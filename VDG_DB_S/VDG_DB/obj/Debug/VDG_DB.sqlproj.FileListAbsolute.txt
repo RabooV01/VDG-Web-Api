@@ -1,6 +1,0 @@
-D:\map\Projects\VDG_DB_S\VDG_DB\bin\Debug\VDG_DB.dacpac
-D:\map\Projects\VDG_DB_S\VDG_DB\obj\Debug\VDG_DB.sqlproj.AssemblyReference.cache
-D:\map\Projects\VDG_DB_S\VDG_DB\obj\Debug\VDG_DB.dll
-D:\map\Projects\VDG_DB_S\VDG_DB\obj\Debug\VDG_DB.pdb
-D:\map\Projects\VDG_DB_S\VDG_DB\bin\Debug\VDG_DB.dll
-D:\map\Projects\VDG_DB_S\VDG_DB\bin\Debug\VDG_DB.pdb
