@@ -1,8 +1,8 @@
 ﻿CREATE TABLE [dbo].[Doctor]
 (
-	Syndicate_Id varchar(16) NOT NULL PRIMARY KEY,
-	User_Id int,
-	Speciality_Id int,
-	constraint Doctor_User_FK foreign key(User_Id) references [User](Id),
-	constraint Doctor_Speciality_FK foreign key([Speciality_Id]) references [Speciality]([Id])
+	Syndicate_Id VARCHAR(16) PRIMARY KEY,
+	User_Id INT,
+	Speciality_Id INT,
+	CONSTRAINT Doctor_User_FK FOREIGN KEY(User_Id) REFERENCES [User](Id),
+	CONSTRAINT Doctor_Speciality_FK FOREIGN KEY([Speciality_Id]) REFERENCES [Speciality]([Id])
 )

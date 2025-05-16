@@ -1,7 +1,8 @@
 ﻿
 CREATE TABLE [dbo].[Post] 
 (
-    [Id] int primary key identity(1,1) ,
-    [Doctor_Id] varchar(16) foreign key references [Doctor](Syndicate_Id),
-    [Content] TEXT
+    [Id] INT PRIMARY KEY IDENTITY(1,1),
+    [Doctor_Id] VARCHAR(16),
+    [Content] TEXT,
+    CONSTRAINT Post_Doctor_FK FOREIGN KEY(Doctor_Id) REFERENCES [Doctor](Syndicate_Id)
 )

@@ -60,7 +60,7 @@
     <Build Include="Tables\Person.sql" />
     <Build Include="Tables\User.sql" />
     <Build Include="Tables\Doctor.sql" />
-    <Build Include="Tables\Booking.sql" />
+    <Build Include="Tables\Reservation.sql" />
     <Build Include="Tables\Post.sql" />
     <Build Include="Tables\Rating.sql" />
     <Build Include="Tables\Speciality.sql" />
