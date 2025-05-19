@@ -6,5 +6,7 @@ namespace VDG_Web_Api.src.Repositories.Interfaces
 	{
 		User? GetById(int userId);
 		IEnumerable<User> GetUsers();
+		void UpdateUserAsync(int userId);
+		void DeleteUserAsync(int userId);
 	}
 }

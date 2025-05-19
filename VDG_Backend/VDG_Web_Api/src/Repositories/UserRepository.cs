@@ -15,7 +15,12 @@ namespace VDG_Web_Api.src.Repositories
 			this.context = new VdgDbDemoContext(context);
 		}
 
-		public User? GetById(int userId)
+        public void DeleteUserAsync(int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public User? GetById(int userId)
 		{
 			var user = context.Users.FirstOrDefault(x => x.Id == userId);
 			return user;
@@ -27,5 +32,10 @@ namespace VDG_Web_Api.src.Repositories
 			User user = context.Users.FirstOrDefault();
 			return new List<User>() { user };
 		}
-	}
+
+        public void UpdateUserAsync(int userId)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
