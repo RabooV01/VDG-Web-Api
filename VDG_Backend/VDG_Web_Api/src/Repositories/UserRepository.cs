@@ -7,12 +7,12 @@ namespace VDG_Web_Api.src.Repositories
 {
 	public class UserRepository : IUserRepository
 	{
-		VdgDbDemoContext context;
+		private readonly VdgDbDemoContext context;
 
 
-		public UserRepository(DbContextOptions<VdgDbDemoContext> context)
+		public UserRepository(VdgDbDemoContext context)
 		{
-			this.context = new VdgDbDemoContext(context);
+			this.context = context;
 		}
 
         public void DeleteUserAsync(int userId)
