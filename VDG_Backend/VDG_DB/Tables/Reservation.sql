@@ -4,6 +4,7 @@
     [User_Id] INT,
     [Vritual_Id] INT,
     [Time] TIME,
+    [Test] INT,
     [Type] VARCHAR(255),
     CONSTRAINT Reservation_User_FK FOREIGN KEY([User_Id]) REFERENCES [User](Id),
     CONSTRAINT Reservation_Virtual_FK FOREIGN KEY(Vritual_Id) REFERENCES Virtual_Clinic(Id),

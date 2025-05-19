@@ -5,6 +5,8 @@ VisualStudioVersion = 17.13.35828.75
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "VDG_DB", "VDG_DB\VDG_DB.sqlproj", "{3A1B824C-4EA9-4FCF-B71A-22C70220BAF3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VDG_Web_Api", "VDG_Web_Api\VDG_Web_Api.csproj", "{9BAD7095-3B09-41C4-B33E-C091E8134564}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,6 +19,10 @@ Global
 		{3A1B824C-4EA9-4FCF-B71A-22C70220BAF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A1B824C-4EA9-4FCF-B71A-22C70220BAF3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3A1B824C-4EA9-4FCF-B71A-22C70220BAF3}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{9BAD7095-3B09-41C4-B33E-C091E8134564}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BAD7095-3B09-41C4-B33E-C091E8134564}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BAD7095-3B09-41C4-B33E-C091E8134564}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BAD7095-3B09-41C4-B33E-C091E8134564}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
