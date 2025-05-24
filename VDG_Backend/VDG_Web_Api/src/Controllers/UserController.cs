@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using VDG_Web_Api.src.DTOs.UserDTOs;
 using VDG_Web_Api.src.Models;
+using VDG_Web_Api.src.Repositories;
 using VDG_Web_Api.src.Repositories.Interfaces;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -14,7 +16,7 @@ namespace VDG_Web_Api.src.Controllers
 		[HttpGet]
 		public IEnumerable<User> GetAllUsers(IUserRepository repo)
 		{
-			var users = repo.GetUsers();
+			var users = repo.GetUsers(1, 1);
 			return users;
 		}
 
@@ -41,6 +43,11 @@ namespace VDG_Web_Api.src.Controllers
 		[HttpDelete("{id}")]
 		public void Delete(int id)
 		{
+		}
+		[HttpGet("/login")]
+		public UserLogin Get(UserRepository userdata)
+		{
+			return userdata.GetUserLogin(new Data.Models.User() { Email = "rabii@rabii.com", PasswordHash = "asdasdasd" });
 		}
 	}
 }

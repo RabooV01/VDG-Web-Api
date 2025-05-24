@@ -1,43 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace VDG_Web_Api.src.Models;
 
 [Table("Doctor")]
 public partial class Doctor
 {
-    [Key]
-    [Column("Syndicate_Id")]
-    [StringLength(16)]
-    [Unicode(false)]
-    public string SyndicateId { get; set; } = null!;
+	[Key]
+	[Column("Syndicate_Id")]
+	[StringLength(16)]
+	[Unicode(false)]
+	public string SyndicateId { get; set; } = null!;
 
-    [Column("User_Id")]
-    public int? UserId { get; set; }
+	[Column("User_Id")]
+	public int? UserId { get; set; }
 
-    [Column("Speciality_Id")]
-    public int? SpecialityId { get; set; }
+	[Column("Speciality_Id")]
+	public int? SpecialityId { get; set; }
 
-    [InverseProperty("Doctor")]
-    public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
+	[InverseProperty("Doctor")]
+	public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
 
-    [InverseProperty("Doctor")]
-    public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
+	[InverseProperty("Doctor")]
+	public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
 
-    [ForeignKey("SpecialityId")]
-    [InverseProperty("Doctors")]
-    public virtual Speciality? Speciality { get; set; }
+	[ForeignKey("SpecialityId")]
+	[InverseProperty("Doctors")]
+	public virtual Speciality? Speciality { get; set; }
 
-    [InverseProperty("Doctor")]
-    public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+	[InverseProperty("Doctor")]
+	public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 
-    [ForeignKey("UserId")]
-    [InverseProperty("Doctors")]
-    public virtual User? User { get; set; }
+	[ForeignKey("UserId")]
+	[InverseProperty("Doctors")]
+	public virtual User? User { get; set; }
 
-    [InverseProperty("Doctor")]
-    public virtual ICollection<VirtualClinic> VirtualClinics { get; set; } = new List<VirtualClinic>();
+	[InverseProperty("Doctor")]
+	public virtual ICollection<VirtualClinic> VirtualClinics { get; set; } = new List<VirtualClinic>();
 }

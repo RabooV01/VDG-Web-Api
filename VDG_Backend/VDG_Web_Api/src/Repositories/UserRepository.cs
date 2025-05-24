@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using VDG_Web_Api.src.Data;
+﻿using VDG_Web_Api.src.Data;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 
@@ -15,27 +14,26 @@ namespace VDG_Web_Api.src.Repositories
 			this.context = context;
 		}
 
-        public void DeleteUserAsync(int userId)
-        {
-            throw new NotImplementedException();
-        }
+		public void DeleteUserAsync(int userId)
+		{
 
-        public User? GetById(int userId)
+		}
+
+		public User? GetById(int userId)
 		{
 			var user = context.Users.FirstOrDefault(x => x.Id == userId);
 			return user;
 		}
 
-		public IEnumerable<User> GetUsers()
+		public IEnumerable<User> GetUsers(int page, int pageSize)
 		{
 
-			User user = context.Users.FirstOrDefault();
-			return new List<User>() { user };
+			return context.Users.Take(1..10).ToList();
 		}
 
-        public void UpdateUserAsync(int userId)
-        {
-            throw new NotImplementedException();
-        }
-    }
+		public void UpdateUserAsync(int userId)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }
