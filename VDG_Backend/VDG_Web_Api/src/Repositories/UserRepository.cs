@@ -4,36 +4,37 @@ using VDG_Web_Api.src.Repositories.Interfaces;
 
 namespace VDG_Web_Api.src.Repositories
 {
-	public class UserRepository : IUserRepository
-	{
-		private readonly VdgDbDemoContext context;
+    public class UserRepository : IUserRepository
+    {
+        private readonly VdgDbDemoContext context;
 
 
-		public UserRepository(VdgDbDemoContext context)
-		{
-			this.context = context;
-		}
+        public UserRepository(VdgDbDemoContext context)
+        {
+            this.context = context;
+        }
 
-		public void DeleteUserAsync(int userId)
-		{
+        public void DeleteUserAsync(int userId)
+        {
 
-		}
+        }
 
-		public User? GetById(int userId)
-		{
-			var user = context.Users.FirstOrDefault(x => x.Id == userId);
-			return user;
-		}
+        public User? GetById(int userId)
+        {
+            var user = context.Users.FirstOrDefault(x => x.Id == userId);
+            return user;
+        }
 
-		public IEnumerable<User> GetUsers(int page, int pageSize)
-		{
+        public IEnumerable<User> GetUsers(int page, int pageSize)
+        {
+            var res = context.Users;
 
-			return context.Users.Take(1..10).ToList();
-		}
+            return res;
+        }
 
-		public void UpdateUserAsync(int userId)
-		{
-			throw new NotImplementedException();
-		}
-	}
+        public void UpdateUserAsync(int userId)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

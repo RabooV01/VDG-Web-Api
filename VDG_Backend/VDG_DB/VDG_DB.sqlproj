@@ -68,7 +68,4 @@
     <Build Include="Tables\Ticket_Message.sql" />
     <Build Include="Tables\Virtual_Clinic.sql" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="VDG_DB.publish.xml" />
-  </ItemGroup>
 </Project>
