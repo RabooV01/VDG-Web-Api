@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using VDG_Web_Api.src.Data.Models;
+using VDG_Web_Api.src.Models;
 
-namespace VDG_Web_Api.src.Data.DTOs.UserDTOs
+namespace VDG_Web_Api.src.DTOs.UserDTOs
 {
 	public class UserRegister
 	{

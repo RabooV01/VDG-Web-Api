@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace VDG_Web_Api.src.Data.DTOs.UserDTOs
+namespace VDG_Web_Api.src.DTOs.UserDTOs
 {
 	public class UserLogin
 	{

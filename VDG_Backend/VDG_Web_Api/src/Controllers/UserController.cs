@@ -1,7 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using VDG_Web_Api.src.DTOs.UserDTOs;
-using VDG_Web_Api.src.Models;
-using VDG_Web_Api.src.Repositories;
 using VDG_Web_Api.src.Repositories.Interfaces;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -12,25 +9,45 @@ namespace VDG_Web_Api.src.Controllers
 	[ApiController]
 	public class UserController : ControllerBase
 	{
+		private readonly IUserRepository userData;
+
+		public UserController(IUserRepository userData)
+		{
+			this.userData = userData;
+		}
 		// GET: api/<UserController>
 		[HttpGet]
-		public IEnumerable<User> GetAllUsers(IUserRepository repo)
+		public IResult GetAllUsers(int page = 1, int limit = 20)
 		{
-			var users = repo.GetUsers(1, 1);
-			return users;
+			try
+			{
+				var users = userData.GetUsers(page, limit);
+				return Results.Ok(users);
+			}
+			catch (Exception e)
+			{
+				return Results.BadRequest(e.Message);
+			}
 		}
 
 		// GET api/<UserController>/5
 		[HttpGet("{id}")]
-		public string Get(int id)
+		public IResult Get(int id)
 		{
-			return "value";
-		}
+			try
+			{
+				var user = userData.GetById(id);
+				if (user == null)
+				{
+					return Results.NoContent();
+				}
+				return Results.Ok(user);
+			}
+			catch (Exception e)
+			{
+				return Results.BadRequest(e.Message);
+			}
 
-		// POST api/<UserController>
-		[HttpPost]
-		public void Post([FromBody] string value)
-		{
 		}
 
 		// PUT api/<UserController>/5
@@ -41,13 +58,17 @@ namespace VDG_Web_Api.src.Controllers
 
 		// DELETE api/<UserController>/5
 		[HttpDelete("{id}")]
-		public void Delete(int id)
+		public IResult Delete(int id)
 		{
-		}
-		[HttpGet("/login")]
-		public UserLogin Get(UserRepository userdata)
-		{
-			return userdata.GetUserLogin(new Data.Models.User() { Email = "rabii@rabii.com", PasswordHash = "asdasdasd" });
+			try
+			{
+				userData.DeleteUserAsync(id);
+				return Results.NoContent();
+			}
+			catch (Exception e)
+			{
+				return Results.BadRequest(e.Message);
+			}
 		}
 	}
 }

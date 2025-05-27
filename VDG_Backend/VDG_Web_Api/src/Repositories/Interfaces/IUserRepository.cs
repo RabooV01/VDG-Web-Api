@@ -5,8 +5,8 @@ namespace VDG_Web_Api.src.Repositories.Interfaces
 	public interface IUserRepository
 	{
 		User? GetById(int userId);
-		IEnumerable<User> GetUsers(int page, int pageSize);
-		void UpdateUserAsync(int userId);
+		IEnumerable<User> GetUsers(int page, int limit);
+		void UpdateUserAsync(User user);
 		void DeleteUserAsync(int userId);
 	}
 }
