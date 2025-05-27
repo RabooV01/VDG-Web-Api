@@ -33,7 +33,6 @@ public partial class Doctor
 	public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 
 	[ForeignKey("UserId")]
-	[InverseProperty("Doctors")]
 	public virtual User? User { get; set; }
 
 	[InverseProperty("Doctor")]

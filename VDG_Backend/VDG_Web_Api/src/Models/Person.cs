@@ -30,7 +30,4 @@ public partial class Person
 	[StringLength(16)]
 	[Unicode(false)]
 	public string? Phone { get; set; }
-
-	[InverseProperty("Person")]
-	public virtual ICollection<User> Users { get; set; } = new List<User>();
 }

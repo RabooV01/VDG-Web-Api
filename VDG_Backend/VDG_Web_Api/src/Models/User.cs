@@ -26,11 +26,7 @@ public partial class User
 	[Unicode(false)]
 	public string? Role { get; set; }
 
-	[InverseProperty("User")]
-	public virtual ICollection<Doctor> Doctors { get; set; } = new List<Doctor>();
-
 	[ForeignKey("PersonId")]
-	[InverseProperty("Users")]
 	public virtual Person? Person { get; set; }
 
 	[InverseProperty("User")]
