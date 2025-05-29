@@ -14,23 +14,16 @@ namespace VDG_Web_Api.src.Repositories
             this.context = context;
         }
 
-<<<<<<< HEAD
         public void DeleteUserAsync(int userId)
         {
-
+            var user = GetById(userId);
+            if (user is null)
+            {
+                return;
+            }
+            context.Users.Remove(user);
+            context.SaveChanges();
         }
-=======
-		public void DeleteUserAsync(int userId)
-		{
-			var user = GetById(userId);
-			if (user is null)
-			{
-				return;
-			}
-			context.Users.Remove(user);
-			context.SaveChanges();
-		}
->>>>>>> a2fa3bdb4ff82acadffb7131a2b2f90ba32e364f
 
         public User? GetById(int userId)
         {
@@ -38,34 +31,19 @@ namespace VDG_Web_Api.src.Repositories
             return user;
         }
 
-<<<<<<< HEAD
-        public IEnumerable<User> GetUsers(int page, int pageSize)
+        public IEnumerable<User> GetUsers(int page, int limit)
         {
-            var res = context.Users;
 
-            return res;
+            return context.Users.AsEnumerable();
         }
 
-        public void UpdateUserAsync(int userId)
+        public void UpdateUserAsync(User user)
         {
-            throw new NotImplementedException();
+            if (GetById(user.Id) == null)
+            {
+                return;
+            }
+            context.Users.Update(user);
         }
     }
-=======
-		public IEnumerable<User> GetUsers(int page, int limit)
-		{
-
-			return context.Users.AsEnumerable();
-		}
-
-		public void UpdateUserAsync(User user)
-		{
-			if (GetById(user.Id) == null)
-			{
-				return;
-			}
-			context.Users.Update(user);
-		}
-	}
->>>>>>> a2fa3bdb4ff82acadffb7131a2b2f90ba32e364f
 }
