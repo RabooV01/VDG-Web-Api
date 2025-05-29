@@ -8,8 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
-builder.Services.AddOpenApi();
-
+//builder.Services.AddOpenApi();
+builder.Services.AddOpenApiDocument();
 // Our App Services
 builder.Services.AddDbContext<VdgDbDemoContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -20,9 +20,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    app.MapOpenApi();
+    app.UseOpenApi();
+    app.UseSwaggerUi();
 }
 
 app.UseHttpsRedirection();
