@@ -18,16 +18,16 @@ namespace VDG_Web_Api.src.Controllers
 		}
 		// GET: api/<UserController>
 		[HttpGet]
-		public IResult GetAllUsers(int page = 1, int limit = 20)
+		public ActionResult<IEnumerable<User>> GetAllUsers(int page = 1, int limit = 20)
 		{
 			try
 			{
 				var users = userData.GetUsers(page, limit);
-				return Results.Ok(users);
+				return Ok(users);
 			}
 			catch (Exception e)
 			{
-				return Results.BadRequest(e.Message);
+				return BadRequest(e.Message);
 			}
 		}
 
