@@ -5,10 +5,12 @@ namespace VDG_Web_Api.src.Data;
 
 public partial class VdgDbDemoContext : DbContext
 {
+    private readonly IConfiguration _config;
 
-    public VdgDbDemoContext(DbContextOptions<VdgDbDemoContext> options)
+    public VdgDbDemoContext(DbContextOptions<VdgDbDemoContext> options, IConfiguration config)
         : base(options)
     {
+        _config = config;
     }
 
     public virtual DbSet<Doctor> Doctors { get; set; }
@@ -32,7 +34,7 @@ public partial class VdgDbDemoContext : DbContext
     public virtual DbSet<VirtualClinic> VirtualClinics { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Data Source=LAPTOP-RABOO;Initial Catalog=VDG_Migration;Integrated Security=True;Connect Timeout=60;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False");
+        => optionsBuilder.UseSqlServer(_config.GetConnectionString("Default"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
