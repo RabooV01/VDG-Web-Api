@@ -6,11 +6,14 @@ namespace VDG_Web_Api.src.Data;
 public partial class VdgDbDemoContext : DbContext
 {
     private readonly IConfiguration _config;
+    private readonly IConfiguration _config;
 
+    public VdgDbDemoContext(DbContextOptions<VdgDbDemoContext> options, IConfiguration config)
     public VdgDbDemoContext(DbContextOptions<VdgDbDemoContext> options, IConfiguration config)
         : base(options)
     {
         this._config = config;
+        _config = config;
     }
 
     public virtual DbSet<Doctor> Doctors { get; set; }
@@ -34,6 +37,7 @@ public partial class VdgDbDemoContext : DbContext
     public virtual DbSet<VirtualClinic> VirtualClinics { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseSqlServer(_config.GetConnectionString("Default"));
         => optionsBuilder.UseSqlServer(_config.GetConnectionString("Default"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

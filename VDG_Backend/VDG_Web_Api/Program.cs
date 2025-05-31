@@ -22,7 +22,7 @@ if (app.Environment.IsDevelopment())
 {
     //app.UseOpenApi();
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUi();
 }
 
 app.UseHttpsRedirection();
