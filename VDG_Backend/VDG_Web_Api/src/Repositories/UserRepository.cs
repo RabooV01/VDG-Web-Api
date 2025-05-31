@@ -35,7 +35,7 @@ namespace VDG_Web_Api.src.Repositories
 			return await context.Users.ToListAsync();
 		}
 
-		public async Task<User?> UpdateUserAsync(User user)
+		public async Task<User> UpdateUserAsync(User user)
 		{
 			context.Users.Update(user);
 			await context.SaveChangesAsync();
