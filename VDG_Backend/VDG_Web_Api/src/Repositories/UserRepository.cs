@@ -1,49 +1,45 @@
-﻿using VDG_Web_Api.src.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using VDG_Web_Api.src.Data;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 
 namespace VDG_Web_Api.src.Repositories
 {
-    public class UserRepository : IUserRepository
-    {
-        private readonly VdgDbDemoContext context;
+	public class UserRepository : IUserRepository
+	{
+		private readonly VdgDbDemoContext context;
 
 
-        public UserRepository(VdgDbDemoContext context)
-        {
-            this.context = context;
-        }
+		public UserRepository(VdgDbDemoContext context)
+		{
+			this.context = context;
+		}
 
-        public void DeleteUserAsync(int userId)
-        {
-            var user = GetById(userId);
-            if (user is null)
-            {
-                return;
-            }
-            context.Users.Remove(user);
-            context.SaveChanges();
-        }
+		public Task DeleteUserAsync(int userId)
+		{
 
-        public User? GetById(int userId)
-        {
-            var user = context.Users.FirstOrDefault(x => x.Id == userId);
-            return user;
-        }
+			context.Users.Where(usr => usr.Id == userId).ExecuteDeleteAsync();
+			context.SaveChanges();
+			return Task.CompletedTask;
+		}
 
-        public IEnumerable<User> GetUsers(int page, int limit)
-        {
+		public async Task<User?> GetById(int userId)
+		{
+			var user = await context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+			return user;
+		}
 
-            return context.Users.AsEnumerable();
-        }
+		public async Task<IEnumerable<User>> GetUsers(int page, int limit)
+		{
 
-        public void UpdateUserAsync(User user)
-        {
-            if (GetById(user.Id) == null)
-            {
-                return;
-            }
-            context.Users.Update(user);
-        }
-    }
+			return await context.Users.ToListAsync();
+		}
+
+		public async Task<User?> UpdateUserAsync(User user)
+		{
+			context.Users.Update(user);
+			await context.SaveChangesAsync();
+			return user;
+		}
+	}
 }

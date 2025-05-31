@@ -51,11 +51,20 @@ namespace VDG_Web_Api.src.Controllers
 
 		}
 
-        // PUT api/<UserController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+		// PUT api/<UserController>/5
+		[HttpPut]
+		public async Task<ActionResult<User?>> Put([FromBody] User user)
+		{
+			try
+			{
+				var updatedUser = await userData.UpdateUserAsync(user);
+				return Ok(updatedUser);
+			}
+			catch (Exception e)
+			{
+				return BadRequest(e.Message);
+			}
+		}
 
 		// DELETE api/<UserController>/5
 		[HttpDelete("{id}")]
