@@ -10,29 +10,28 @@ public partial class VdgDbDemoContext : DbContext
     public VdgDbDemoContext(DbContextOptions<VdgDbDemoContext> options, IConfiguration config)
         : base(options)
     {
-        this._config = config;
         _config = config;
     }
 
-    public virtual DbSet<Doctor> Doctors { get; set; }
+    public virtual DbSet<Doctor> Doctors { get; set; } = null!;
 
-    public virtual DbSet<Person> People { get; set; }
+    public virtual DbSet<Person> People { get; set; } = null!;
 
-    public virtual DbSet<Post> Posts { get; set; }
+    public virtual DbSet<Post> Posts { get; set; } = null!;
 
-    public virtual DbSet<Rating> Ratings { get; set; }
+    public virtual DbSet<Rating> Ratings { get; set; } = null!;
 
-    public virtual DbSet<Reservation> Reservations { get; set; }
+    public virtual DbSet<Reservation> Reservations { get; set; } = null!;
 
-    public virtual DbSet<Speciality> Specialities { get; set; }
+    public virtual DbSet<Speciality> Specialities { get; set; } = null!;
 
-    public virtual DbSet<Ticket> Tickets { get; set; }
+    public virtual DbSet<Ticket> Tickets { get; set; } = null!;
 
-    public virtual DbSet<TicketMessage> TicketMessages { get; set; }
+    public virtual DbSet<TicketMessage> TicketMessages { get; set; } = null!;
 
-    public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<User> Users { get; set; } = null!;
 
-    public virtual DbSet<VirtualClinic> VirtualClinics { get; set; }
+    public virtual DbSet<VirtualClinic> VirtualClinics { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer(_config.GetConnectionString("Default"));

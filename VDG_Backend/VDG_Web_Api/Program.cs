@@ -13,6 +13,7 @@ builder.Services.AddOpenApiDocument();
 // Our App Services
 builder.Services.AddDbContext<VdgDbDemoContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
