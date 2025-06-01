@@ -18,11 +18,11 @@ namespace VDG_Web_Api.src.Controllers
 		}
 		// GET: api/<UserController>
 		[HttpGet]
-		public ActionResult<IEnumerable<User>> GetAllUsers(int page = 1, int limit = 20)
+		public async Task<ActionResult<IEnumerable<User>>> GetAllUsers(int page = 1, int limit = 20)
 		{
 			try
 			{
-				var users = userData.GetUsers(page, limit);
+				var users = await userData.GetUsers(page, limit);
 				return Ok(users);
 			}
 			catch (Exception e)
