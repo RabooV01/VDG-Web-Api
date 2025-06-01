@@ -1,6 +1,7 @@
 ﻿namespace VDG_Web_Api.src.Repositories.Interfaces
 {
-	public interface ITicketRepository
-	{
-	}
+    public interface ITicketRepository
+    {
+
+    }
 }
