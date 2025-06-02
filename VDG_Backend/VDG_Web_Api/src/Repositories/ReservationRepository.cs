@@ -16,6 +16,7 @@ public class ReservationRepository : IReservationRepository
 	{
 		_context = context;
 	}
+
 	public async Task<IEnumerable<Reservation>> GetReservationsAsync(int? virtualId = null, int? userId = null, DateOnly? day = null)
 	{
 		var reservations = _context.Reservations
@@ -62,30 +63,30 @@ public class ReservationRepository : IReservationRepository
 	}
 
 	public async Task UpdateAppointmentAsync(Reservation reservation)
-{
-    if (reservation == null)
-    {
-        throw new ArgumentNullException(nameof(reservation), "Reservation cannot be null.");
-    }
+	{
+		try
+		{
+			if (reservation == null)
+			{
+				throw new ArgumentNullException(nameof(reservation), "Reservation cannot be null.");
+			}
+			
+			var existingReservation = await _context.Reservations.FindAsync(reservation.Id);
+			
+			if (existingReservation == null)
+			{
+				throw new InvalidOperationException("Appointment has not been found.");
+			}
+			
+			existingReservation.ScheduledAt = reservation.ScheduledAt;
+			existingReservation.Text = reservation.Text;
+			existingReservation.Type = reservation.Type;
 
-    try
-    {
-        var existingReservation = await _context.Reservations.FindAsync(reservation.Id);
-        
-        if (existingReservation == null)
-        {
-            throw new InvalidOperationException("Appointment has not been found.");
-        }
-        
-        existingReservation.ScheduledAt = reservation.ScheduledAt;
-        existingReservation.Text = reservation.Text;
-        existingReservation.Type = reservation.Type;
-
-        await _context.SaveChangesAsync();
-    }
-    catch (Exception e)
-    {
-        throw new InvalidOperationException($"An error occurred while updating the appointment. {e.Message}", e);
-    }
-}
+			await _context.SaveChangesAsync();
+		}
+		catch (Exception e)
+		{
+			throw new InvalidOperationException($"An error occurred while updating the appointment. {e.Message}", e);
+		}
+	}
 }

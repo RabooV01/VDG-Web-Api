@@ -8,6 +8,6 @@ public interface IReservationRepository
     public Task<IEnumerable<UserReservation>> GetUserReservationsAsync(int userId, DateOnly? date = null);
     public Task BookAppointmentAsync(ReservationDTO reservation);
     public Task BookRevisionAppointmentAsync(ReservationDTO reservation);
-    public Task DeleteAppointmentAsync(int reservationId);
-    public Task UpdateAppointmentAsync(ReservationDTO reservation);
+    public Task CancelAppointmentAsync(int reservationId);
+    public Task EditAppointmentAsync(ReservationDTO reservation);
 }
