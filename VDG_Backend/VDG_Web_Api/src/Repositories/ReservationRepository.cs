@@ -17,20 +17,43 @@ public class ReservationRepository : IReservationRepository
 		_context = context;
 	}
 
-	public async Task<IEnumerable<Reservation>> GetReservationsAsync(int? virtualId = null, int? userId = null, DateOnly? day = null)
+	public async Task<IEnumerable<Reservation>> GetReservationsAsync(int? virtualId = null, int? userId = null, DateOnly? date = null)
 	{
-		var reservations = _context.Reservations
-		.Where( c => (c.VritualId == virtualId || virtualId == null) 
-		&& (c.UserId == userId || userId == null) 
-		&& ( day == null || DateOnly.Parse(c.ScheduledAt.ToString()) == day));
+		if(virtualId != null && userId != null)
+		{
+			throw new ArgumentException("Must select atmost a user or a clinic");
+		}
+		
+		var reservations = _context.Reservations.AsQueryable();
 
-		return await reservations.ToListAsync();
+		if(date != null)
+		{
+			reservations = _context.Reservations.Where(c => 
+            c.ScheduledAt.Year == date.Value.Year && 
+            c.ScheduledAt.Month == date.Value.Month && 
+            c.ScheduledAt.Day == date.Value.Day);
+		}
+
+		if(virtualId != null)
+		{
+			// return all reservations that related to a clinic
+			return await reservations
+			.Where(c => c.VirtualId == virtualId)
+			.ToListAsync();
+		}
+		if(userId != null)
+		{
+			// return all reservations that related to a user
+			return await reservations
+			.Where(c => c.UserId == userId)
+			.ToListAsync();
+		}
+
+		throw new InvalidOperationException($"Unexpected error occured in {nameof(GetReservationsAsync)} method controlflow.");
 	}
 
 	public async Task BookAppointmentAsync(Reservation reservation)
 	{
-		if(reservation.UserId == null || reservation.VritualId == null)
-			throw new ArgumentNullException(nameof(reservation), "must selected a user and a clinic");
 		try
 		{
 			_context.Reservations.Add(reservation);
@@ -38,21 +61,21 @@ public class ReservationRepository : IReservationRepository
 		}
 		catch (Exception e)
 		{
-			throw new InvalidOperationException($"failed to add appointment, Error: {e.Message}", e);
+			throw new InvalidOperationException($"Failed to add appointment, Error: {e.Message}", e);
 		}
 	}
 
 	public async Task CancelAppointmentAsync(int reservationId)
 	{
+		var reservation = await _context.Reservations.FindAsync(reservationId);
+		
+		if(reservation == null)
+		{
+			throw new KeyNotFoundException("No such appointment found; it may have been canceled already.");
+		}
+
 		try
 		{
-			var reservation = await _context.Reservations.FindAsync(reservationId);
-		
-			if(reservation == null)
-			{
-				throw new Exception("No such appointment found; it may have been canceled already");
-			}
-
 			_context.Reservations.Remove(reservation);
 			await _context.SaveChangesAsync();
 		}
@@ -64,24 +87,24 @@ public class ReservationRepository : IReservationRepository
 
 	public async Task UpdateAppointmentAsync(Reservation reservation)
 	{
+		if (reservation == null)
+		{
+			throw new ArgumentNullException(nameof(reservation), "Reservation cannot be null.");
+		}
+		
+		var existingReservation = await _context.Reservations.FindAsync(reservation.Id);
+		
+		if (existingReservation == null)
+		{
+			throw new InvalidOperationException("Appointment has not been found.");
+		}
+
+		existingReservation.ScheduledAt = reservation.ScheduledAt;
+		existingReservation.Text = reservation.Text;
+		existingReservation.Type = reservation.Type;
+
 		try
 		{
-			if (reservation == null)
-			{
-				throw new ArgumentNullException(nameof(reservation), "Reservation cannot be null.");
-			}
-			
-			var existingReservation = await _context.Reservations.FindAsync(reservation.Id);
-			
-			if (existingReservation == null)
-			{
-				throw new InvalidOperationException("Appointment has not been found.");
-			}
-			
-			existingReservation.ScheduledAt = reservation.ScheduledAt;
-			existingReservation.Text = reservation.Text;
-			existingReservation.Type = reservation.Type;
-
 			await _context.SaveChangesAsync();
 		}
 		catch (Exception e)

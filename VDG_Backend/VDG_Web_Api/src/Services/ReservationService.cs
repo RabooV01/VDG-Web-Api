@@ -1,30 +1,151 @@
 using VDG_Web_Api.src.DTOs.ReservationDTOs;
+using VDG_Web_Api.src.DTOs.UserDTOs;
+using VDG_Web_Api.src.Models;
+using VDG_Web_Api.src.Repositories;
+using VDG_Web_Api.src.Repositories.Interfaces;
 
 namespace VDG_Web_Api.src.Services.Interfaces;
 
-public class ReservationRepository : IReservationRepository
+public class ReservationSerivce : IReservationService
 {
-    public Task BookAppointmentAsync(ReservationDTO reservation)
+    private readonly IReservationRepository _reservationRepository;
+    private readonly IVirtualClinicService _virtualClinicService;
+    private readonly IUserService _userService;
+
+    public enum BookingTypes { preview, revision };
+    public ReservationSerivce(IReservationRepository reservationRepository, 
+        IVirtualClinicService virtualClinicService,
+        IUserService userService)
     {
-        throw new NotImplementedException();
+        _reservationRepository = reservationRepository;
+        _virtualClinicService = virtualClinicService;
+        _userService = userService;
     }
 
-    public Task BookRevisionAppointmentAsync(ReservationDTO reservation)
+    private Reservation MapToEntity(ReservationDTO Dto) 
+    {        
+        return new Reservation() 
+        {
+            Id = Dto.Id,
+            UserId = Dto.UserId,
+            VirtualId = Dto.VirtualId,
+            Text = Dto.Text,
+            ScheduledAt = Dto.ScheduledAt,
+            Type = Dto.Type
+        };
+    }
+    public async Task<UserReservationDTO> MapToUserReservation(ReservationDTO Dto)
     {
-        throw new NotImplementedException();
+        if(Dto.VirtualId is null)
+            throw new ArgumentNullException("Virtual clinic is not selected.");
+        
+        var virtualClinic = await _virtualClinicService.GetClinicById(Dto.VirtualId.Value);
+        var userReservation = new UserReservationDTO() 
+        {
+            ReservationDto = Dto,
+            VirtualDto = virtualClinic
+        };
+        return userReservation;
     }
 
-    public Task CancelAppointmentAsync(int reservationId)
+    public async Task<ClinicReservationDTO> MapToClinicReservation(ReservationDTO Dto)
     {
-        throw new NotImplementedException();
+        if(Dto.UserId is null)
+            throw new ArgumentNullException("User is not selected.");
+
+        var userDto = await _userService.GetByIdAsync(Dto.UserId.Value);
+
+        var userReservation = new ClinicReservationDTO() 
+        {
+            ReservationDto = Dto,
+            UserDto = userDto 
+        };
+
+        return userReservation;
     }
 
-    public Task<IEnumerable<ClinicReservation>> GetClinicReservationsAsync(int virtualId, DateOnly? date = null)
+    public ReservationDTO MapToDto(Reservation reservation) => new ReservationDTO()
     {
-        throw new NotImplementedException();
+        Id = reservation.Id,
+        Type = reservation.Type,
+        Text = reservation.Text,
+        ScheduledAt = reservation.ScheduledAt,
+        UserId = reservation.UserId,
+        VirtualId = reservation.VirtualId
+    };
+
+    public async Task BookAppointmentAsync(ReservationDTO reservationDto)
+    {
+        Reservation reservation = MapToEntity(reservationDto);
+        
+        // if (!IsValidReservation(reservation))
+        // {
+        //     throw new ArgumentNullException(nameof(reservation), "Must select a user and a clinic.");
+        // }
+
+        try
+        {
+            await _reservationRepository.BookAppointmentAsync(reservation);
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new InvalidOperationException($"Error occured while booking the appointment: {ex.Message}", ex);
+        }
+        catch (Exception e)
+        {
+            throw new InvalidOperationException($"Unexpected error occurred: {e.Message}", e);
+        }
     }
 
-    public Task<IEnumerable<UserReservation>> GetUserReservationsAsync(int userId, DateOnly? date = null)
+    public async Task CancelAppointmentAsync(int reservationId)
+    {
+        try
+        {
+            await _reservationRepository.CancelAppointmentAsync(reservationId);
+        }
+        catch(KeyNotFoundException ex)
+        {
+            throw new InvalidOperationException($"Unable to cancel appointment: {ex.Message}", ex);
+        }
+        catch(Exception ex)
+        {
+            throw new InvalidOperationException($"Error occured while canceling the appointment: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<IEnumerable<ClinicReservationDTO>> GetClinicReservationsAsync(int virtualId, DateOnly? date = null)
+    {
+        try
+        {
+            var reservations = await _reservationRepository.GetReservationsAsync(virtualId: virtualId, day: date);
+
+                var userIds = reservations.Select(r => r.UserId)
+                .Distinct()
+                .ToList();
+
+            UserDTO?[] userDtos = await Task.WhenAll(userIds.Where(Id => Id.HasValue).Select( Id => _userService.GetByIdAsync(Id!.Value)));
+            
+            return reservations.Select(s => 
+            {
+                var reservationDto = MapToDto(s);
+
+                var userDto = userDtos.FirstOrDefault(user => user?.Id == reservationDto.UserId);
+
+                return new ClinicReservationDTO()
+                {
+                    ReservationDto = reservationDto,
+                    UserDto = userDto
+                };
+            }).ToList();
+        }
+        catch (Exception)
+        {
+            
+            throw;
+        }
+    }
+
+    public Task<IEnumerable<UserReservationDTO>> GetUserReservationsAsync(int userId, DateOnly? date = null)
     {
         throw new NotImplementedException();
     }

@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VDG_Web_Api.src.Models;
 
+public enum BookingTypes { Preview, Revision }
+
 [Table("Reservation")]
 public partial class Reservation
 {
@@ -14,17 +16,15 @@ public partial class Reservation
 	public int? UserId { get; set; }
 
 	[Column("Vritual_Id")]
-	public int? VritualId { get; set; }
+	public int? VirtualId { get; set; }
 
 	public DateTime ScheduledAt { get; set; }
 
 	[StringLength(512)]
-	public string? Text { get; set; }
-
-	[StringLength(255)]
-	[AllowedValues(["preview", "revision"])]
-	[Unicode(false)]
-	public string? Type { get; set; }
+	public string Text { get; set; } = string.Empty;
+	
+	[Required]
+	public BookingTypes Type { get; set; }
 
 	[ForeignKey("UserId")]
 	[InverseProperty("Reservations")]
