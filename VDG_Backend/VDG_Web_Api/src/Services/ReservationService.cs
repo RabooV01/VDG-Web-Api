@@ -102,12 +102,12 @@ public class ReservationSerivce : IReservationService
 
     public async Task BookAppointmentAsync(ReservationDTO reservationDto)
     {
+        if (!IsValidReservation(reservationDto))
+        {
+            throw new ArgumentNullException("Reservation is invalid");
+        }
+
         Reservation reservation = MapToEntity(reservationDto);
-        
-        // if (!IsValidReservation(reservation))
-        // {
-        //     throw new ArgumentNullException(nameof(reservation), "Must select a user and a clinic.");
-        // }
 
         try
         {
