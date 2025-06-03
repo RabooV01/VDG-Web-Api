@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using VDG_Web_Api.src.DTOs.ReservationDTOs;
 using VDG_Web_Api.src.DTOs.UserDTOs;
 using VDG_Web_Api.src.Models;
@@ -22,8 +23,33 @@ public class ReservationSerivce : IReservationService
         _userService = userService;
     }
 
+    private bool IsValidReservation(ReservationDTO reservation)
+    {
+        if(reservation == null)
+        {
+            return false;
+        }
+        
+        if(!Enum.TryParse<BookingTypes>(reservation.Type.ToString(), true, out _))
+        {
+            return false;
+        }
+
+        if(reservation.VirtualId == null)
+        {
+            return false;
+        }
+
+        if(reservation.ScheduledAt < DateTime.UtcNow)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     private Reservation MapToEntity(ReservationDTO Dto) 
-    {        
+    { 
         return new Reservation() 
         {
             Id = Dto.Id,
@@ -119,11 +145,11 @@ public class ReservationSerivce : IReservationService
         {
             var reservations = await _reservationRepository.GetReservationsAsync(virtualId: virtualId, day: date);
 
-                var userIds = reservations.Select(r => r.UserId)
-                .Distinct()
-                .ToList();
+            var userIds = reservations.Select(r => r.UserId)
+            .Distinct()
+            .ToList();
 
-            UserDTO?[] userDtos = await Task.WhenAll(userIds.Where(Id => Id.HasValue).Select( Id => _userService.GetByIdAsync(Id!.Value)));
+            UserDTO?[] userDtos = await Task.WhenAll(userIds.Where(Id => Id != null).Select( Id => _userService.GetByIdAsync(Id!.Value)));
             
             return reservations.Select(s => 
             {
@@ -138,20 +164,69 @@ public class ReservationSerivce : IReservationService
                 };
             }).ToList();
         }
+        catch (InvalidOperationException ex)
+        {
+            throw new InvalidOperationException($"Could not retrive data, Error: {ex.Message}", ex);
+        }
         catch (Exception)
         {
-            
             throw;
         }
     }
 
-    public Task<IEnumerable<UserReservationDTO>> GetUserReservationsAsync(int userId, DateOnly? date = null)
+    public async Task<IEnumerable<UserReservationDTO>> GetUserReservationsAsync(int userId, DateOnly? date = null)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var reservations = await _reservationRepository.GetReservationsAsync(userId: userId, day: date);
+
+            var ClinicIds = reservations.Select(r => r.VirtualId!.Value);
+
+            var ClinicDtos = await Task.WhenAll(ClinicIds.Select(_virtualClinicService.GetClinicById));
+
+            return reservations.Select(r =>
+            {
+                var reservationDto = MapToDto(r);
+
+                var virtualClinicDto =  ClinicDtos.FirstOrDefault(c => c.Id == r.VirtualId);
+
+                return new UserReservationDTO()
+                {
+                    ReservationDto = reservationDto,
+                    VirtualDto = virtualClinicDto
+                };
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new InvalidOperationException($"Could not retrive data, Error: {ex.Message}", ex);
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 
-    public Task EditAppointmentAsync(ReservationDTO reservation)
+    public async Task EditAppointmentAsync(ReservationDTO reservationDto)
     {
-        throw new NotImplementedException();
+        if(!IsValidReservation(reservationDto))
+        {
+            throw new ArgumentException("Reservation value is invalid, No update were applied.");
+        }
+
+        Reservation reservation = MapToEntity(reservationDto);
+
+        try
+        {
+            await _reservationRepository.UpdateAppointmentAsync(reservation);
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new InvalidOperationException($"Update failed, Error: {ex.Message}", ex);
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 }

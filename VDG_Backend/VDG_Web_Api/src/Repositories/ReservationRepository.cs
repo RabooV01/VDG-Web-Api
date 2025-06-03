@@ -24,29 +24,36 @@ public class ReservationRepository : IReservationRepository
 			throw new ArgumentException("Must select atmost a user or a clinic");
 		}
 		
-		var reservations = _context.Reservations.AsQueryable();
+		try
+		{
+			var reservations = _context.Reservations.AsQueryable();
 
-		if(date != null)
-		{
-			reservations = _context.Reservations.Where(c => 
-            c.ScheduledAt.Year == date.Value.Year && 
-            c.ScheduledAt.Month == date.Value.Month && 
-            c.ScheduledAt.Day == date.Value.Day);
-		}
+			if(date != null)
+			{
+				reservations = _context.Reservations.Where(c => 
+				c.ScheduledAt.Year == date.Value.Year && 
+				c.ScheduledAt.Month == date.Value.Month && 
+				c.ScheduledAt.Day == date.Value.Day);
+			}
 
-		if(virtualId != null)
-		{
-			// return all reservations that related to a clinic
-			return await reservations
-			.Where(c => c.VirtualId == virtualId)
-			.ToListAsync();
+			if(virtualId != null)
+			{
+				// return all reservations that related to a clinic
+				return await reservations
+				.Where(c => c.VirtualId == virtualId)
+				.ToListAsync();
+			}
+			if(userId != null)
+			{
+				// return all reservations that related to a user
+				return await reservations
+				.Where(c => c.UserId == userId)
+				.ToListAsync();
+			}
 		}
-		if(userId != null)
+		catch (Exception ex)
 		{
-			// return all reservations that related to a user
-			return await reservations
-			.Where(c => c.UserId == userId)
-			.ToListAsync();
+			throw new InvalidOperationException($"Error while retrieving data. {ex.Message}", ex);
 		}
 
 		throw new InvalidOperationException($"Unexpected error occured in {nameof(GetReservationsAsync)} method controlflow.");
@@ -87,11 +94,6 @@ public class ReservationRepository : IReservationRepository
 
 	public async Task UpdateAppointmentAsync(Reservation reservation)
 	{
-		if (reservation == null)
-		{
-			throw new ArgumentNullException(nameof(reservation), "Reservation cannot be null.");
-		}
-		
 		var existingReservation = await _context.Reservations.FindAsync(reservation.Id);
 		
 		if (existingReservation == null)
