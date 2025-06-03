@@ -23,6 +23,10 @@ public partial class VirtualClinic
 
 	[StringLength(255)]
 	[Unicode(false)]
+	public string? Location { get; set; }
+
+	[StringLength(255)]
+	[Unicode(false)]
 	public string? Status { get; set; }
 
 	[Column("Avg_Service")]

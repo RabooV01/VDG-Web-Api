@@ -5,10 +5,7 @@ namespace VDG_Web_Api.src.DTOs.UserDTOs
 {
 	public class UserRegister
 	{
-		[Required]
-		Person @Person { get; set; }
-
-		//[Required]
+		Person? @Person { get; set; }
 		[EmailAddress]
 		public string Email { get; set; } = string.Empty;
 		public string Password { get; set; } = string.Empty;
