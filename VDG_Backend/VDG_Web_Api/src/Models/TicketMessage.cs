@@ -18,7 +18,7 @@ public partial class TicketMessage
 
     [StringLength(255)]
     [Unicode(false)]
-    public int? UserId { get; set; }
+    public int? OwnerId { get; set; }
 
     public DateOnly? Date { get; set; }
 

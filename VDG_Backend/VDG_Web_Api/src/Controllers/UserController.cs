@@ -37,7 +37,7 @@ namespace VDG_Web_Api.src.Controllers
         {
             try
             {
-                var user = userData.GetById(id);
+                var user =await userData.GetById(id);
                 if (user == null)
                 {
                     return NoContent();
