@@ -1,8 +1,6 @@
-using System.Diagnostics;
 using VDG_Web_Api.src.DTOs.ReservationDTOs;
 using VDG_Web_Api.src.DTOs.UserDTOs;
 using VDG_Web_Api.src.Models;
-using VDG_Web_Api.src.Repositories;
 using VDG_Web_Api.src.Repositories.Interfaces;
 
 namespace VDG_Web_Api.src.Services.Interfaces;
@@ -13,7 +11,6 @@ public class ReservationSerivce : IReservationService
     private readonly IVirtualClinicService _virtualClinicService;
     private readonly IUserService _userService;
 
-    public enum BookingTypes { preview, revision };
     public ReservationSerivce(IReservationRepository reservationRepository, 
         IVirtualClinicService virtualClinicService,
         IUserService userService)

@@ -7,37 +7,58 @@ namespace VDG_Web_Api.src.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly VdgDbDemoContext context;
+        private readonly VdgDbDemoContext _context;
 
 
         public UserRepository(VdgDbDemoContext context)
         {
-            this.context = context;
+            _context = context;
         }
 
-        public Task DeleteUserAsync(int userId)
+        public async Task DeleteUserAsync(int userId)
         {
+            var user = await _context.Users.FindAsync(userId);
+            
+            if(user == null)
+            {
+                throw new KeyNotFoundException("User is not found");
+            }
 
-            context.Users.Where(usr => usr.Id == userId).ExecuteDeleteAsync();
-            context.SaveChanges();
-            return Task.CompletedTask;
+            try
+            {
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                throw new InvalidOperationException($"Unable to delete user,{e.Message}", e);
+            }
         }
 
         public async Task<User?> GetById(int userId)
         {
-            return await context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            User? user = await _context.Users.Include( p => p.Person)
+                .Where( u => u.Id == userId)
+                .FirstOrDefaultAsync();
+
+            if(user == null)
+            {
+                throw new KeyNotFoundException("User is not found");
+            }
+
+            return user;
         }
 
         public async Task<IEnumerable<User>> GetUsers(int page, int limit)
         {
-
-            return await context.Users.ToListAsync();
+            
+            return await _context.Users.ToListAsync();
         }
 
         public async Task<User> UpdateUserAsync(User user)
         {
-            context.Users.Update(user);
-            await context.SaveChangesAsync();
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
             return user;
         }
     }
