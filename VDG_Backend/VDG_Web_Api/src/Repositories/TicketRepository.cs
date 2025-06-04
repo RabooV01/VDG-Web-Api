@@ -1,4 +1,5 @@
-﻿using VDG_Web_Api.src.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using VDG_Web_Api.src.Data;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 
@@ -6,58 +7,121 @@ namespace VDG_Web_Api.src.Repositories
 {
     public class TicketRepository : ITicketRepository
     {
-        private readonly VdgDbDemoContext context;
+        private readonly VdgDbDemoContext _context;
 
         public TicketRepository(VdgDbDemoContext context)
         {
-            this.context = context;
+            this._context = context;
         }
-        public async Task DeleteMessage(int Id)
+        // Done
+        public async Task<IEnumerable<Ticket>> GetConsultationsAsync(string? doctorId = null, int? userId = null)
         {
-            var ticketMessage = context.TicketMessages.FirstOrDefault(x => x.Id == Id);
+            if (doctorId != null && userId != null)
+            {
+                throw new ArgumentNullException("Should select a doctor or user");
+            }
             try
             {
-                if (ticketMessage == null)
-                {
-                    throw new Exception("Message was not found");
-                }
-                context.TicketMessages.Remove(ticketMessage);
-                await context.SaveChangesAsync();
+                var tickets = _context.Tickets.AsQueryable();
 
+                if (userId != null)
+                {
+                    return await tickets.Where(t => t.UserId == userId)
+                        .ToListAsync();
+                }
+                if (doctorId != null)
+                {
+                    return await tickets.Where(t => t.DoctorId == doctorId)
+                        .ToListAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Error while retrieving data. {ex.Message}", ex);
+            }
+            throw new InvalidOperationException($"Unexpected error occured in {nameof(GetConsultationsAsync)} method controlflow.");
+        }
+
+        // Done
+        public async Task DeleteMessageAsync(int id)
+        {
+            var message = await _context.TicketMessages.FindAsync(id);
+
+            if (message == null)
+            {
+                throw new KeyNotFoundException("There is no message with this id");
+            }
+            try
+            {
+                _context.TicketMessages.Remove(message);
+                await _context.SaveChangesAsync();
             }
             catch (Exception e)
             {
-                throw new InvalidOperationException(e.Message, e);
+
+                throw new InvalidOperationException($"Faild to delet the message, Error: {e.Message}", e);
             }
         }
 
-        public Task EditMessage(TicketMessage ticketMessage)
+        // #ToDo Add service logic (create + sendMessage) on request
+        public async Task SendConsultationRequestAsync(Ticket ticket)
         {
-            context.TicketMessages.Update(ticketMessage);
-            context.SaveChangesAsync();
-            return Task.CompletedTask;
+            if (ticket == null)
+            {
+                throw new KeyNotFoundException("The ticket has not found.");
+            }
+            try
+            {
+                _context.Tickets.Add(ticket);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
 
+                throw new InvalidOperationException($"Faild to send the ticket, Error: {e.Message}", e);
+            }
         }
 
-        public Task SendConsultationRequest(Ticket ticket)
+        // Done
+        public async Task SendMessageAsync(TicketMessage ticketMessage)
         {
-            context.Tickets.Add(ticket);
-            context.SaveChangesAsync();
-            return Task.CompletedTask;
+            if (ticketMessage == null)
+            {
+                throw new KeyNotFoundException("The ticket message has not found.");
+            }
+            try
+            {
+                _context.TicketMessages.Add(ticketMessage);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+
+                throw new InvalidOperationException($"Faild to send the ticket message, Error: {e.Message}", e);
+            }
         }
 
-        public Task SendMessage(TicketMessage ticketMessage)
+        // Done
+        public async Task UpdateMessageAsync(TicketMessage ticketMessage)
         {
+            var ticketMessageToUpdate = await _context.TicketMessages.FindAsync(ticketMessage.Id);
+            if (ticketMessageToUpdate == null)
+            {
+                throw new KeyNotFoundException("The ticket message has not found.");
+            }
 
-            context.TicketMessages.Add(ticketMessage);
-            context.SaveChangesAsync();
-            return Task.CompletedTask;
-        }
-        public Task<IEnumerable<Ticket>> ShowDoctorConsultationsAsync(int? doctorId = null, int? userId = null)
-        {
-            var doctor = context.Doctors.FirstOrDefault(x => x.UserId == Id);
+            ticketMessageToUpdate = ticketMessage;
 
-            return (Task<IEnumerable<Ticket>>)doctor.Tickets;
+            try
+            {
+                _context.TicketMessages.Update(ticketMessageToUpdate);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+
+                throw new InvalidOperationException($"Faild to update the ticket message, Error: {e.Message}", e);
+            }
 
         }
     }

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace VDG_Web_Api.src.Models;
 
@@ -20,7 +18,7 @@ public partial class TicketMessage
 
     [StringLength(255)]
     [Unicode(false)]
-    public string? Owner { get; set; }
+    public int? UserId { get; set; }
 
     public DateOnly? Date { get; set; }
 
