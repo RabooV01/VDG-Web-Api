@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using VDG_Web_Api.src.DTOs.TicketDTOs;
 
 namespace VDG_Web_Api.src.Models;
 
@@ -25,4 +26,9 @@ public partial class TicketMessage
     [ForeignKey("TicketId")]
     [InverseProperty("TicketMessages")]
     public virtual Ticket? Ticket { get; set; }
+
+    public static implicit operator TicketMessage(TicketMessageDTO v)
+    {
+        throw new NotImplementedException();
+    }
 }
