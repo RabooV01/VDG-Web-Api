@@ -51,8 +51,12 @@ namespace VDG_Web_Api.src.Repositories
 
         public async Task<IEnumerable<User>> GetUsers(int page, int limit)
         {
-            
-            return await _context.Users.ToListAsync();
+            var users = await _context.Users
+            .Include(u => u.Person) // Eager load the related Person entity
+            .Skip((page - 1) * limit) // Apply pagination
+            .Take(limit) // Limit the number of users returned
+            .ToListAsync();
+             return users;
         }
 
         public async Task<User> UpdateUserAsync(User user)

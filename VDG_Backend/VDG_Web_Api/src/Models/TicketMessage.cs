@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
+using VDG_Web_Api.src.DTOs.TicketDTOs;
 
 namespace VDG_Web_Api.src.Models;
 
@@ -20,11 +19,16 @@ public partial class TicketMessage
 
     [StringLength(255)]
     [Unicode(false)]
-    public string? Owner { get; set; }
+    public int? OwnerId { get; set; }
 
     public DateOnly? Date { get; set; }
 
     [ForeignKey("TicketId")]
     [InverseProperty("TicketMessages")]
     public virtual Ticket? Ticket { get; set; }
+
+    public static implicit operator TicketMessage(TicketMessageDTO v)
+    {
+        throw new NotImplementedException();
+    }
 }

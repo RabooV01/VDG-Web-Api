@@ -18,18 +18,18 @@ namespace VDG_Web_Api.src.Controllers
         }
         // GET: api/<UserController>
         [HttpGet]
-        public async Task<async Task<ActionResult<IEnumerable<User>>>> GetAllUsers(int page = 1, int limit = 20)
-        {
-            try
-            {
-                var users = await await userData.GetUsers(page, limit);
-                return Ok(users);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
+        //public async Task<Task<ActionResult<IEnumerable<User>>>> GetAllUsers(int page = 1, int limit = 20)
+        //{
+        //    try
+        //    {
+        //        var users = await userData.GetUsers(page, limit);
+        //        return users;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest(e.Message);
+        //    }
+        //}
 
         // GET api/<UserController>/5
         [HttpGet("{id}")]
@@ -37,7 +37,7 @@ namespace VDG_Web_Api.src.Controllers
         {
             try
             {
-                var user = userData.GetById(id);
+                var user =await userData.GetById(id);
                 if (user == null)
                 {
                     return NoContent();

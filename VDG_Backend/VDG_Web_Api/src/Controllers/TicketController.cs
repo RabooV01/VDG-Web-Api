@@ -14,18 +14,18 @@ namespace VDG_Web_Api.src.Controllers
             this.ticketRepository = ticketRepository;
         }
 
-        [HttpDelete("{id}")]
-        public ActionResult DeleteMessage(int Id)
-        {
-            try
-            {
-                ticketRepository.DeleteMessage(Id);
-            }
-            catch
-            {
+        // [HttpDelete("{id}")]
+        // public ActionResult DeleteMessage(int Id)
+        // {
+        //     try
+        //     {
+        //         ticketRepository.DeleteMessage(Id);
+        //     }
+        //     catch
+        //     {
 
-            }
-        }
+        //     }
+        // }
 
 
     }

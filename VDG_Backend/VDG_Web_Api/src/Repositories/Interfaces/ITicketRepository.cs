@@ -4,10 +4,10 @@ namespace VDG_Web_Api.src.Repositories.Interfaces
 {
     public interface ITicketRepository
     {
-        public Task<IEnumerable<Ticket>> ShowDoctorConsultationsAsync(int? doctorId, int? userId);
-        public Task SendConsultationRequest(Ticket ticket);
-        public Task SendMessage(TicketMessage ticketMessage);
-        public Task EditMessage(TicketMessage ticketMessage);
-        public Task DeleteMessage(int Id);
+        public Task<IEnumerable<Ticket>> GetConsultationsAsync(string? doctorId = null, int? userId = null);
+        public Task SendConsultationRequestAsync(Ticket ticket);
+        public Task SendMessageAsync(TicketMessage ticketMessage);
+        public Task UpdateMessageAsync(TicketMessage ticketMessage);
+        public Task DeleteMessageAsync(int Id);
     }
 }
