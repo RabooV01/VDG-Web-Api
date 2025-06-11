@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VDG_Web_Api.src.DTOs.UserDTOs;
 using VDG_Web_Api.src.Models;
@@ -9,6 +10,7 @@ namespace VDG_Web_Api.src.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	[Authorize]
 	public class UserController : ControllerBase
 	{
 		private readonly IUserService _userService;
