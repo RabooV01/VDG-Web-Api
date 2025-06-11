@@ -166,31 +166,32 @@ namespace VDG_Web_Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("ScheduledAt")
+                    b.Property<DateTime>("ScheduledAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Text")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.Property<string>("Type")
-                        .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int")
                         .HasColumnName("User_Id");
 
-                    b.Property<int?>("VritualId")
+                    b.Property<int?>("VirtualId")
                         .HasColumnType("int")
-                        .HasColumnName("Vritual_Id");
+                        .HasColumnName("Virtual_Id");
 
                     b.HasKey("Id")
                         .HasName("PK__tmp_ms_x__3214EC07765A5547");
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("VritualId");
+                    b.HasIndex("VirtualId");
 
                     b.ToTable("Reservation");
                 });
@@ -261,10 +262,10 @@ namespace VDG_Web_Api.Migrations
                     b.Property<DateOnly?>("Date")
                         .HasColumnType("date");
 
-                    b.Property<string>("Owner")
+                    b.Property<int?>("OwnerId")
                         .HasMaxLength(255)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Text")
                         .HasColumnType("text");
@@ -339,6 +340,11 @@ namespace VDG_Web_Api.Migrations
                     b.Property<TimeOnly?>("EndWorkHours")
                         .HasColumnType("time")
                         .HasColumnName("End_Work_Hours");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(255)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<double?>("PreviewConst")
                         .HasColumnType("float")
@@ -422,14 +428,14 @@ namespace VDG_Web_Api.Migrations
                         .HasForeignKey("UserId")
                         .HasConstraintName("Reservation_User_FK");
 
-                    b.HasOne("VDG_Web_Api.src.Models.VirtualClinic", "Vritual")
+                    b.HasOne("VDG_Web_Api.src.Models.VirtualClinic", "Virtual")
                         .WithMany("Reservations")
-                        .HasForeignKey("VritualId")
+                        .HasForeignKey("VirtualId")
                         .HasConstraintName("Reservation_Virtual_FK");
 
                     b.Navigation("User");
 
-                    b.Navigation("Vritual");
+                    b.Navigation("Virtual");
                 });
 
             modelBuilder.Entity("VDG_Web_Api.src.Models.Ticket", b =>

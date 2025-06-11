@@ -47,6 +47,6 @@ public partial class VirtualClinic
 	[InverseProperty("VirtualClinics")]
 	public virtual Doctor? Doctor { get; set; }
 
-	[InverseProperty("Vritual")]
+	[InverseProperty("Virtual")]
 	public virtual ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
 }

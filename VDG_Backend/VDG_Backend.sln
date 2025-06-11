@@ -7,6 +7,8 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "VDG_DB", "VDG_DB\VDG_DB.sql
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VDG_Web_Api", "VDG_Web_Api\VDG_Web_Api.csproj", "{9BAD7095-3B09-41C4-B33E-C091E8134564}"
 EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "VDG_Dev", "C:\Users\VICTUS\Desktop\SQLDB\VDG_Dev\VDG_Dev.sqlproj", "{19EA913D-67F1-41BD-BAB1-6114701C3485}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,12 @@ Global
 		{9BAD7095-3B09-41C4-B33E-C091E8134564}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9BAD7095-3B09-41C4-B33E-C091E8134564}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9BAD7095-3B09-41C4-B33E-C091E8134564}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19EA913D-67F1-41BD-BAB1-6114701C3485}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19EA913D-67F1-41BD-BAB1-6114701C3485}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19EA913D-67F1-41BD-BAB1-6114701C3485}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{19EA913D-67F1-41BD-BAB1-6114701C3485}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19EA913D-67F1-41BD-BAB1-6114701C3485}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19EA913D-67F1-41BD-BAB1-6114701C3485}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

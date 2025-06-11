@@ -14,7 +14,7 @@ public partial class Reservation
     [Column("User_Id")]
     public int? UserId { get; set; }
 
-    [Column("Vritual_Id")]
+    [Column("Virtual_Id")]
     public int? VirtualId { get; set; }
 
     public DateTime ScheduledAt { get; set; }
@@ -29,7 +29,7 @@ public partial class Reservation
     [InverseProperty("Reservations")]
     public virtual User? User { get; set; }
 
-    [ForeignKey("VritualId")]
+    [ForeignKey("VirtualId")]
     [InverseProperty("Reservations")]
-    public virtual VirtualClinic? Vritual { get; set; }
+    public virtual VirtualClinic? Virtual { get; set; }
 }

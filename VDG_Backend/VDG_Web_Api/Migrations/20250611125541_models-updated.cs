@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace VDG_Web_Api.Migrations
 {
     /// <inheritdoc />
-    public partial class startupConfig : Migration
+    public partial class Modelsupdated : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -69,9 +69,7 @@ namespace VDG_Web_Api.Migrations
                 {
                     Syndicate_Id = table.Column<string>(type: "varchar(16)", unicode: false, maxLength: 16, nullable: false),
                     User_Id = table.Column<int>(type: "int", nullable: true),
-                    Speciality_Id = table.Column<int>(type: "int", nullable: true),
-                    SpecialityId1 = table.Column<int>(type: "int", nullable: true),
-                    UserId1 = table.Column<int>(type: "int", nullable: true)
+                    Speciality_Id = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -84,16 +82,6 @@ namespace VDG_Web_Api.Migrations
                     table.ForeignKey(
                         name: "Doctor_User_FK",
                         column: x => x.User_Id,
-                        principalTable: "User",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Doctor_Speciality_SpecialityId1",
-                        column: x => x.SpecialityId1,
-                        principalTable: "Speciality",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Doctor_User_UserId1",
-                        column: x => x.UserId1,
                         principalTable: "User",
                         principalColumn: "Id");
                 });
@@ -127,23 +115,11 @@ namespace VDG_Web_Api.Migrations
                     Doctor_Id = table.Column<string>(type: "varchar(16)", unicode: false, maxLength: 16, nullable: true),
                     Avg_Wait = table.Column<double>(type: "float", nullable: true),
                     Avg_Service = table.Column<double>(type: "float", nullable: true),
-                    Act = table.Column<double>(type: "float", nullable: true),
-                    DoctorSyndicateId = table.Column<string>(type: "varchar(16)", nullable: true),
-                    UserId1 = table.Column<int>(type: "int", nullable: true)
+                    Act = table.Column<double>(type: "float", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK__Rating__3214EC07B32B9B16", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Rating_Doctor_DoctorSyndicateId",
-                        column: x => x.DoctorSyndicateId,
-                        principalTable: "Doctor",
-                        principalColumn: "Syndicate_Id");
-                    table.ForeignKey(
-                        name: "FK_Rating_User_UserId1",
-                        column: x => x.UserId1,
-                        principalTable: "User",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "Rating_Doctor_FK",
                         column: x => x.Doctor_Id,
@@ -191,6 +167,7 @@ namespace VDG_Web_Api.Migrations
                     Doctor_Id = table.Column<string>(type: "varchar(16)", unicode: false, maxLength: 16, nullable: true),
                     Start_Work_Hours = table.Column<TimeOnly>(type: "time", nullable: true),
                     End_Work_Hours = table.Column<TimeOnly>(type: "time", nullable: true),
+                    Location = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
                     Status = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
                     Avg_Service = table.Column<double>(type: "float", nullable: true),
                     Ticket_Status = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
@@ -215,7 +192,7 @@ namespace VDG_Web_Api.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Ticket_Id = table.Column<int>(type: "int", nullable: true),
                     Text = table.Column<string>(type: "text", nullable: true),
-                    Owner = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
+                    OwnerId = table.Column<int>(type: "int", unicode: false, maxLength: 255, nullable: true),
                     Date = table.Column<DateOnly>(type: "date", nullable: true)
                 },
                 constraints: table =>
@@ -235,10 +212,10 @@ namespace VDG_Web_Api.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     User_Id = table.Column<int>(type: "int", nullable: true),
-                    Vritual_Id = table.Column<int>(type: "int", nullable: true),
-                    Time = table.Column<TimeOnly>(type: "time", nullable: true),
-                    Test = table.Column<int>(type: "int", nullable: true),
-                    Type = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true)
+                    Virtual_Id = table.Column<int>(type: "int", nullable: true),
+                    ScheduledAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Text = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -250,7 +227,7 @@ namespace VDG_Web_Api.Migrations
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "Reservation_Virtual_FK",
-                        column: x => x.Vritual_Id,
+                        column: x => x.Virtual_Id,
                         principalTable: "Virtual_Clinic",
                         principalColumn: "Id");
                 });
@@ -258,14 +235,7 @@ namespace VDG_Web_Api.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Doctor_Speciality_Id",
                 table: "Doctor",
-                column: "Speciality_Id",
-                unique: true,
-                filter: "[Speciality_Id] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Doctor_SpecialityId1",
-                table: "Doctor",
-                column: "SpecialityId1");
+                column: "Speciality_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Doctor_User_Id",
@@ -273,11 +243,6 @@ namespace VDG_Web_Api.Migrations
                 column: "User_Id",
                 unique: true,
                 filter: "[User_Id] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Doctor_UserId1",
-                table: "Doctor",
-                column: "UserId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Post_Doctor_Id",
@@ -290,19 +255,9 @@ namespace VDG_Web_Api.Migrations
                 column: "Doctor_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rating_DoctorSyndicateId",
-                table: "Rating",
-                column: "DoctorSyndicateId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Rating_User_Id",
                 table: "Rating",
                 column: "User_Id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Rating_UserId1",
-                table: "Rating",
-                column: "UserId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reservation_User_Id",
@@ -310,9 +265,9 @@ namespace VDG_Web_Api.Migrations
                 column: "User_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reservation_Vritual_Id",
+                name: "IX_Reservation_Virtual_Id",
                 table: "Reservation",
-                column: "Vritual_Id");
+                column: "Virtual_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ticket_Doctor_Id",
@@ -332,7 +287,9 @@ namespace VDG_Web_Api.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_User_Person_Id",
                 table: "User",
-                column: "Person_Id");
+                column: "Person_Id",
+                unique: true,
+                filter: "[Person_Id] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Virtual_Clinic_Doctor_Id",
