@@ -62,12 +62,13 @@ namespace VDG_Web_Api.src.Repositories
 			
 		}
 
-		public async Task AddUserAsync(User user)
+		public async Task<int> AddUserAsync(User user)
 		{
 			try
 			{
-				_context.Users.Add(user);
+				await _context.Users.AddAsync(user);
 				await _context.SaveChangesAsync();
+				return user.Id;
 			}
 			catch (Exception ex)
 			{
@@ -87,5 +88,17 @@ namespace VDG_Web_Api.src.Repositories
 				throw new InvalidOperationException($"Unable to update user, Error {ex.Message}", ex);
 			}
 		}
-	}
+
+        public async Task<User?> GetByEmail(string email)
+        {
+			try
+			{
+				return await _context.Users.FirstOrDefaultAsync(u => email.Equals(u.Email));
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+        }
+    }
 }

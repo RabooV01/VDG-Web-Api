@@ -9,6 +9,7 @@ namespace VDG_Web_Api.src.DTOs.UserDTOs
 	{
         public int? Id { get; set; }
 
+        [EmailAddress]
         public string Email { get; set; } = null!;
 
         public string? Role { get; set; }

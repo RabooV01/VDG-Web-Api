@@ -10,6 +10,6 @@ namespace VDG_Web_Api.src.DTOs.UserDTOs
 		public string Email { get; set; } = null!;
 		public string Password { get; set; } = null!;
 		public string Role { get; } = "user";
-		PersonProfileDTO? @Person { get; set; }
+		public PersonProfileDTO? @Person { get; set; }
 	}
 }

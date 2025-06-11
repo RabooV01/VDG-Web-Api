@@ -3,19 +3,62 @@ using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
+using VDG_Web_Api.src.DTOs.UserDTOs;
 using VDG_Web_Api.src.Services.Interfaces;
 
 public class BasicAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
-    private readonly IUserService _userService;
+    private readonly IAuthService _authService;
 
-    public BasicAuthHandler(IUserService userService, IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder) : base(options, logger, encoder)
+    public BasicAuthHandler(IAuthService authService, IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder) : base(options, logger, encoder)
     {
-        _userService = userService;
+        _authService = authService;
     }
 
-    protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+    protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
+        if(!Request.Headers.ContainsKey("Authorization"))
+        {
+            return await Task.FromResult(AuthenticateResult.Fail("Must provide authorization header"));
+        }
+        
+        var authHeader = Request.Headers["Authorization"].ToString();
+
+        if(!authHeader.StartsWith("Basic ", StringComparison.OrdinalIgnoreCase))
+        {
+            return await Task.FromResult(AuthenticateResult.Fail("Auth type unsupported"));
+        }
+
+        // Email: creds[0], password: creds[1]
+        string authCreds = authHeader["Basic ".Length..];
+        var creds = Encoding.UTF8.GetString(Convert.FromBase64String(authCreds)).Split(':');
+
+        if(creds is null || creds.Length < 2)
+        {
+            return await Task.FromResult(AuthenticateResult.Fail("Auth format is incorrect"));
+        }
+
+        UserLogin user = new () 
+        {
+            Email = creds[0],
+            Password = creds[1]
+        };
+
+        if(!await _authService.ValidateUser(user))
+        {
+            return await Task.FromResult(AuthenticateResult.Fail("invalid credentials"));
+        }
+
+        
+        var claimsIdentity = new ClaimsIdentity(new Claim[]
+        {
+            
+        }, "Basic");
+
+        var userPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+        var authTicket = new AuthenticationTicket(userPrincipal, "Basic");
+
         throw new NotImplementedException();
     }
 
