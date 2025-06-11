@@ -6,7 +6,7 @@ namespace VDG_Web_Api.src.Repositories.Interfaces
 	{
 		Task<User?> GetById(int userId);
 		Task<IEnumerable<User>> GetUsers(int page, int limit);
-		Task<User> UpdateUserAsync(User user);
+		Task UpdateUserAsync(User user);
 		Task DeleteUserAsync(int userId);
 	}
 }
