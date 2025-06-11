@@ -51,15 +51,25 @@ public class BasicAuthService : IAuthService
         }
     }
 
-    public async Task<bool> ValidateUser(UserLogin userLogin)
+    public async Task<UserDTO> ValidateUser(UserLogin userLogin)
     {
         var user = await _userRepository.GetByEmail(userLogin.Email);
         if(user == null)
-            return await Task.FromResult(false);
+        {
+            throw new ArgumentException("Invalid email or password");
+        }
 
         if(!userLogin.Password.Equals(user.PasswordHash))
-            return await Task.FromResult(false);
+        {
+            throw new ArgumentException("Invalid email or password");
+        }
         
-        return true;
+        return new()
+        {
+            Id = user.Id,
+            Email = user.Email,
+            Role = user.Role,
+            Person = _userService.MapPersonToDto(user.Person!)
+        };
     }
 }

@@ -93,7 +93,7 @@ namespace VDG_Web_Api.src.Repositories
         {
 			try
 			{
-				return await _context.Users.FirstOrDefaultAsync(u => email.Equals(u.Email));
+				return await _context.Users.Include(u => u.Person).FirstOrDefaultAsync(u => email.Equals(u.Email));
 			}
 			catch (Exception)
 			{

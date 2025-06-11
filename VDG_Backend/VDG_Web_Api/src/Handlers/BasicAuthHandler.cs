@@ -38,28 +38,29 @@ public class BasicAuthHandler : AuthenticationHandler<AuthenticationSchemeOption
             return await Task.FromResult(AuthenticateResult.Fail("Auth format is incorrect"));
         }
 
-        UserLogin user = new () 
+        UserLogin userLogin = new () 
         {
             Email = creds[0],
             Password = creds[1]
         };
 
-        if(!await _authService.ValidateUser(user))
-        {
-            return await Task.FromResult(AuthenticateResult.Fail("invalid credentials"));
-        }
+        UserDTO user = await _authService.ValidateUser(userLogin);
 
-        
-        var claimsIdentity = new ClaimsIdentity(new Claim[]
-        {
-            
-        }, "Basic");
+        var userFullName =  $"{user.Person.FirstName} {user.Person.LastName}";
+
+        var claimsIdentity = new ClaimsIdentity(
+        [
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()!),
+            new Claim(ClaimTypes.Name, userFullName),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.Role!)
+        ], "Basic");
 
         var userPrincipal = new ClaimsPrincipal(claimsIdentity);
 
         var authTicket = new AuthenticationTicket(userPrincipal, "Basic");
 
-        throw new NotImplementedException();
+        return await Task.FromResult(AuthenticateResult.Success(authTicket));
     }
 
 }

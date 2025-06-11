@@ -6,5 +6,5 @@ namespace VDG_Web_Api.src.Services.Interfaces;
 public interface IAuthService
 {
     public Task<bool> AuthenticateAsync(UserRegister userRegister);
-    public Task<bool> ValidateUser(UserLogin userLogin);
+    public Task<UserDTO> ValidateUser(UserLogin userLogin);
 }
