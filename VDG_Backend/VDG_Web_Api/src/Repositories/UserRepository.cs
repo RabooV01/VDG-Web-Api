@@ -62,10 +62,30 @@ namespace VDG_Web_Api.src.Repositories
 			
 		}
 
+		public async Task AddUserAsync(User user)
+		{
+			try
+			{
+				_context.Users.Add(user);
+				await _context.SaveChangesAsync();
+			}
+			catch (Exception ex)
+			{
+				throw new InvalidOperationException($"Unable to add user, Error {ex.Message}", ex);
+			}
+		}
+
 		public async Task UpdateUserAsync(User user)
 		{
-			_context.Users.Update(user);
-			await _context.SaveChangesAsync();
+			try
+			{
+				_context.Users.Update(user);
+				await _context.SaveChangesAsync();
+			}
+			catch (Exception ex)
+			{
+				throw new InvalidOperationException($"Unable to update user, Error {ex.Message}", ex);
+			}
 		}
 	}
 }

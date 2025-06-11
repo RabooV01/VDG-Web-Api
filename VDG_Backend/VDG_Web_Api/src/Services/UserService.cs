@@ -86,7 +86,7 @@ public class UserService : IUserService
             Person = MapPersonToDto(user.Person!),
             Role = user.Role
         };
-}
+    }
 
     public async Task DeleteUserAsync(int userId)
     {
