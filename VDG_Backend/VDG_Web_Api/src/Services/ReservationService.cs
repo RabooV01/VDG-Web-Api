@@ -1,5 +1,6 @@
 using VDG_Web_Api.src.DTOs.ReservationDTOs;
 using VDG_Web_Api.src.DTOs.UserDTOs;
+using VDG_Web_Api.src.Extensions.Validation;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 
@@ -18,31 +19,6 @@ public class ReservationService : IReservationService
 		_reservationRepository = reservationRepository;
 		_virtualClinicService = virtualClinicService;
 		_userService = userService;
-	}
-
-	private bool IsValidReservation(ReservationDTO reservation)
-	{
-		if (reservation == null)
-		{
-			return false;
-		}
-
-		if (!Enum.TryParse<BookingTypes>(reservation.Type.ToString(), true, out _))
-		{
-			return false;
-		}
-
-		if (reservation.VirtualId == null)
-		{
-			return false;
-		}
-
-		if (reservation.ScheduledAt < DateTime.UtcNow)
-		{
-			return false;
-		}
-
-		return true;
 	}
 
 	private Reservation MapToEntity(ReservationDTO Dto)
@@ -99,7 +75,7 @@ public class ReservationService : IReservationService
 
 	public async Task BookAppointmentAsync(ReservationDTO reservationDto)
 	{
-		if (!IsValidReservation(reservationDto))
+		if (!reservationDto.IsValidReservation())
 		{
 			throw new ArgumentNullException("Reservation is invalid");
 		}
@@ -206,7 +182,7 @@ public class ReservationService : IReservationService
 
 	public async Task EditAppointmentAsync(ReservationDTO reservationDto)
 	{
-		if (!IsValidReservation(reservationDto))
+		if (!reservationDto.IsValidReservation())
 		{
 			throw new ArgumentException("Reservation value is invalid, No update were applied.");
 		}
