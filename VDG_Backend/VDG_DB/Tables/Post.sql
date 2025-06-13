@@ -1,8 +1,13 @@
-﻿
-CREATE TABLE [dbo].[Post] 
-(
-    [Id] INT PRIMARY KEY IDENTITY(1,1),
-    [Doctor_Id] VARCHAR(16),
-    [Content] TEXT,
-    CONSTRAINT Post_Doctor_FK FOREIGN KEY(Doctor_Id) REFERENCES [Doctor](Syndicate_Id)
-)
+﻿CREATE TABLE [dbo].[Post] (
+    [Id]        INT          IDENTITY (1, 1) NOT NULL,
+    [Doctor_Id] VARCHAR (16) NULL,
+    [Content]   TEXT         NULL,
+    CONSTRAINT [PK__Post__3214EC07FAD031E1] PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [Post_Doctor_FK] FOREIGN KEY ([Doctor_Id]) REFERENCES [dbo].[Doctor] ([Syndicate_Id])
+);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_Post_Doctor_Id]
+    ON [dbo].[Post]([Doctor_Id] ASC);
+

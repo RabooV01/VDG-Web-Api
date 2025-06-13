@@ -1,4 +1,5 @@
-﻿using VDG_Web_Api.src.Models;
+﻿using VDG_Web_Api.src.DTOs.ReservationDTOs;
+using VDG_Web_Api.src.Models;
 
 namespace VDG_Web_Api.src.Repositories.Interfaces
 {

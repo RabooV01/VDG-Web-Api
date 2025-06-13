@@ -77,7 +77,12 @@ public partial class VdgDbDemoContext : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.Reservations).HasConstraintName("Reservation_User_FK");
 
-            entity.HasOne(d => d.Vritual).WithMany(p => p.Reservations).HasConstraintName("Reservation_Virtual_FK");
+            entity.HasOne(d => d.Virtual).WithMany(p => p.Reservations).HasConstraintName("Reservation_Virtual_FK");
+
+            entity.Property(p => p.Type)
+                .HasConversion(
+                v => v.ToString(),                                          // Convert enum to string
+                v => (BookingTypes)Enum.Parse(typeof(BookingTypes), v));    // Convert string back to enum
         });
 
         modelBuilder.Entity<Speciality>(entity =>

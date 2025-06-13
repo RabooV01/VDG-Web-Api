@@ -1,6 +1,13 @@
-﻿namespace VDG_Web_Api.src.Repositories.Interfaces
+﻿using VDG_Web_Api.src.Models;
+
+namespace VDG_Web_Api.src.Repositories.Interfaces
 {
-	public interface ITicketRepository
-	{
-	}
+    public interface ITicketRepository
+    {
+        public Task<IEnumerable<Ticket>> GetConsultationsAsync(string? doctorId = null, int? userId = null);
+        public Task SendConsultationRequestAsync(Ticket ticket);
+        public Task SendMessageAsync(TicketMessage ticketMessage);
+        public Task UpdateMessageAsync(TicketMessage ticketMessage);
+        public Task DeleteMessageAsync(int Id);
+    }
 }

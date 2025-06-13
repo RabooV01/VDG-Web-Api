@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using VDG_Web_Api.src.DTOs.UserDTOs;
 using VDG_Web_Api.src.Models;
-using VDG_Web_Api.src.Repositories.Interfaces;
+using VDG_Web_Api.src.Services.Interfaces;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,21 +10,22 @@ namespace VDG_Web_Api.src.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	[Authorize]
 	public class UserController : ControllerBase
 	{
-		private readonly IUserRepository userData;
+		private readonly IUserService _userService;
 
-		public UserController(IUserRepository userData)
+		public UserController(IUserService userService)
 		{
-			this.userData = userData;
+			_userService = userService;
 		}
 		// GET: api/<UserController>
 		[HttpGet]
-		public ActionResult<IEnumerable<User>> GetAllUsers(int page = 1, int limit = 20)
+		public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllUsers(int page = 1, int limit = 20)
 		{
 			try
 			{
-				var users = userData.GetUsers(page, limit);
+				var users = await _userService.GetUsers(page, limit);
 				return Ok(users);
 			}
 			catch (Exception e)
@@ -33,32 +36,32 @@ namespace VDG_Web_Api.src.Controllers
 
 		// GET api/<UserController>/5
 		[HttpGet("{id}")]
-		public IResult Get(int id)
+		public async Task<ActionResult> Get(int id)
 		{
 			try
 			{
-				var user = userData.GetById(id);
+				var user = await _userService.GetUser(id);
 				if (user == null)
 				{
-					return Results.NoContent();
+					return NoContent();
 				}
-				return Results.Ok(user);
+				return Ok(user);
 			}
 			catch (Exception e)
 			{
-				return Results.BadRequest(e.Message);
+				return BadRequest(e.Message);
 			}
 
 		}
 
 		// PUT api/<UserController>/5
 		[HttpPut]
-		public async Task<ActionResult<User?>> Put([FromBody] User user)
+		public async Task<ActionResult<User?>> Put([FromBody] UserDTO user)
 		{
 			try
 			{
-				var updatedUser = await userData.UpdateUserAsync(user);
-				return Ok(updatedUser);
+				await _userService.UpdateUserAsync(user);
+				return NoContent();
 			}
 			catch (Exception e)
 			{
@@ -72,7 +75,7 @@ namespace VDG_Web_Api.src.Controllers
 		{
 			try
 			{
-				userData.DeleteUserAsync(id);
+				_userService.DeleteUserAsync(id);
 				return Results.NoContent();
 			}
 			catch (Exception e)

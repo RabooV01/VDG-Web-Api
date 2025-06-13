@@ -12,8 +12,8 @@ using VDG_Web_Api.src.Data;
 namespace VDG_Web_Api.Migrations
 {
     [DbContext(typeof(VdgDbDemoContext))]
-    [Migration("20250527105525_startupConfig")]
-    partial class startupConfig
+    [Migration("20250611125541_models-updated")]
+    partial class Modelsupdated
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,30 +38,18 @@ namespace VDG_Web_Api.Migrations
                         .HasColumnType("int")
                         .HasColumnName("Speciality_Id");
 
-                    b.Property<int?>("SpecialityId1")
-                        .HasColumnType("int");
-
                     b.Property<int?>("UserId")
                         .HasColumnType("int")
                         .HasColumnName("User_Id");
 
-                    b.Property<int?>("UserId1")
-                        .HasColumnType("int");
-
                     b.HasKey("SyndicateId")
                         .HasName("PK__Doctor__B5BD6B27701103BA");
 
-                    b.HasIndex("SpecialityId")
-                        .IsUnique()
-                        .HasFilter("[Speciality_Id] IS NOT NULL");
-
-                    b.HasIndex("SpecialityId1");
+                    b.HasIndex("SpecialityId");
 
                     b.HasIndex("UserId")
                         .IsUnique()
                         .HasFilter("[User_Id] IS NOT NULL");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("Doctor");
                 });
@@ -159,26 +147,16 @@ namespace VDG_Web_Api.Migrations
                         .HasColumnType("varchar(16)")
                         .HasColumnName("Doctor_Id");
 
-                    b.Property<string>("DoctorSyndicateId")
-                        .HasColumnType("varchar(16)");
-
                     b.Property<int?>("UserId")
                         .HasColumnType("int")
                         .HasColumnName("User_Id");
-
-                    b.Property<int?>("UserId1")
-                        .HasColumnType("int");
 
                     b.HasKey("Id")
                         .HasName("PK__Rating__3214EC07B32B9B16");
 
                     b.HasIndex("DoctorId");
 
-                    b.HasIndex("DoctorSyndicateId");
-
                     b.HasIndex("UserId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("Rating");
                 });
@@ -191,31 +169,32 @@ namespace VDG_Web_Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("Test")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("ScheduledAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<TimeOnly?>("Time")
-                        .HasColumnType("time");
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.Property<string>("Type")
-                        .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int")
                         .HasColumnName("User_Id");
 
-                    b.Property<int?>("VritualId")
+                    b.Property<int?>("VirtualId")
                         .HasColumnType("int")
-                        .HasColumnName("Vritual_Id");
+                        .HasColumnName("Virtual_Id");
 
                     b.HasKey("Id")
                         .HasName("PK__tmp_ms_x__3214EC07765A5547");
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("VritualId");
+                    b.HasIndex("VirtualId");
 
                     b.ToTable("Reservation");
                 });
@@ -286,10 +265,10 @@ namespace VDG_Web_Api.Migrations
                     b.Property<DateOnly?>("Date")
                         .HasColumnType("date");
 
-                    b.Property<string>("Owner")
+                    b.Property<int?>("OwnerId")
                         .HasMaxLength(255)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Text")
                         .HasColumnType("text");
@@ -336,7 +315,9 @@ namespace VDG_Web_Api.Migrations
                     b.HasKey("Id")
                         .HasName("PK__User__3214EC071AAE95BF");
 
-                    b.HasIndex("PersonId");
+                    b.HasIndex("PersonId")
+                        .IsUnique()
+                        .HasFilter("[Person_Id] IS NOT NULL");
 
                     b.ToTable("User");
                 });
@@ -362,6 +343,11 @@ namespace VDG_Web_Api.Migrations
                     b.Property<TimeOnly?>("EndWorkHours")
                         .HasColumnType("time")
                         .HasColumnName("End_Work_Hours");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(255)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<double?>("PreviewConst")
                         .HasColumnType("float")
@@ -397,22 +383,14 @@ namespace VDG_Web_Api.Migrations
             modelBuilder.Entity("VDG_Web_Api.src.Models.Doctor", b =>
                 {
                     b.HasOne("VDG_Web_Api.src.Models.Speciality", "Speciality")
-                        .WithOne()
-                        .HasForeignKey("VDG_Web_Api.src.Models.Doctor", "SpecialityId")
-                        .HasConstraintName("Doctor_Speciality_FK");
-
-                    b.HasOne("VDG_Web_Api.src.Models.Speciality", null)
                         .WithMany("Doctors")
-                        .HasForeignKey("SpecialityId1");
+                        .HasForeignKey("SpecialityId")
+                        .HasConstraintName("Doctor_Speciality_FK");
 
                     b.HasOne("VDG_Web_Api.src.Models.User", "User")
                         .WithOne()
                         .HasForeignKey("VDG_Web_Api.src.Models.Doctor", "UserId")
                         .HasConstraintName("Doctor_User_FK");
-
-                    b.HasOne("VDG_Web_Api.src.Models.User", null)
-                        .WithMany("Doctors")
-                        .HasForeignKey("UserId1");
 
                     b.Navigation("Speciality");
 
@@ -432,22 +410,14 @@ namespace VDG_Web_Api.Migrations
             modelBuilder.Entity("VDG_Web_Api.src.Models.Rating", b =>
                 {
                     b.HasOne("VDG_Web_Api.src.Models.Doctor", "Doctor")
-                        .WithMany()
+                        .WithMany("Ratings")
                         .HasForeignKey("DoctorId")
                         .HasConstraintName("Rating_Doctor_FK");
 
-                    b.HasOne("VDG_Web_Api.src.Models.Doctor", null)
-                        .WithMany("Ratings")
-                        .HasForeignKey("DoctorSyndicateId");
-
                     b.HasOne("VDG_Web_Api.src.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Ratings")
                         .HasForeignKey("UserId")
                         .HasConstraintName("Rating_User_FK");
-
-                    b.HasOne("VDG_Web_Api.src.Models.User", null)
-                        .WithMany("Ratings")
-                        .HasForeignKey("UserId1");
 
                     b.Navigation("Doctor");
 
@@ -461,14 +431,14 @@ namespace VDG_Web_Api.Migrations
                         .HasForeignKey("UserId")
                         .HasConstraintName("Reservation_User_FK");
 
-                    b.HasOne("VDG_Web_Api.src.Models.VirtualClinic", "Vritual")
+                    b.HasOne("VDG_Web_Api.src.Models.VirtualClinic", "Virtual")
                         .WithMany("Reservations")
-                        .HasForeignKey("VritualId")
+                        .HasForeignKey("VirtualId")
                         .HasConstraintName("Reservation_Virtual_FK");
 
                     b.Navigation("User");
 
-                    b.Navigation("Vritual");
+                    b.Navigation("Virtual");
                 });
 
             modelBuilder.Entity("VDG_Web_Api.src.Models.Ticket", b =>
@@ -501,8 +471,8 @@ namespace VDG_Web_Api.Migrations
             modelBuilder.Entity("VDG_Web_Api.src.Models.User", b =>
                 {
                     b.HasOne("VDG_Web_Api.src.Models.Person", "Person")
-                        .WithMany("Users")
-                        .HasForeignKey("PersonId")
+                        .WithOne()
+                        .HasForeignKey("VDG_Web_Api.src.Models.User", "PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("User_Person_FK");
 
@@ -530,11 +500,6 @@ namespace VDG_Web_Api.Migrations
                     b.Navigation("VirtualClinics");
                 });
 
-            modelBuilder.Entity("VDG_Web_Api.src.Models.Person", b =>
-                {
-                    b.Navigation("Users");
-                });
-
             modelBuilder.Entity("VDG_Web_Api.src.Models.Speciality", b =>
                 {
                     b.Navigation("Doctors");
@@ -547,8 +512,6 @@ namespace VDG_Web_Api.Migrations
 
             modelBuilder.Entity("VDG_Web_Api.src.Models.User", b =>
                 {
-                    b.Navigation("Doctors");
-
                     b.Navigation("Ratings");
 
                     b.Navigation("Reservations");

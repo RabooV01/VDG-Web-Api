@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace VDG_Web_Api.src.Models;
+
+public enum BookingTypes { Preview, Revision }
 
 [Table("Reservation")]
 public partial class Reservation
@@ -15,22 +14,22 @@ public partial class Reservation
     [Column("User_Id")]
     public int? UserId { get; set; }
 
-    [Column("Vritual_Id")]
-    public int? VritualId { get; set; }
+    [Column("Virtual_Id")]
+    public int? VirtualId { get; set; }
 
-    public TimeOnly? Time { get; set; }
+    public DateTime ScheduledAt { get; set; }
 
-    public int? Test { get; set; }
+    [StringLength(512)]
+    public string Text { get; set; } = string.Empty;
 
-    [StringLength(255)]
-    [Unicode(false)]
-    public string? Type { get; set; }
+    [Required]
+    public BookingTypes Type { get; set; }
 
     [ForeignKey("UserId")]
     [InverseProperty("Reservations")]
     public virtual User? User { get; set; }
 
-    [ForeignKey("VritualId")]
+    [ForeignKey("VirtualId")]
     [InverseProperty("Reservations")]
-    public virtual VirtualClinic? Vritual { get; set; }
+    public virtual VirtualClinic? Virtual { get; set; }
 }

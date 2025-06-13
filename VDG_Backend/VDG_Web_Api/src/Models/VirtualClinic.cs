@@ -23,6 +23,10 @@ public partial class VirtualClinic
 
 	[StringLength(255)]
 	[Unicode(false)]
+	public string? Location { get; set; }
+
+	[StringLength(255)]
+	[Unicode(false)]
 	public string? Status { get; set; }
 
 	[Column("Avg_Service")]
@@ -43,6 +47,6 @@ public partial class VirtualClinic
 	[InverseProperty("VirtualClinics")]
 	public virtual Doctor? Doctor { get; set; }
 
-	[InverseProperty("Vritual")]
+	[InverseProperty("Virtual")]
 	public virtual ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
 }
