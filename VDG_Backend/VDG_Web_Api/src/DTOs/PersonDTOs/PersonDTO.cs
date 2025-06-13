@@ -2,7 +2,7 @@ namespace VDG_Web_Api.src.DTOs.PersonDTOs;
 
 public class PersonDTO 
 {
-    public int? Id { get; set; }
+    public int Id { get; set; }
     
     public string FirstName { get; set; } = null!;
 

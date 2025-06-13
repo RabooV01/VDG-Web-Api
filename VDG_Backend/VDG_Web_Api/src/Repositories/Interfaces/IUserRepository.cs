@@ -8,5 +8,7 @@ namespace VDG_Web_Api.src.Repositories.Interfaces
 		Task<IEnumerable<User>> GetUsers(int page, int limit);
 		Task UpdateUserAsync(User user);
 		Task DeleteUserAsync(int userId);
+		Task<int> AddUserAsync(User user);
+		Task<User?> GetByEmail(string email);
 	}
 }

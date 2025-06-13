@@ -5,13 +5,13 @@ using VDG_Web_Api.src.Repositories.Interfaces;
 
 namespace VDG_Web_Api.src.Services.Interfaces;
 
-public class ReservationSerivce : IReservationService
+public class ReservationService : IReservationService
 {
 	private readonly IReservationRepository _reservationRepository;
 	private readonly IVirtualClinicService _virtualClinicService;
 	private readonly IUserService _userService;
 
-	public ReservationSerivce(IReservationRepository reservationRepository,
+	public ReservationService(IReservationRepository reservationRepository,
 		IVirtualClinicService virtualClinicService,
 		IUserService userService)
 	{

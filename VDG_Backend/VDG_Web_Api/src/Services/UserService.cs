@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using Namotion.Reflection;
 using VDG_Web_Api.src.DTOs.PersonDTOs;
 using VDG_Web_Api.src.DTOs.UserDTOs;
+using VDG_Web_Api.src.Extensions.Validation;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services.Interfaces;
@@ -20,12 +21,6 @@ public class UserService : IUserService
     }
     private string UserInvalidOperationErrorMessage(string operationName) => 
         $"{operationName} {FailedUserOperationMessage}";
-
-    private bool IsValidPerson(string? firstName, string? lastName) => 
-        !firstName.IsNullOrEmpty() && !lastName.IsNullOrEmpty();
-
-    private bool IsValidUser(string? email) =>
-        !email.IsNullOrEmpty();
 
     public PersonDTO MapPersonToDto(Person person) => new()
         {
@@ -48,8 +43,13 @@ public class UserService : IUserService
 
     public Person MapPersonDtoToEntity(PersonDTO personDto)
     {
-
-        return new Person();
+        return new Person()
+        {
+            Id = personDto.Id,
+            FirstName = personDto.FirstName,
+            LastName = personDto.LastName,
+            Phone = personDto.Phone
+        };
     }
 
     public Person MapPersonDtoToEntity(PersonProfileDTO personDetailsDto)
@@ -86,7 +86,7 @@ public class UserService : IUserService
             Person = MapPersonToDto(user.Person!),
             Role = user.Role
         };
-}
+    }
 
     public async Task DeleteUserAsync(int userId)
     {
