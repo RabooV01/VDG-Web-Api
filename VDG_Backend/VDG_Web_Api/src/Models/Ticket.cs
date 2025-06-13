@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-using VDG_Web_Api.src.DTOs.TicketDTOs;
 
 namespace VDG_Web_Api.src.Models;
 
@@ -39,8 +36,4 @@ public partial class Ticket
     [InverseProperty("Tickets")]
     public virtual User? User { get; set; }
 
-    public static implicit operator Ticket(TicketDTO v)
-    {
-        throw new NotImplementedException();
-    }
 }

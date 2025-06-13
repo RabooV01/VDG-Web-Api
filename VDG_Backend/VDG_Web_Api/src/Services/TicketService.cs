@@ -4,7 +4,6 @@ using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services.Interfaces;
 
-
 namespace VDG_Web_Api.src.Services
 {
     public class TicketService : ITicketService
@@ -13,9 +12,10 @@ namespace VDG_Web_Api.src.Services
         private readonly IUserService _userService;
 
 
-        public TicketService(ITicketRepository ticketRepository)
+        public TicketService(ITicketRepository ticketRepository, IUserService userService)
         {
             this._ticketRepository = ticketRepository;
+            _userService = userService;
         }
         // D 
         public async Task DeleteMessageAsync(int id)
@@ -49,7 +49,7 @@ namespace VDG_Web_Api.src.Services
 
                     var userDto = userDtos.FirstOrDefault(user => user?.Id == ticketDto.UserId);
 
-                    return new DoctorTicketDTO() { TicketDto = ticketDto, UserDto = userDto };
+                    return new DoctorTicketDTO() { TicketDto = ticketDto };
                 });
 
 
@@ -81,7 +81,8 @@ namespace VDG_Web_Api.src.Services
         {
             try
             {
-                Ticket ticket = ticketDto;
+                Ticket ticket = new Ticket(); // TODO MAP TO DTO
+
                 await _ticketRepository.SendConsultationRequestAsync(ticket);
                 await SendMessageAsync(ticketMessageDto);
             }
@@ -129,12 +130,11 @@ namespace VDG_Web_Api.src.Services
         {
             return new TicketDTO()
             {
-                CloseDate = ticket.CloseDate,
                 Id = ticket.Id,
                 DoctorId = ticket.DoctorId,
-                Status = ticket.Status,
                 UserId = ticket.UserId,
-
+                Status = ticket.Status,
+                CloseDate = ticket.CloseDate,
             };
         }
     }
