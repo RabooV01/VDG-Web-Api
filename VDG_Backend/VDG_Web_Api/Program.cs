@@ -3,7 +3,7 @@ using VDG_Web_Api.src.Data;
 using VDG_Web_Api.src.Repositories;
 using VDG_Web_Api.src.Repositories.Interfaces;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder();
 
 // Add services to the container.
 builder.Services.AddControllers();

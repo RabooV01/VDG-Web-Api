@@ -62,8 +62,6 @@ namespace VDG_Web_Api.src.Repositories
                 throw new InvalidOperationException($"Faild to delet the message, Error: {e.Message}", e);
             }
         }
-
-        // #ToDo Add service logic (create + sendMessage) on request
         public async Task SendConsultationRequestAsync(Ticket ticket)
         {
             if (ticket == null)

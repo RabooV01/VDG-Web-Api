@@ -1,19 +1,23 @@
 ﻿using VDG_Web_Api.src.DTOs.TicketDTOs;
+using VDG_Web_Api.src.DTOs.UserDTOs;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services.Interfaces;
+
 
 namespace VDG_Web_Api.src.Services
 {
     public class TicketService : ITicketService
     {
         private readonly ITicketRepository _ticketRepository;
+        private readonly IUserService _userService;
+
 
         public TicketService(ITicketRepository ticketRepository)
         {
             this._ticketRepository = ticketRepository;
         }
-
+        // D 
         public async Task DeleteMessageAsync(int id)
         {
             try
@@ -27,11 +31,27 @@ namespace VDG_Web_Api.src.Services
             }
         }
 
+        // N
         public async Task<IEnumerable<DoctorTicketDTO>> GetDoctorConsultationsAsync(string doctorId)
         {
             try
             {
-                return (IEnumerable<DoctorTicketDTO>)await _ticketRepository.GetConsultationsAsync(doctorId, null);
+                var doctorConsultations = await _ticketRepository.GetConsultationsAsync(doctorId, null);
+
+                var userIds = doctorConsultations.Select(r => r.UserId)
+                .Distinct()
+                .ToList();
+
+                UserDTO?[] userDtos = await Task.WhenAll(userIds.Where(Id => Id != null).Select(Id => _userService.GetUser(Id!.Value)));
+                return doctorConsultations.Select(d =>
+                {
+                    var ticketDto = MapToTicketDto(d);
+
+                    var userDto = userDtos.FirstOrDefault(user => user?.Id == ticketDto.UserId);
+
+                    return new DoctorTicketDTO() { TicketDto = ticketDto, UserDto = userDto };
+                });
+
 
             }
             catch (Exception ex)
@@ -41,6 +61,7 @@ namespace VDG_Web_Api.src.Services
             }
         }
 
+        // N
         public async Task<IEnumerable<UserTicketDTO>> GetUserConsultationsAsync(int userId)
         {
             try
@@ -55,6 +76,7 @@ namespace VDG_Web_Api.src.Services
             }
         }
 
+        // N
         public async Task SendConsultationRequest(TicketDTO ticketDto, TicketMessageDTO ticketMessageDto)
         {
             try
@@ -70,6 +92,7 @@ namespace VDG_Web_Api.src.Services
             }
         }
 
+        // N 
         public async Task SendMessageAsync(TicketMessageDTO message)
         {
             try
@@ -84,6 +107,8 @@ namespace VDG_Web_Api.src.Services
             }
         }
 
+
+        // N
         public async Task UpdateMessageAsync(TicketMessageDTO message)
         {
             try
@@ -95,6 +120,22 @@ namespace VDG_Web_Api.src.Services
 
                 throw new InvalidOperationException($"Could not update, Error: {ex.Message}", ex);
             }
+        }
+
+
+        // Mapping 
+
+        public TicketDTO MapToTicketDto(Ticket ticket)
+        {
+            return new TicketDTO()
+            {
+                CloseDate = ticket.CloseDate,
+                Id = ticket.Id,
+                DoctorId = ticket.DoctorId,
+                Status = ticket.Status,
+                UserId = ticket.UserId,
+
+            };
         }
     }
 }
