@@ -10,7 +10,7 @@
 
         public int? OwnerId { get; set; }
 
-        public DateTime? Date { get; set; }
+        public DateOnly? Date { get; set; }
 
     }
 }

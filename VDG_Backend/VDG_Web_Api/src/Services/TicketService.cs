@@ -1,5 +1,4 @@
 ﻿using VDG_Web_Api.src.DTOs.TicketDTOs;
-using VDG_Web_Api.src.DTOs.UserDTOs;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services.Interfaces;
@@ -11,13 +10,15 @@ namespace VDG_Web_Api.src.Services
     {
         private readonly ITicketRepository _ticketRepository;
         private readonly IUserService _userService;
+        public readonly IDoctorService _doctorService;
 
 
-        public TicketService(ITicketRepository ticketRepository)
+        public TicketService(ITicketRepository ticketRepository, IUserService userService, IDoctorService doctorService)
         {
             this._ticketRepository = ticketRepository;
+            this._userService = userService;
+            this._doctorService = doctorService;
         }
-        // D 
         public async Task DeleteMessageAsync(int id)
         {
             try
@@ -26,12 +27,10 @@ namespace VDG_Web_Api.src.Services
             }
             catch (Exception ex)
             {
-
                 throw new InvalidOperationException($"Faild to delete the ticket meassge, Error: {ex.Message}", ex);
             }
         }
 
-        // N
         public async Task<IEnumerable<DoctorTicketDTO>> GetDoctorConsultationsAsync(string doctorId)
         {
             try
@@ -42,7 +41,7 @@ namespace VDG_Web_Api.src.Services
                 .Distinct()
                 .ToList();
 
-                UserDTO?[] userDtos = await Task.WhenAll(userIds.Where(Id => Id != null).Select(Id => _userService.GetUser(Id!.Value)));
+                var userDtos = await Task.WhenAll(userIds.Where(Id => Id != null).Select(Id => _userService.GetUser(Id!.Value)));
                 return doctorConsultations.Select(d =>
                 {
                     var ticketDto = MapToTicketDto(d);
@@ -50,7 +49,7 @@ namespace VDG_Web_Api.src.Services
                     var userDto = userDtos.FirstOrDefault(user => user?.Id == ticketDto.UserId);
 
                     return new DoctorTicketDTO() { TicketDto = ticketDto, UserDto = userDto };
-                });
+                }).ToList();
 
 
             }
@@ -61,12 +60,28 @@ namespace VDG_Web_Api.src.Services
             }
         }
 
-        // N
         public async Task<IEnumerable<UserTicketDTO>> GetUserConsultationsAsync(int userId)
         {
             try
             {
-                return (IEnumerable<UserTicketDTO>)await _ticketRepository.GetConsultationsAsync(null, userId);
+                var userConsultaions = await _ticketRepository.GetConsultationsAsync(null, userId);
+
+                var doctorIds = userConsultaions.Select(r => r.DoctorId)
+                    .Distinct()
+                    .ToList();
+                var doctorDtos = await Task.WhenAll(doctorIds.Select(_doctorService.GetDoctorById!));
+
+                return userConsultaions.Select(d =>
+                {
+                    var ticketDto = MapToTicketDto(d);
+                    var doctorDto = doctorDtos.FirstOrDefault(doctor => doctor.SyndicateId == ticketDto.DoctorId);
+
+                    return new UserTicketDTO()
+                    {
+                        TicketDto = ticketDto,
+                        DoctorDto = doctorDto
+                    };
+                }).ToList();
 
             }
             catch (Exception ex)
@@ -76,29 +91,27 @@ namespace VDG_Web_Api.src.Services
             }
         }
 
-        // N
         public async Task SendConsultationRequest(TicketDTO ticketDto, TicketMessageDTO ticketMessageDto)
         {
             try
             {
-                Ticket ticket = ticketDto;
+                Ticket ticket = MapToTicket(ticketDto);
                 await _ticketRepository.SendConsultationRequestAsync(ticket);
                 await SendMessageAsync(ticketMessageDto);
             }
             catch (Exception ex)
             {
-
                 throw new InvalidOperationException($"Could not send, Error: {ex.Message}", ex);
             }
         }
 
         // N 
-        public async Task SendMessageAsync(TicketMessageDTO message)
+        public async Task SendMessageAsync(TicketMessageDTO ticketMessageDto)
         {
             try
             {
-                TicketMessage Message = message;
-                await _ticketRepository.SendMessageAsync(Message);
+                TicketMessage ticketMessage = MapToTicketMessage(ticketMessageDto);
+                await _ticketRepository.SendMessageAsync(ticketMessage);
             }
             catch (Exception ex)
             {
@@ -106,14 +119,12 @@ namespace VDG_Web_Api.src.Services
                 throw new InvalidOperationException($"Could not send, Error: {ex.Message}", ex);
             }
         }
-
-
-        // N
-        public async Task UpdateMessageAsync(TicketMessageDTO message)
+        public async Task UpdateMessageAsync(TicketMessageDTO ticketMessageDTO)
         {
             try
             {
-                await _ticketRepository.UpdateMessageAsync(message);
+                var ticketMessage = MapToTicketMessage(ticketMessageDTO);
+                await _ticketRepository.UpdateMessageAsync(ticketMessage);
             }
             catch (Exception ex)
             {
@@ -135,6 +146,30 @@ namespace VDG_Web_Api.src.Services
                 Status = ticket.Status,
                 UserId = ticket.UserId,
 
+            };
+        }
+
+        public Ticket MapToTicket(TicketDTO ticketDto)
+        {
+            return new Ticket()
+            {
+                DoctorId = ticketDto.DoctorId,
+                Status = ticketDto.Status,
+                UserId = ticketDto.UserId,
+                CloseDate = ticketDto.CloseDate,
+                Id = ticketDto.Id,
+            };
+        }
+
+        public TicketMessage MapToTicketMessage(TicketMessageDTO ticketMessageDto)
+        {
+            return new TicketMessage()
+            {
+                Id = ticketMessageDto.Id,
+                TicketId = ticketMessageDto.TicketId,
+                Date = ticketMessageDto.Date,
+                OwnerId = ticketMessageDto.OwnerId,
+                Text = ticketMessageDto.Text,
             };
         }
     }

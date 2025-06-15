@@ -13,7 +13,7 @@ namespace VDG_Web_Api.src.Repositories
         {
             this._context = context;
         }
-        // Done
+    
         public async Task<IEnumerable<Ticket>> GetConsultationsAsync(string? doctorId = null, int? userId = null)
         {
             if (doctorId != null && userId != null)
@@ -42,7 +42,6 @@ namespace VDG_Web_Api.src.Repositories
             throw new InvalidOperationException($"Unexpected error occured in {nameof(GetConsultationsAsync)} method controlflow.");
         }
 
-        // Done
         public async Task DeleteMessageAsync(int id)
         {
             var message = await _context.TicketMessages.FindAsync(id);
@@ -80,7 +79,6 @@ namespace VDG_Web_Api.src.Repositories
             }
         }
 
-        // Done
         public async Task SendMessageAsync(TicketMessage ticketMessage)
         {
             if (ticketMessage == null)
@@ -98,8 +96,6 @@ namespace VDG_Web_Api.src.Repositories
                 throw new InvalidOperationException($"Faild to send the ticket message, Error: {e.Message}", e);
             }
         }
-
-        // Done
         public async Task UpdateMessageAsync(TicketMessage ticketMessage)
         {
             var ticketMessageToUpdate = await _context.TicketMessages.FindAsync(ticketMessage.Id);
