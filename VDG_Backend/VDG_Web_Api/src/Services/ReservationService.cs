@@ -1,5 +1,4 @@
 using VDG_Web_Api.src.DTOs.ReservationDTOs;
-using VDG_Web_Api.src.DTOs.UserDTOs;
 using VDG_Web_Api.src.Extensions.Validation;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
@@ -122,7 +121,7 @@ public class ReservationService : IReservationService
 			.Distinct()
 			.ToList();
 
-			UserDTO?[] userDtos = await Task.WhenAll(userIds.Where(Id => Id != null).Select(Id => _userService.GetUser(Id!.Value)));
+			var userDtos = userIds.Where(Id => Id != null).Select(Id => _userService.GetUser(Id!.Value).Result);
 
 			return reservations.Select(s =>
 			{

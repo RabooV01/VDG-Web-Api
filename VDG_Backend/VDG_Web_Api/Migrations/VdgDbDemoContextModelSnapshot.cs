@@ -285,7 +285,10 @@ namespace VDG_Web_Api.Migrations
             modelBuilder.Entity("VDG_Web_Api.src.Models.User", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Email")
                         .IsRequired()
