@@ -1,0 +1,422 @@
+[33mcommit 80aa012367c89b9bfec7afd788834c13d8b772fd[m[33m ([m[1;36mHEAD[m[33m)[m
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Sun Jun 15 11:10:11 2025 +0300
+
+    Finish Tikcet Service
+
+[33mcommit 469b278eb511bf322baf49717e66b90f1417c9d5[m
+Merge: 820f7b4 c1402d5
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Fri Jun 13 16:56:55 2025 +0300
+
+    merge update
+
+[33mcommit 820f7b43b8a1bc1fa9034f699ce5e602878ad78d[m
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Fri Jun 13 16:51:13 2025 +0300
+
+    merge
+
+[33mcommit c1402d594f47597edf7d3bd10ea675262ef332f5[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: 349eb12 760d8e6
+Author: nowar aboamash <nowar901@gmail.com>
+Date:   Fri Jun 13 09:07:47 2025 +0300
+
+    Merge branch 'main' of https://github.com/RabooV01/VDG-Web-Api
+
+[33mcommit 349eb124ad7bdbfd9e3586b2df7610b85827930c[m
+Author: nowar aboamash <nowar901@gmail.com>
+Date:   Fri Jun 13 08:55:37 2025 +0300
+
+    update IReservationRepostory
+
+[33mcommit 760d8e63a08bd5f3ee9a1d754cae03ed80ed25e8[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Thu Jun 12 01:38:21 2025 +0300
+
+    feat(AuthController), ref(DI Error): added auth controller, fixed DI errors, init new tasks to do
+
+[33mcommit fc1da60c5c910c96fdaa90a6facf4b72f1351330[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Thu Jun 12 00:39:10 2025 +0300
+
+    build(program.cs): setup authentication scheme
+
+[33mcommit 1ef93df901a791536f1298082f81f28ce4957387[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Thu Jun 12 00:32:28 2025 +0300
+
+    ref(auth service): user validation method changed
+
+[33mcommit 7ad762c836c7fe8ce43197e0589c91f5af27d4ff[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Thu Jun 12 00:14:45 2025 +0300
+
+    feat(AuthService-UserRepository-AuthHandler): implemented basic auth, added required auth methods in user repository, added auth handler
+
+[33mcommit 70b061f2be7fb413e6d1a70dfbfde81103cd358e[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Wed Jun 11 23:03:11 2025 +0300
+
+    feat(AuthService): init basic auth service and handler
+
+[33mcommit bcb24e6a1972f293582208e9d6b7ad26570166a7[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Wed Jun 11 21:52:57 2025 +0300
+
+    feat(UserService): impelemented user service, need testing
+
+[33mcommit 03a8a1bec97500ef7f9fdaf92f72ddaf9f3cc648[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Wed Jun 11 18:34:33 2025 +0300
+
+    (VDG_Backend/.gitignore): remove .sln files from repo, need to use: git rm --cached VDG_Backend.sln
+
+[33mcommit 1b5c23aca898ad845453369b1935621f6f02d7b6[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Wed Jun 11 18:29:38 2025 +0300
+
+    changes applied
+
+[33mcommit e2ab3e8958ba56bbf7de1fe7d2fa295f90de4d20[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Wed Jun 11 18:29:08 2025 +0300
+
+    edit(VDG-WEB-API/.gitignore): added self ignoring, must use git rm --cached .gitignore
+
+[33mcommit e649b2640dbfdbad545b05448aa48af05635da5e[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Wed Jun 11 18:25:49 2025 +0300
+
+    refactor(migration): models updated, added postdeploy script, init UserService Interface
+
+[33mcommit d7cce716ce2918fc3b92e535ba368d8fa0c25019[m
+Merge: 4da89ff 6fadd36
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Thu Jun 5 16:42:36 2025 +0300
+
+    merge with remote
+
+[33mcommit 6fadd3625929ef593fa2afc678c203cfb97611e5[m
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Thu Jun 5 12:03:37 2025 +0300
+
+    implementd all methods in Ticket service
+
+[33mcommit 4da89ff85edb8cf4ad913a9eebc90bb9d8b29dec[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Thu Jun 5 01:58:36 2025 +0300
+
+    ref(Reservation): Service refactor 'removed BookingTypes from Service'
+
+[33mcommit 01f1e617a85ebc632a558d2cf33365b4fdd33487[m
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Wed Jun 4 16:38:36 2025 +0300
+
+    added methods to the TicketServerce interface
+
+[33mcommit 001f686730fade70adc2e947b295705f2ad1f865[m
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Wed Jun 4 13:07:40 2025 +0300
+
+    init (ticket repository): added ticket repository, added ticketDto, modified TicketMessage model 'Owner to UserId'
+
+[33mcommit 5808715ed414a107577c99b6bc13441b53a1a2b8[m
+Merge: 290d881 e156214
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Tue Jun 3 14:07:39 2025 +0300
+
+    JJ
+
+[33mcommit e156214d7521b89244bf4e1e0f752142e8e79080[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Tue Jun 3 14:24:11 2025 +0300
+
+    refactor(ReservationService): changed reservation validation in BookAppointmentAsync
+
+[33mcommit ea547dd3a093700f9dd671d9f65a18050890fd12[m
+Merge: 2953760 964b330
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Tue Jun 3 14:15:22 2025 +0300
+
+    Merge with remote
+
+[33mcommit 295376044fc7d213b702407a0c8e86aaf78689f4[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Tue Jun 3 14:13:08 2025 +0300
+
+    refactor(Reservation): completed Service impelementing, modified repository data retrieving.
+
+[33mcommit 290d881125e5391581fe9f5e9e89256617d6d6bd[m
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Tue Jun 3 14:04:20 2025 +0300
+
+    GG
+
+[33mcommit 6b5c940d473c55baf1d69940729bd5128e82fc64[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Tue Jun 3 03:41:47 2025 +0300
+
+    feat(ReservationService): implemented Reservation Service logic, changed Reservation.Type to enum, Configured DBContext Reservation  model creating to handle conversion from and to enum.
+
+[33mcommit 7bca164ea65402dac9b96c85ea51bc2f6bddb5a7[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Mon Jun 2 03:50:20 2025 +0300
+
+    style(Reservation Service and Repository)
+
+[33mcommit 6874125646f02b0f5d97d8bccb741ef6d32e8a84[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Mon Jun 2 03:25:36 2025 +0300
+
+    feat(Services): added Reservation Service
+
+[33mcommit d309f6bf282374808aa24ce26b7cfedcfa89daa7[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Mon Jun 2 03:12:39 2025 +0300
+
+    modified(ReservationDTOs): used compostion instead of repeating DTO properties
+
+[33mcommit 7a5094949cf6dd4419f007d10c1f95bb6226e178[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Mon Jun 2 02:51:03 2025 +0300
+
+    feat(ReservationRepository): modified and implemented IReservationRepository Interface
+
+[33mcommit c2ff7d3983a531dba5c06e080496f9fc2b56d260[m
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Sun Jun 1 09:11:35 2025 +0300
+
+    Just Pulling
+
+[33mcommit 964b3300ce0daadcaf23eb5640c5025388c7d3db[m
+Merge: 21054c1 39d7356
+Author: nowar aboamash <nowar901@gmail.com>
+Date:   Sat May 31 17:55:27 2025 +0300
+
+    Merge branch 'main' of https://github.com/RabooV01/VDG-Web-Api
+
+[33mcommit 21054c1f01ded5bc92ffaf5455a324d4287b58f8[m
+Merge: ef399f5 56267bd
+Author: nowar aboamash <nowar901@gmail.com>
+Date:   Sat May 31 17:55:18 2025 +0300
+
+    Merge branch 'main' of https://github.com/RabooV01/VDG-Web-Api
+
+[33mcommit c7a76e3ec3a33df4e01ef6df3b6ddec49dc34731[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Sat May 31 14:40:26 2025 +0300
+
+    build(program): registered reservation repository in app services
+
+[33mcommit 0dbc5f26500116646973b6e32d4fb7692e77e510[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Sat May 31 14:39:23 2025 +0300
+
+    init(ReservationRepository): fake implementing for IReservationRepository
+
+[33mcommit 62b6cfa5297f400f2c4f0997c9765a81ba6e12f5[m
+Merge: ffd8030 b8ef38e
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Sat May 31 14:35:52 2025 +0300
+
+    Merge branch 'main' of https://github.com/RabooV01/VDG-Web-Api
+
+[33mcommit ffd8030b2ccff20528855ad13e9166da27dfebe2[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Sat May 31 14:34:05 2025 +0300
+
+    init(repositories): adding 3 repositories to work on, adding auth service to work on too
+
+[33mcommit 39d7356a387d57a78e44385bfb4b21720c47c721[m
+Merge: edfea67 c7a76e3
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Sat May 31 13:55:30 2025 +0300
+
+    Merge branch 'main' of https://github.com/RabooV01/VDG-Web-Api
+
+[33mcommit edfea6715245c7fded9d70462b7a13abaf135f4d[m
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Sat May 31 13:55:05 2025 +0300
+
+    Ok
+
+[33mcommit b8ef38eb26b45715d406d36c4d026e2331211a98[m
+Merge: d4ba2b8 56267bd
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Sat May 31 13:12:36 2025 +0300
+
+    Merge branch 'main' of https://github.com/RabooV01/VDG-Web-Api
+
+[33mcommit d4ba2b8c54d962de0d1b72c0fde061cc05d63674[m
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Sat May 31 13:03:35 2025 +0300
+
+    nothing
+
+[33mcommit 56267bde82aef8415b48e1b33e078e8bd44f8f62[m
+Merge: 97a2028 33002f6
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Thu May 29 11:24:01 2025 +0300
+
+    dbcontext config setup
+
+[33mcommit 97a20289b6aaf0e67e56c7369187671e58a5e36e[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Thu May 29 10:49:48 2025 +0300
+
+    merging
+
+[33mcommit ef399f50ec625cab3fb58c295f6dc7ef9364f66c[m
+Author: nowar aboamash <nowar901@gmail.com>
+Date:   Thu May 29 10:28:11 2025 +0300
+
+    dbcontext setup
+
+[33mcommit 33002f63f4ffade9053149c47b7415fe19d9d33b[m
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Thu May 29 09:49:57 2025 +0300
+
+    markers removed
+
+[33mcommit bbab44a6723cffa5b7130910e37c9df3b25754dc[m
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Thu May 29 09:38:50 2025 +0300
+
+    setup gitignore
+
+[33mcommit 739192ea7dcf4d8826fd6daa3b56bc418a7ef447[m
+Merge: 6fe6abf 847bbbf
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Thu May 29 09:36:36 2025 +0300
+
+    resolved conflict
+
+[33mcommit 847bbbf9d95bcf6a286658c8b538a43786143cea[m
+Merge: 87850c8 3672c61
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Thu May 29 00:11:21 2025 +0300
+
+    merging
+
+[33mcommit 87850c885362721887980e6e2d09317403763261[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Wed May 28 23:55:35 2025 +0300
+
+    modify(gitignore)
+
+[33mcommit c04fb768e4da85879124bc91e57aae7a71629cb4[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Wed May 28 23:55:13 2025 +0300
+
+    modify(gitignore)
+
+[33mcommit 3eabd1cc722d22bf0802c2b411434aeae373cb87[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Wed May 28 23:54:43 2025 +0300
+
+    chore(appsettings): removed appsettings from future commits
+
+[33mcommit 3672c61f7e4dbe2a99993c6ab1348e01261193ed[m
+Author: nowar aboamash <nowar901@gmail.com>
+Date:   Wed May 28 09:29:01 2025 +0300
+
+    add some packages
+
+[33mcommit a2fa3bdb4ff82acadffb7131a2b2f90ba32e364f[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Tue May 27 14:44:45 2025 +0300
+
+    build(dbcontext): ef configurations and migrations
+
+[33mcommit 6fe6abfbd9ae2809ce0a8508a5ebd12ed3406408[m
+Merge: 08785c4 a2fa3bd
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Tue May 27 13:47:35 2025 +0300
+
+    merge
+
+[33mcommit 08785c46b8a7334466c598e61dc741c90dd71c3f[m
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Tue May 27 13:47:00 2025 +0300
+
+    savechanges
+
+[33mcommit 642415468e00b76c0e1bb9a6838c829d4f62c8df[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Sat May 24 13:25:47 2025 +0300
+
+    feat(src): added DTOs for user
+
+[33mcommit e79b0892572dd1a8001ff1eaf38a36851f3c59d8[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Mon May 19 21:56:11 2025 +0300
+
+    fix(UserRepository): changed AppDbContext Injection
+
+[33mcommit 068886a06ab70c446260f8831ed20493b2eadc54[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Mon May 19 21:10:21 2025 +0300
+
+    feat(UserRepository): added CRUD operations for user repo
+
+[33mcommit ff2010450f1bfc64107223adbcda5df3e7e6c29a[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Mon May 19 20:51:33 2025 +0300
+
+    init(VDG_Web_Api): project initialization with ef core init
+
+[33mcommit 75707c973b485191618d34fe7a0a44d886792189[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Sat May 17 02:25:17 2025 +0300
+
+    refactor(DB Project): named constraints and sorted syntax
+
+[33mcommit 2c2af74bfcc438866fa7158a7db2d3e9785158ba[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Fri May 16 00:17:16 2025 +0300
+
+    fix(gitignore): not ignoring folder bug fixed
+
+[33mcommit 09b36fba4032f2c29269e69f8969df8ccf58802a[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Fri May 16 00:02:10 2025 +0300
+
+    fix(VDG_Backend): added .gitignore, conflict fixed
+
+[33mcommit a6b1e23f16f8016f86a4ed578604fdf642368947[m
+Merge: 6bffb6b 08fe0b0
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Thu May 15 23:57:32 2025 +0300
+
+    merging
+
+[33mcommit 6bffb6b2d0d54790e6c119f2562135ee96399a0c[m
+Author: RabooV01 <rabii961ra@gmail.com>
+Date:   Thu May 15 23:55:07 2025 +0300
+
+    init: setting up gitignore
+
+[33mcommit 08fe0b0651809f1e4262c258ae39a526f15524b4[m
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Thu May 15 22:21:45 2025 +0300
+
+    fix(Code): Update solution name
+
+[33mcommit 2ead7c2062ac3c21869f68d4b207dc6a6140a3c4[m
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Thu May 15 22:06:29 2025 +0300
+
+    feat(sql): init database
+
+[33mcommit aa12d0aa2ba71cb4c20d3d82d6fd6f5db9b78a15[m
+Author: WORKSHOP <abd.alghafour2002@gmail.com>
+Date:   Thu May 15 21:44:22 2025 +0300
+
+    feat(sql): init database
+
+[33mcommit f93ef7fba7a4191f933207dd1ef3004ae22fe056[m
+Author: RabooV01 <140656578+RabooV01@users.noreply.github.com>
+Date:   Thu May 15 20:49:12 2025 +0300
+
+    Initial commit
