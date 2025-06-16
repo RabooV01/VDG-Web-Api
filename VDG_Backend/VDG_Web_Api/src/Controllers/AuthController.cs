@@ -20,8 +20,11 @@ namespace VDG_Web_Api.src.Controllers
 		{
 			try
 			{
-				await _authService.AuthenticateAsync(user);
-				return NoContent();
+				if (await _authService.AuthenticateAsync(user))
+				{
+					return Created();
+				}
+				return BadRequest("Check that your email address is valid, and please write password longer than 8 characters");
 			}
 			catch (Exception ex)
 			{

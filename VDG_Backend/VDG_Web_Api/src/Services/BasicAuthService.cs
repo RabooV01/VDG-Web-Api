@@ -23,7 +23,7 @@ public class BasicAuthService : IAuthService
 			throw new ArgumentNullException("Something is missing, Double check your credentials and try again.");
 		}
 
-		if (!userRegister.IsValidUser())
+		if (!userRegister.IsValidUser() || !userRegister.Person!.IsValidPerson())
 		{
 			return await Task.FromResult(false);
 		}
