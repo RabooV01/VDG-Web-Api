@@ -4,8 +4,8 @@ namespace VDG_Web_Api.src.DTOs.TicketDTOs
 {
     public class UserTicketDTO
     {
-        DoctorDTO? DoctorDto { get; set; }
-        TicketDTO? TicketDto { get; set; }
+        public DoctorDTO? DoctorDto { get; set; }
+        public TicketDTO? TicketDto { get; set; }
 
     }
 }

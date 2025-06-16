@@ -5,9 +5,9 @@ namespace VDG_Web_Api.src.Repositories.Interfaces
 {
     public interface IReservationRepository
     {
-        public Task BookAppointment(User user, VirtualClinic clinic, DateTime date);
-        public Task BookRevisionAppointment(User user, VirtualClinic clinic, DateTime date);
-        public Task CancelAppointment(int reservationId);
-        public Task<Reservation?> UpdateAppointment(Reservation reservation);
+        Task<IEnumerable<Reservation>> GetReservationsAsync(int? virtualId = null, int? userId = null, DateOnly? day = null);
+		public Task BookAppointmentAsync(Reservation reservation);
+		public Task CancelAppointmentAsync(int reservationId);
+		public Task UpdateAppointmentAsync(Reservation reservation);
     }
 }
