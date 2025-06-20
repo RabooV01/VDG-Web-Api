@@ -4,7 +4,6 @@
     {
         public Task GetById(int id);
         public Task GetByName(string fullName);
-        
         public Task DeleteById(int id);
 
 
