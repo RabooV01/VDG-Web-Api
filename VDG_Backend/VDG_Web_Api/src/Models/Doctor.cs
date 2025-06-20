@@ -7,34 +7,37 @@ namespace VDG_Web_Api.src.Models;
 [Table("Doctor")]
 public partial class Doctor
 {
-	[Key]
-	[Column("Syndicate_Id")]
-	[StringLength(16)]
-	[Unicode(false)]
-	public string SyndicateId { get; set; } = null!;
+    [Key]
+    [Column("Id")]
+    public int Id { get; set; }
 
-	[Column("User_Id")]
-	public int? UserId { get; set; }
+    [Column("User_Id")]
+    public int? UserId { get; set; }
 
-	[Column("Speciality_Id")]
-	public int? SpecialityId { get; set; }
+    [Column("Speciality_Id")]
+    public int? SpecialityId { get; set; } = null!;
 
-	[InverseProperty("Doctor")]
-	public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
+    [Column("Syndicate_Id")]
+    [StringLength(16)]
+    [Unicode(false)]
+    public string SyndicateId { get; set; } = null!;
 
-	[InverseProperty("Doctor")]
-	public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
+    [InverseProperty("Doctor")]
+    public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
 
-	[ForeignKey("SpecialityId")]
-	[InverseProperty("Doctors")]
-	public virtual Speciality? Speciality { get; set; }
+    [InverseProperty("Doctor")]
+    public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
 
-	[InverseProperty("Doctor")]
-	public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+    [ForeignKey("SpecialityId")]
+    [InverseProperty("Doctors")]
+    public virtual Speciality? Speciality { get; set; }
 
-	[ForeignKey("UserId")]
-	public virtual User? User { get; set; }
+    [InverseProperty("Doctor")]
+    public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 
-	[InverseProperty("Doctor")]
-	public virtual ICollection<VirtualClinic> VirtualClinics { get; set; } = new List<VirtualClinic>();
+    [ForeignKey("UserId")]
+    public virtual User? User { get; set; }
+
+    [InverseProperty("Doctor")]
+    public virtual ICollection<VirtualClinic> VirtualClinics { get; set; } = new List<VirtualClinic>();
 }
