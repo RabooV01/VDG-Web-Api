@@ -4,27 +4,44 @@ using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services.Interfaces;
 
 
+
 namespace VDG_Web_Api.src.Services
 {
     public class TicketService : ITicketService
     {
         private readonly int UpdateAndDeleteThreshold = 5;
+        private readonly int UpdateAndDeleteThreshold = 5;
         private readonly ITicketRepository _ticketRepository;
         private readonly IUserService _userService;
         public readonly IDoctorService _doctorService;
         private readonly IUserRepository _userRepository;
+        private readonly IUserRepository _userRepository;
 
 
-        public TicketService(ITicketRepository ticketRepository, IUserService userService, IDoctorService doctorService, IUserRepository userRepository)
+        public TicketService(ITicketRepository ticketRepository, IUserService userService, IDoctorService doctorService, IUserRepository userRepository, IUserRepository userRepository)
         {
             this._ticketRepository = ticketRepository;
             this._userService = userService;
             this._doctorService = doctorService;
             this._userRepository = userRepository;
+            this._userRepository = userRepository;
         }
+        // Done 
         // Done 
         public async Task DeleteMessageAsync(int id)
         {
+            TicketMessage ticketMessage = await _ticketRepository.GetTicketMessageAsync(id);
+
+            if (ticketMessage == null)
+            {
+                throw new ArgumentNullException($"No such ticket with this id: {id}");
+            }
+
+            if (DateTime.Now.Subtract(ticketMessage.Date).Minutes > UpdateAndDeleteThreshold)
+            {
+                throw new Exception($"The minimum time to remove the message has passed");
+            }
+
             TicketMessage ticketMessage = await _ticketRepository.GetTicketMessageAsync(id);
 
             if (ticketMessage == null)
@@ -70,9 +87,38 @@ namespace VDG_Web_Api.src.Services
                 throw new InvalidOperationException($"Could not update, Error: {ex.Message}", ex);
             }
         }
+        // Done
+        public async Task UpdateMessageAsync(TicketMessageDTO ticketMessageDTO)
+        {
+
+            var ticketMessage = MapToTicketMessage(ticketMessageDTO);
+            if (ticketMessage == null)
+            {
+                throw new ArgumentNullException($"No such Message");
+            }
+            if (DateTime.Now.Subtract(ticketMessage.Date).Minutes > UpdateAndDeleteThreshold)
+            {
+                throw new Exception($"The minimum time to remove the message has passed");
+            }
+
+            try
+            {
+                await _ticketRepository.UpdateMessageAsync(ticketMessage);
+            }
+            catch (Exception ex)
+            {
+
+                throw new InvalidOperationException($"Could not update, Error: {ex.Message}", ex);
+            }
+        }
 
         public async Task<IEnumerable<DoctorTicketDTO>> GetDoctorConsultationsAsync(string doctorId)
         {
+
+            if (doctorId == null)
+            {
+                throw new ArgumentNullException($"No such doctor with this id: {doctorId}");
+            }
 
             if (doctorId == null)
             {
@@ -86,6 +132,12 @@ namespace VDG_Web_Api.src.Services
                 {
                     var ticketDto = MapToTicketDto(d);
 
+                    /* Todo 
+                     
+                        get Fname and Lname 
+
+                    */
+                    var user =
                     /* Todo 
                      
                         get Fname and Lname 
@@ -170,10 +222,13 @@ namespace VDG_Web_Api.src.Services
             return new TicketDTO()
             {
                 CloseDate = ticket.CloseDate,
+                CloseDate = ticket.CloseDate,
                 Id = ticket.Id,
                 DoctorId = ticket.DoctorId,
                 Status = ticket.Status,
+                Status = ticket.Status,
                 UserId = ticket.UserId,
+
 
             };
         }
@@ -202,6 +257,10 @@ namespace VDG_Web_Api.src.Services
             };
         }
 
+        public Task DeleteMessageAsync(int id, DateTime date)
+        {
+            throw new NotImplementedException();
+        }
         public Task DeleteMessageAsync(int id, DateTime date)
         {
             throw new NotImplementedException();

@@ -11,14 +11,14 @@ public class ReservationService : IReservationService
     private readonly IVirtualClinicService _virtualClinicService;
     private readonly IUserService _userService;
 
-	public ReservationService(IReservationRepository reservationRepository,
-		IVirtualClinicService virtualClinicService,
-		IUserService userService)
-	{
-		_reservationRepository = reservationRepository;
-		_virtualClinicService = virtualClinicService;
-		_userService = userService;
-	}
+    public ReservationService(IReservationRepository reservationRepository,
+        IVirtualClinicService virtualClinicService,
+        IUserService userService)
+    {
+        _reservationRepository = reservationRepository;
+        _virtualClinicService = virtualClinicService;
+        _userService = userService;
+    }
 
     private Reservation MapToEntity(ReservationDTO Dto)
     {
@@ -72,12 +72,12 @@ public class ReservationService : IReservationService
         VirtualId = reservation.VirtualId
     };
 
-	public async Task BookAppointmentAsync(ReservationDTO reservationDto)
-	{
-		if (!reservationDto.IsValidReservation())
-		{
-			throw new ArgumentNullException("Reservation is invalid");
-		}
+    public async Task BookAppointmentAsync(ReservationDTO reservationDto)
+    {
+        if (!reservationDto.IsValidReservation())
+        {
+            throw new ArgumentNullException("Reservation is invalid");
+        }
 
         Reservation reservation = MapToEntity(reservationDto);
 
@@ -121,7 +121,7 @@ public class ReservationService : IReservationService
             .Distinct()
             .ToList();
 
-			var userDtos = userIds.Where(Id => Id != null).Select(Id => _userService.GetUser(Id!.Value).Result);
+            var userDtos = userIds.Where(Id => Id != null).Select(Id => _userService.GetUser(Id!.Value).Result);
 
             return reservations.Select(s =>
             {
@@ -179,12 +179,12 @@ public class ReservationService : IReservationService
         }
     }
 
-	public async Task EditAppointmentAsync(ReservationDTO reservationDto)
-	{
-		if (!reservationDto.IsValidReservation())
-		{
-			throw new ArgumentException("Reservation value is invalid, No update were applied.");
-		}
+    public async Task EditAppointmentAsync(ReservationDTO reservationDto)
+    {
+        if (!reservationDto.IsValidReservation())
+        {
+            throw new ArgumentException("Reservation value is invalid, No update were applied.");
+        }
 
         Reservation reservation = MapToEntity(reservationDto);
 
