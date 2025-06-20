@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using VDG_Web_Api.src.Data;
+﻿using VDG_Web_Api.src.Data;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 
@@ -49,17 +48,14 @@ namespace VDG_Web_Api.src.Repositories
 
         }
 
-        public async Task<IEnumerable<Doctor>> GetAllDoctorsBySpcilityAsync(int spcialityId)
+        public async Task<Speciality> GetSpecialityAsync(int specialityId)
         {
             // ممكن لقدام نبعت actoin لنفلتر الدكاترة اللي من هاد التخصص
-            try
-            {
-                return await _context.Doctors.Where(d => true).ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Unable to display doctors , Error: {ex.Message}", ex);
-            }
+            var speciality = await _context.Specialities.FindAsync(specialityId);
+            if (speciality == null)
+                throw new KeyNotFoundException();
+
+            return speciality;
 
         }
 
