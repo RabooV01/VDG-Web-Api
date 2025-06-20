@@ -13,7 +13,19 @@ namespace VDG_Web_Api.src.Repositories
         {
             this._context = context;
         }
-    
+
+        public async Task<IEnumerable<TicketMessage>> GetTicketMessagesAsync(int tiketId)
+        {
+            try
+            {
+                return await _context.TicketMessages.Where(t => t.TicketId == tiketId).ToListAsync(); ;
+            }
+            catch (Exception ex)
+            {
+
+                throw new InvalidOperationException($"Error while retrieving data. {ex.Message}", ex);
+            }
+        }
         public async Task<IEnumerable<Ticket>> GetConsultationsAsync(string? doctorId = null, int? userId = null)
         {
             if (doctorId != null && userId != null)
@@ -32,6 +44,8 @@ namespace VDG_Web_Api.src.Repositories
                 if (doctorId != null)
                 {
                     return await tickets.Where(t => t.DoctorId == doctorId)
+                        .Include(t => t.User)
+                        .ThenInclude(u => u!.Person)
                         .ToListAsync();
                 }
             }
@@ -42,6 +56,9 @@ namespace VDG_Web_Api.src.Repositories
             throw new InvalidOperationException($"Unexpected error occured in {nameof(GetConsultationsAsync)} method controlflow.");
         }
 
+
+
+        // Here we are 
         public async Task DeleteMessageAsync(int id)
         {
             var message = await _context.TicketMessages.FindAsync(id);
@@ -113,10 +130,22 @@ namespace VDG_Web_Api.src.Repositories
             }
             catch (Exception e)
             {
-
                 throw new InvalidOperationException($"Faild to update the ticket message, Error: {e.Message}", e);
             }
 
+        }
+
+        public async Task<TicketMessage?> GetTicketMessageAsync(int id)
+        {
+            try
+            {
+                return await _context.TicketMessages.FirstOrDefaultAsync(m => m.Id == id);
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"Faild while retriving data,Error:{ex.Message}", ex);
+            }
         }
     }
 }

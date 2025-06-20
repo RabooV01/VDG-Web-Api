@@ -6,5 +6,8 @@
 
         public int? TicketId { get; set; }
         public int? OwnerId { get; set; }
+        public string? Txt { get; set; }
+        public DateTime? Date { get; set; }
+
     }
 }
