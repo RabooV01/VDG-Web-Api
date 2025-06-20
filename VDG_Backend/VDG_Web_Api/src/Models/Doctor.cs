@@ -8,16 +8,16 @@ namespace VDG_Web_Api.src.Models;
 public partial class Doctor
 {
 	[Key]
-	[Column("Syndicate_Id")]
+	[Column("Id")]
 	[StringLength(16)]
 	[Unicode(false)]
-	public string SyndicateId { get; set; } = null!;
+	public int Id { get; set; }
 
 	[Column("User_Id")]
 	public int? UserId { get; set; }
 
 	[Column("Speciality_Id")]
-	public int? SpecialityId { get; set; }
+	public string? SpecialityId { get; set; } = null!;
 
 	[InverseProperty("Doctor")]
 	public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
