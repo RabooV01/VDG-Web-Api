@@ -4,8 +4,8 @@ namespace VDG_Web_Api.src.Repositories.Interfaces
 {
     public interface ISpecialityRepository
     {
-        public Task<int> AddSpcialityAsyc(string name);
-        public Task DeleteSpcialityAsync(int specialityId);
-        public Task<IEnumerable<Doctor>> GetAllDoctorsBySpcilityAsync(int spcialityId);
+        public Task<int> AddSpecialityAsyc(string name);
+        public Task DeleteSpecialityAsync(int specialityId);
+        public Task<Speciality> GetSpecialityAsync(int specialityId);
     }
 }
