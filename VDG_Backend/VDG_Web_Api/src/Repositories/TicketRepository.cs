@@ -26,7 +26,7 @@ namespace VDG_Web_Api.src.Repositories
                 throw new InvalidOperationException($"Error while retrieving data. {ex.Message}", ex);
             }
         }
-        public async Task<IEnumerable<Ticket>> GetConsultationsAsync(string? doctorId = null, int? userId = null)
+        public async Task<IEnumerable<Ticket>> GetConsultationsAsync(int? doctorId = null, int? userId = null)
         {
             if (doctorId != null && userId != null)
             {
@@ -56,9 +56,6 @@ namespace VDG_Web_Api.src.Repositories
             throw new InvalidOperationException($"Unexpected error occured in {nameof(GetConsultationsAsync)} method controlflow.");
         }
 
-
-
-        // Here we are 
         public async Task DeleteMessageAsync(int id)
         {
             var message = await _context.TicketMessages.FindAsync(id);
@@ -135,7 +132,7 @@ namespace VDG_Web_Api.src.Repositories
 
         }
 
-        public async Task<TicketMessage?> GetTicketMessageAsync(int id)
+        public async Task<TicketMessage> GetTicketMessageAsync(int id)
         {
             try
             {

@@ -16,7 +16,7 @@ public partial class Ticket
     [Column("Doctor_Id")]
     [StringLength(16)]
     [Unicode(false)]
-    public string? DoctorId { get; set; }
+    public int? DoctorId { get; set; }
 
     [StringLength(16)]
     [Unicode(false)]

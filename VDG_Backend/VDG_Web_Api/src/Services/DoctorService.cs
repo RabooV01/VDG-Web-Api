@@ -7,7 +7,7 @@ namespace VDG_Web_Api.src.Services
     {
         public DoctorService() { }
 
-        public Task<DoctorDTO> GetDoctorById(string doctorId)
+        public Task<DoctorDTO> GetDoctorById(int doctorId)
         {
             throw new NotImplementedException();
         }

@@ -4,7 +4,7 @@
     {
         public TicketDTO? TicketDto { get; set; }
 
-        public string? Fname { get; set; }
-        public string? Lname { get; set; }
+        public string? UserFirstName { get; set; }
+        public string? UserLastName { get; set; }
     }
 }
