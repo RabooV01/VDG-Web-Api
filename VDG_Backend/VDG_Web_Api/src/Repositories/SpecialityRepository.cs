@@ -4,15 +4,19 @@ using VDG_Web_Api.src.Repositories.Interfaces;
 
 namespace VDG_Web_Api.src.Repositories
 {
-    public class SpecalityRepository 
+    public class SpecialityRepository : ISpecialityRepository
     {
         private readonly VdgDbDemoContext _context;
-        public SpecalityRepository(VdgDbDemoContext context)
+        public SpecialityRepository()
+        {
+
+        }
+        public SpecialityRepository(VdgDbDemoContext context)
         {
             _context = context;
         }
 
-        public async Task<int> AddSpcialityAsyc(string name)
+        public async Task<int> AddSpecialityAsyc(string name)
         {
             try
             {
@@ -24,11 +28,11 @@ namespace VDG_Web_Api.src.Repositories
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Unable to ِadd speciality,[{ex.Message}]", ex);
+                throw new InvalidOperationException($"Unable to ِadd speciality,error:[{ex.Message}]", ex);
             }
         }
 
-        public async Task DeleteSpcialityAsync(int specialityId)
+        public async Task DeleteSpecialityAsync(int specialityId)
         {
             var speciality = await _context.Specialities.FindAsync(specialityId);
             if (speciality == null)
@@ -43,23 +47,19 @@ namespace VDG_Web_Api.src.Repositories
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Unable to ِremove speciality,[{ex.Message}]", ex);
+                throw new InvalidOperationException($"Unable to ِremove speciality,error:[{ex.Message}]", ex);
             }
 
         }
 
         public async Task<Speciality> GetSpecialityAsync(int specialityId)
         {
-            // ممكن لقدام نبعت actoin لنفلتر الدكاترة اللي من هاد التخصص
             var speciality = await _context.Specialities.FindAsync(specialityId);
             if (speciality == null)
-                throw new KeyNotFoundException();
+                throw new KeyNotFoundException("Speciality is not found");
 
             return speciality;
-
         }
-
-
 
     }
 }

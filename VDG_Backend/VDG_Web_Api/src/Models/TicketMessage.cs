@@ -20,7 +20,7 @@ public partial class TicketMessage
     [Unicode(false)]
     public int? OwnerId { get; set; }
 
-    public DateOnly? Date { get; set; }
+    public DateTime Date { get; set; }
 
     [ForeignKey("TicketId")]
     [InverseProperty("TicketMessages")]
