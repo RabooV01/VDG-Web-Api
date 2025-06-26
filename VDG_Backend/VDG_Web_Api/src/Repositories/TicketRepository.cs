@@ -5,147 +5,147 @@ using VDG_Web_Api.src.Repositories.Interfaces;
 
 namespace VDG_Web_Api.src.Repositories
 {
-    public class TicketRepository : ITicketRepository
-    {
-        private readonly VdgDbDemoContext _context;
+	public class TicketRepository : ITicketRepository
+	{
+		private readonly VdgDbDemoContext _context;
 
-        public TicketRepository(VdgDbDemoContext context)
-        {
-            this._context = context;
-        }
+		public TicketRepository(VdgDbDemoContext context)
+		{
+			this._context = context;
+		}
 
-        public async Task<IEnumerable<TicketMessage>> GetTicketMessagesAsync(int tiketId)
-        {
-            try
-            {
-                return await _context.TicketMessages.Where(t => t.TicketId == tiketId).ToListAsync(); ;
-            }
-            catch (Exception ex)
-            {
+		public async Task<IEnumerable<TicketMessage>> GetTicketMessagesAsync(int tiketId)
+		{
+			try
+			{
+				return await _context.TicketMessages.Where(t => t.TicketId == tiketId).ToListAsync(); ;
+			}
+			catch (Exception ex)
+			{
 
-                throw new InvalidOperationException($"Error while retrieving data. {ex.Message}", ex);
-            }
-        }
-        public async Task<IEnumerable<Ticket>> GetConsultationsAsync(string? doctorId = null, int? userId = null)
-        {
-            if (doctorId != null && userId != null)
-            {
-                throw new ArgumentNullException("Should select a doctor or user");
-            }
-            try
-            {
-                var tickets = _context.Tickets.AsQueryable();
+				throw new InvalidOperationException($"Error while retrieving data. {ex.Message}", ex);
+			}
+		}
+		public async Task<IEnumerable<Ticket>> GetConsultationsAsync(int? doctorId = null, int? userId = null)
+		{
+			if (doctorId != null && userId != null)
+			{
+				throw new ArgumentNullException("Should select a doctor or user");
+			}
+			try
+			{
+				var tickets = _context.Tickets.AsQueryable();
 
-                if (userId != null)
-                {
-                    return await tickets.Where(t => t.UserId == userId)
-                        .ToListAsync();
-                }
-                if (doctorId != null)
-                {
-                    return await tickets.Where(t => t.DoctorId == doctorId)
-                        .Include(t => t.User)
-                        .ThenInclude(u => u!.Person)
-                        .ToListAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Error while retrieving data. {ex.Message}", ex);
-            }
-            throw new InvalidOperationException($"Unexpected error occured in {nameof(GetConsultationsAsync)} method controlflow.");
-        }
+				if (userId != null)
+				{
+					return await tickets.Where(t => t.UserId == userId)
+						.ToListAsync();
+				}
+				if (doctorId != null)
+				{
+					return await tickets.Where(t => t.DoctorId == doctorId)
+						.Include(t => t.User)
+						.ThenInclude(u => u!.Person)
+						.ToListAsync();
+				}
+			}
+			catch (Exception ex)
+			{
+				throw new InvalidOperationException($"Error while retrieving data. {ex.Message}", ex);
+			}
+			throw new InvalidOperationException($"Unexpected error occured in {nameof(GetConsultationsAsync)} method controlflow.");
+		}
 
 
 
-        // Here we are 
-        public async Task DeleteMessageAsync(int id)
-        {
-            var message = await _context.TicketMessages.FindAsync(id);
+		// Here we are 
+		public async Task DeleteMessageAsync(int id)
+		{
+			var message = await _context.TicketMessages.FindAsync(id);
 
-            if (message == null)
-            {
-                throw new KeyNotFoundException("There is no message with this id");
-            }
-            try
-            {
-                _context.TicketMessages.Remove(message);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception e)
-            {
+			if (message == null)
+			{
+				throw new KeyNotFoundException("There is no message with this id");
+			}
+			try
+			{
+				_context.TicketMessages.Remove(message);
+				await _context.SaveChangesAsync();
+			}
+			catch (Exception e)
+			{
 
-                throw new InvalidOperationException($"Faild to delet the message, Error: {e.Message}", e);
-            }
-        }
-        public async Task SendConsultationRequestAsync(Ticket ticket)
-        {
-            if (ticket == null)
-            {
-                throw new KeyNotFoundException("The ticket has not found.");
-            }
-            try
-            {
-                _context.Tickets.Add(ticket);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception e)
-            {
+				throw new InvalidOperationException($"Faild to delet the message, Error: {e.Message}", e);
+			}
+		}
+		public async Task SendConsultationRequestAsync(Ticket ticket)
+		{
+			if (ticket == null)
+			{
+				throw new KeyNotFoundException("The ticket has not found.");
+			}
+			try
+			{
+				_context.Tickets.Add(ticket);
+				await _context.SaveChangesAsync();
+			}
+			catch (Exception e)
+			{
 
-                throw new InvalidOperationException($"Faild to send the ticket, Error: {e.Message}", e);
-            }
-        }
+				throw new InvalidOperationException($"Faild to send the ticket, Error: {e.Message}", e);
+			}
+		}
 
-        public async Task SendMessageAsync(TicketMessage ticketMessage)
-        {
-            if (ticketMessage == null)
-            {
-                throw new KeyNotFoundException("The ticket message has not found.");
-            }
-            try
-            {
-                _context.TicketMessages.Add(ticketMessage);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception e)
-            {
+		public async Task SendMessageAsync(TicketMessage ticketMessage)
+		{
+			if (ticketMessage == null)
+			{
+				throw new KeyNotFoundException("The ticket message has not found.");
+			}
+			try
+			{
+				_context.TicketMessages.Add(ticketMessage);
+				await _context.SaveChangesAsync();
+			}
+			catch (Exception e)
+			{
 
-                throw new InvalidOperationException($"Faild to send the ticket message, Error: {e.Message}", e);
-            }
-        }
-        public async Task UpdateMessageAsync(TicketMessage ticketMessage)
-        {
-            var ticketMessageToUpdate = await _context.TicketMessages.FindAsync(ticketMessage.Id);
-            if (ticketMessageToUpdate == null)
-            {
-                throw new KeyNotFoundException("The ticket message has not found.");
-            }
+				throw new InvalidOperationException($"Faild to send the ticket message, Error: {e.Message}", e);
+			}
+		}
+		public async Task UpdateMessageAsync(TicketMessage ticketMessage)
+		{
+			var ticketMessageToUpdate = await _context.TicketMessages.FindAsync(ticketMessage.Id);
+			if (ticketMessageToUpdate == null)
+			{
+				throw new KeyNotFoundException("The ticket message has not found.");
+			}
 
-            ticketMessageToUpdate = ticketMessage;
+			ticketMessageToUpdate = ticketMessage;
 
-            try
-            {
-                _context.TicketMessages.Update(ticketMessageToUpdate);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception e)
-            {
-                throw new InvalidOperationException($"Faild to update the ticket message, Error: {e.Message}", e);
-            }
+			try
+			{
+				_context.TicketMessages.Update(ticketMessageToUpdate);
+				await _context.SaveChangesAsync();
+			}
+			catch (Exception e)
+			{
+				throw new InvalidOperationException($"Faild to update the ticket message, Error: {e.Message}", e);
+			}
 
-        }
+		}
 
-        public async Task<TicketMessage?> GetTicketMessageAsync(int id)
-        {
-            try
-            {
-                return await _context.TicketMessages.FirstOrDefaultAsync(m => m.Id == id);
-            }
-            catch (Exception ex)
-            {
+		public async Task<TicketMessage?> GetTicketMessageAsync(int id)
+		{
+			try
+			{
+				return await _context.TicketMessages.FirstOrDefaultAsync(m => m.Id == id);
+			}
+			catch (Exception ex)
+			{
 
-                throw new Exception($"Faild while retriving data,Error:{ex.Message}", ex);
-            }
-        }
-    }
+				throw new Exception($"Faild while retriving data,Error:{ex.Message}", ex);
+			}
+		}
+	}
 }

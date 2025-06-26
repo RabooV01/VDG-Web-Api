@@ -7,57 +7,73 @@ namespace VDG_Web_Api.src.Repositories;
 
 public class VirtualClinicRepository : IVirtualClinicRepository
 {
-    private readonly VdgDbDemoContext _context;
+	private readonly VdgDbDemoContext _context;
 
-    public VirtualClinicRepository(VdgDbDemoContext context)
-    {
-        _context = context;
-    }
+	public VirtualClinicRepository(VdgDbDemoContext context)
+	{
+		_context = context;
+	}
 
-    public async Task AddClinic(VirtualClinic clinic, ClinicWorkTime initialWorkTime)
-    {
-        _context.VirtualClinics.Add(clinic);
-        await _context.SaveChangesAsync();
+	public async Task AddClinic(VirtualClinic clinic, ClinicWorkTime initialWorkTime)
+	{
+		_context.VirtualClinics.Add(clinic);
+		await _context.SaveChangesAsync();
 
-        int clinicId = clinic.Id;
+		int clinicId = clinic.Id;
 
-        initialWorkTime.ClinicId = clinicId;
+		initialWorkTime.ClinicId = clinicId;
 
+		await AddClinicWorkTime(initialWorkTime);
+	}
 
-    }
+	public async Task AddClinicWorkTime(ClinicWorkTime workTime)
+	{
+		_context.ClinicWorkTimes.Add(workTime);
+		await _context.SaveChangesAsync();
+	}
 
-    public Task AddClinicWorkTime(ClinicWorkTime workTime)
-    {
-        throw new NotImplementedException();
-    }
+	public async Task<VirtualClinic?> GetClinicById(int Id)
+	{
+		var clinic = await _context.VirtualClinics.FindAsync(Id);
+		return clinic;
+	}
 
-    public Task<VirtualClinic?> GetClinicById(int Id)
-    {
-        throw new NotImplementedException();
-    }
+	public async Task<IEnumerable<VirtualClinic>> GetClinicsByDoctorId(int doctorId)
+	{
+		var doctorClinics = _context.VirtualClinics
+			.Include(x => x.Doctor)
+				.ThenInclude(d => d.User)
+				.ThenInclude(u => u.Person)
+			.Where(clinic => clinic.DoctorId.Equals(doctorId));
+		return await doctorClinics.ToListAsync();
+	}
 
-    public Task<IEnumerable<VirtualClinic>> GetClinicsByDoctorId(int doctorId)
-    {
-        throw new NotImplementedException();
-    }
+	public async Task<IEnumerable<ClinicWorkTime>> GetClinicWorkTimes(int clinicId)
+	{
+		var workTimes = await _context.ClinicWorkTimes.Where(w => w.ClinicId == clinicId).ToListAsync();
+		return workTimes;
+	}
 
-    public Task<ClinicWorkTime> GetClinicWorkTimes(int clinicId)
-    {
-        throw new NotImplementedException();
-    }
+	public async Task RemoveClinic(int clinicId)
+	{
+		var clinic = await GetClinicById(clinicId);
+		if (clinic != null)
+		{
+			_context.VirtualClinics.Remove(clinic);
+			await _context.SaveChangesAsync();
+		}
+	}
 
-    public Task RemoveClinic(int clinicId)
-    {
-        throw new NotImplementedException();
-    }
+	public async Task RemoveClinicWorkTime(int workTimeId)
+	{
+		var clinicWorkTime = await _context.ClinicWorkTimes.FindAsync(workTimeId);
+		if (clinicWorkTime != null)
+			await _context.ClinicWorkTimes.Where(c => c.Id == workTimeId).ExecuteDeleteAsync();
+	}
 
-    public Task RemoveClinicWorkTime(int workTimeId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task UpdateClinic(VirtualClinic clinic)
-    {
-        throw new NotImplementedException();
-    }
+	public async Task UpdateClinic(VirtualClinic clinic)
+	{
+		_context.VirtualClinics.Update(clinic);
+		await _context.SaveChangesAsync();
+	}
 }
