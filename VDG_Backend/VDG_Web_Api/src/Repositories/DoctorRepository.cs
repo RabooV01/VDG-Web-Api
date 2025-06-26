@@ -45,6 +45,7 @@ namespace VDG_Web_Api.src.Repositories
 
                 throw;
             }
+            throw new NotImplementedException();
 
         }
 

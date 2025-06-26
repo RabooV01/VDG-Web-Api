@@ -4,7 +4,7 @@ using VDG_Web_Api.src.Repositories.Interfaces;
 
 namespace VDG_Web_Api.src.Repositories
 {
-    public class SpecalityRepository : ISpecialityRepository
+    public class SpecalityRepository 
     {
         private readonly VdgDbDemoContext _context;
         public SpecalityRepository(VdgDbDemoContext context)

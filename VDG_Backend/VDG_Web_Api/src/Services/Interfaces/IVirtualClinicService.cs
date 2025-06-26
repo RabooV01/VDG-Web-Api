@@ -7,4 +7,10 @@ namespace VDG_Web_Api.src.Services.Interfaces;
 public interface IVirtualClinicService 
 {
     public Task<VirtualClinicDTO> GetClinicById(int clinicId);
+    public Task AddClinic(VirtualClinicDTO clinic);
+    public Task<IEnumerable<ClinicWorkTime>> GetClinicWorkTimes(int clinicId);
+    public Task AddClinicWorkTime(ClinicWorkTimeDTO workTimeDTO);
+    public Task RemoveClinicWorkTime(int workTimeId);
+    public Task UpdateClinic(VirtualClinicDTO clinicDTO);
+    public Task DeleteClinic(int clinicId);
 }

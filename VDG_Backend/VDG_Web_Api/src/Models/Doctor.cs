@@ -22,6 +22,14 @@ public partial class Doctor
     [Unicode(false)]
     public string SyndicateId { get; set; } = null!;
 
+    [Column("Ticket_Status")]
+	[StringLength(255)]
+	[Unicode(false)]
+	public string? TicketStatus { get; set; }
+    
+	[Column("Ticket_Cost")]
+	public double? TicketCost { get; set; }
+
     [InverseProperty("Doctor")]
     public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
 
