@@ -130,7 +130,9 @@ public partial class VdgDbDemoContext : DbContext
 		{
 			entity.HasKey(e => e.Id).HasName("PK__WorkTime");
 
-			entity.HasOne(d => d.Clinic).WithMany(p => p.WorkTimes).HasConstraintName($"Clinic_WorkTime_FK");
+			entity.HasOne(d => d.Clinic).WithMany(p => p.WorkTimes)
+				.OnDelete(DeleteBehavior.Cascade)
+				.HasConstraintName($"Clinic_WorkTime_FK");
 		});
 
 		OnModelCreatingPartial(modelBuilder);

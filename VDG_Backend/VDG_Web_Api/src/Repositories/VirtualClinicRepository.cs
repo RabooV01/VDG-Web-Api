@@ -19,9 +19,7 @@ public class VirtualClinicRepository : IVirtualClinicRepository
 		_context.VirtualClinics.Add(clinic);
 		await _context.SaveChangesAsync();
 
-		int clinicId = clinic.Id;
-
-		initialWorkTime.ClinicId = clinicId;
+		initialWorkTime.ClinicId = clinic.Id;
 
 		await AddClinicWorkTime(initialWorkTime);
 	}
@@ -40,35 +38,40 @@ public class VirtualClinicRepository : IVirtualClinicRepository
 
 	public async Task<IEnumerable<VirtualClinic>> GetClinicsByDoctorId(int doctorId)
 	{
-		var doctorClinics = _context.VirtualClinics
-			.Include(x => x.Doctor)
-				.ThenInclude(d => d.User)
-				.ThenInclude(u => u.Person)
-			.Where(clinic => clinic.DoctorId.Equals(doctorId));
-		return await doctorClinics.ToListAsync();
+		var doctorClinics = await _context.VirtualClinics
+			.Where(clinic => clinic.DoctorId.Equals(doctorId))
+			.ToListAsync();
+
+		return doctorClinics;
 	}
 
 	public async Task<IEnumerable<ClinicWorkTime>> GetClinicWorkTimes(int clinicId)
 	{
-		var workTimes = await _context.ClinicWorkTimes.Where(w => w.ClinicId == clinicId).ToListAsync();
+		var workTimes = await _context.ClinicWorkTimes
+			.Where(w => w.ClinicId == clinicId)
+			.ToListAsync();
+
 		return workTimes;
 	}
 
-	public async Task RemoveClinic(int clinicId)
+	public async Task DeleteClinic(int clinicId)
 	{
 		var clinic = await GetClinicById(clinicId);
-		if (clinic != null)
-		{
-			_context.VirtualClinics.Remove(clinic);
-			await _context.SaveChangesAsync();
-		}
+		if (clinic == null)
+			return;
+
+		_context.VirtualClinics.Remove(clinic);
+		await _context.SaveChangesAsync();
 	}
 
 	public async Task RemoveClinicWorkTime(int workTimeId)
 	{
 		var clinicWorkTime = await _context.ClinicWorkTimes.FindAsync(workTimeId);
-		if (clinicWorkTime != null)
-			await _context.ClinicWorkTimes.Where(c => c.Id == workTimeId).ExecuteDeleteAsync();
+
+		if (clinicWorkTime == null)
+			return;
+
+		await _context.ClinicWorkTimes.Where(c => c.Id == workTimeId).ExecuteDeleteAsync();
 	}
 
 	public async Task UpdateClinic(VirtualClinic clinic)
