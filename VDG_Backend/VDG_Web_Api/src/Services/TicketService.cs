@@ -14,15 +14,13 @@ namespace VDG_Web_Api.src.Services
         private readonly ITicketRepository _ticketRepository;
         private readonly IUserService _userService;
         public readonly IDoctorService _doctorService;
-        private readonly IUserRepository _userRepository;
 
 
-        public TicketService(ITicketRepository ticketRepository, IUserService userService, IDoctorService doctorService, IUserRepository userRepository)
+        public TicketService(ITicketRepository ticketRepository, IUserService userService, IDoctorService doctorService)
         {
             this._ticketRepository = ticketRepository;
             this._userService = userService;
             this._doctorService = doctorService;
-            this._userRepository = userRepository;
         }
 
         // Done 
@@ -140,18 +138,20 @@ namespace VDG_Web_Api.src.Services
             {
                 throw new ArgumentNullException($"No such Message");
             }
-            try
-            {
-                Ticket ticket = MapToTicket(ticketDto);
-                await _ticketRepository.SendConsultationRequestAsync(ticket);
-                await SendMessageAsync(ticketMessageDto);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Could not send, Error: {ex.Message}", ex);
-            }
+            if (_ticketRepository.)
+                try
+                {
+                    Ticket ticket = MapToTicket(ticketDto);
+                    await _ticketRepository.SendConsultationRequestAsync(ticket);
+                    await SendMessageAsync(ticketMessageDto);
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException($"Could not send, Error: {ex.Message}", ex);
+                }
         }
 
+        // Done 
         public async Task SendMessageAsync(TicketMessageDTO ticketMessageDto)
         {
             if (ticketMessageDto == null)
