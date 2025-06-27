@@ -22,7 +22,6 @@ public partial class Reservation
     [StringLength(512)]
     public string Text { get; set; } = string.Empty;
 
-    [Required]
     public BookingTypes Type { get; set; }
 
     [ForeignKey("UserId")]

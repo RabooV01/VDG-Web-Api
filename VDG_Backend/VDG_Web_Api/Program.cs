@@ -14,11 +14,12 @@ builder.Services.AddControllers();
 //builder.Services.AddOpenApi();
 builder.Services.AddOpenApiDocument();
 // Our App Services
-builder.Services.AddDbContextPool<VdgDbDemoContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+builder.Services.AddDbContext<VdgDbDemoContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+builder.Services.AddScoped<IVirtualClinicRepository, VirtualClinicRepository>();
 builder.Services.AddScoped<IVirtualClinicService, VirtualClinicService>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
@@ -27,16 +28,16 @@ builder.Services.AddScoped<IAuthService, BasicAuthService>();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddAuthentication()
-    .AddScheme<AuthenticationSchemeOptions, BasicAuthHandler>("Basic", null);
+	.AddScheme<AuthenticationSchemeOptions, BasicAuthHandler>("Basic", null);
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    //app.UseOpenApi();
-    app.UseSwagger();
-    app.UseSwaggerUi();
+	//app.UseOpenApi();
+	app.UseSwagger();
+	app.UseSwaggerUi();
 }
 
 app.UseHttpsRedirection();

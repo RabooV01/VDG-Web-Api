@@ -28,29 +28,28 @@ namespace VDG_Web_Api.src.Services
         {
             TicketMessage ticketMessage = await _ticketRepository.GetTicketMessageAsync(id);
 
-            if (ticketMessage == null)
-            {
-                throw new ArgumentNullException($"No such ticket with this id: {id}");
-            }
+			if (ticketMessage == null)
+			{
+				throw new ArgumentNullException($"No such ticket with this id: {id}");
+			}
 
-            if (DateTime.Now.Subtract(ticketMessage.Date).Minutes > UpdateAndDeleteThreshold)
-            {
-                throw new Exception($"The minimum time to remove the message has passed");
-            }
+			if (DateTime.Now.Subtract(ticketMessage.Date).Minutes > UpdateAndDeleteThreshold)
+			{
+				throw new Exception($"The minimum time to remove the message has passed");
+			}
 
-            try
-            {
-                await _ticketRepository.DeleteMessageAsync(id);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Faild to delete the ticket meassge, Error: {ex.Message}", ex);
-            }
-        }
-
-        // Done 
-        public async Task UpdateMessageAsync(TicketMessageDTO ticketMessageDTO)
-        {
+			try
+			{
+				await _ticketRepository.DeleteMessageAsync(id);
+			}
+			catch (Exception ex)
+			{
+				throw new InvalidOperationException($"Faild to delete the ticket meassge, Error: {ex.Message}", ex);
+			}
+		}
+		// Done
+		public async Task UpdateMessageAsync(TicketMessageDTO ticketMessageDTO)
+		{
 
             var ticketMessage = MapToTicketMessage(ticketMessageDTO);
             if (ticketMessageDTO == null)
@@ -62,12 +61,12 @@ namespace VDG_Web_Api.src.Services
                 throw new Exception($"The minimum time to remove the message has passed");
             }
 
-            try
-            {
-                await _ticketRepository.UpdateMessageAsync(ticketMessage);
-            }
-            catch (Exception ex)
-            {
+			try
+			{
+				await _ticketRepository.UpdateMessageAsync(ticketMessage);
+			}
+			catch (Exception ex)
+			{
 
                 throw new InvalidOperationException($"Could not update, Error: {ex.Message}", ex);
             }
@@ -97,9 +96,9 @@ namespace VDG_Web_Api.src.Services
                 }).ToList();
 
 
-            }
-            catch (Exception ex)
-            {
+			}
+			catch (Exception ex)
+			{
 
                 throw new InvalidOperationException($"Could not retrive data, Error: {ex.Message}", ex);
             }
@@ -166,9 +165,9 @@ namespace VDG_Web_Api.src.Services
             catch (Exception ex)
             {
 
-                throw new InvalidOperationException($"Could not send, Error: {ex.Message}", ex);
-            }
-        }
+				throw new InvalidOperationException($"Could not send, Error: {ex.Message}", ex);
+			}
+		}
 
         // Mapping 
 
@@ -199,17 +198,17 @@ namespace VDG_Web_Api.src.Services
             };
         }
 
-        public Ticket MapToTicket(TicketDTO ticketDto)
-        {
-            return new Ticket()
-            {
-                DoctorId = ticketDto.DoctorId,
-                Status = ticketDto.Status,
-                UserId = ticketDto.UserId,
-                CloseDate = ticketDto.CloseDate,
-                Id = ticketDto.Id,
-            };
-        }
+		public Ticket MapToTicket(TicketDTO ticketDto)
+		{
+			return new Ticket()
+			{
+				DoctorId = ticketDto.DoctorId,
+				Status = ticketDto.Status,
+				UserId = ticketDto.UserId,
+				CloseDate = ticketDto.CloseDate,
+				Id = ticketDto.Id,
+			};
+		}
 
         public TicketMessage MapToTicketMessage(TicketMessageDTO ticketMessageDto)
         {

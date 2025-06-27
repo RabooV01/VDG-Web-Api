@@ -33,6 +33,8 @@ public partial class VdgDbDemoContext : DbContext
 
 	public virtual DbSet<VirtualClinic> VirtualClinics { get; set; } = null!;
 
+	public virtual DbSet<ClinicWorkTime> ClinicWorkTimes { get; set; } = null!;
+
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		=> optionsBuilder.UseSqlServer(_config.GetConnectionString("Default"));
 
@@ -43,7 +45,7 @@ public partial class VdgDbDemoContext : DbContext
 
 		modelBuilder.Entity<Doctor>(entity =>
 		{
-			entity.HasKey(e => e.SyndicateId).HasName("PK__Doctor__B5BD6B27701103BA");
+			entity.HasKey(e => e.Id).HasName("PK__Doctor__B5BD6B27701103BA");
 
 			entity.HasOne(d => d.Speciality).WithMany(p => p.Doctors).HasConstraintName("Doctor_Speciality_FK");
 
@@ -122,6 +124,15 @@ public partial class VdgDbDemoContext : DbContext
 			entity.HasKey(e => e.Id).HasName("PK__Virtual___3214EC078277E8B9");
 
 			entity.HasOne(d => d.Doctor).WithMany(p => p.VirtualClinics).HasConstraintName("Clinic_Doctor_FK");
+		});
+
+		modelBuilder.Entity<ClinicWorkTime>(entity =>
+		{
+			entity.HasKey(e => e.Id).HasName("PK__WorkTime");
+
+			entity.HasOne(d => d.Clinic).WithMany(p => p.WorkTimes)
+				.OnDelete(DeleteBehavior.Cascade)
+				.HasConstraintName($"Clinic_WorkTime_FK");
 		});
 
 		OnModelCreatingPartial(modelBuilder);
