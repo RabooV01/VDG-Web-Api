@@ -1,4 +1,5 @@
 ﻿using VDG_Web_Api.src.DTOs.DoctorDTOs;
+using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Services.Interfaces;
 
 namespace VDG_Web_Api.src.Services
@@ -11,5 +12,16 @@ namespace VDG_Web_Api.src.Services
 		{
 			throw new NotImplementedException();
 		}
+		 public DoctorDTO MapToDoctorDto(Doctor doctor)
+        {
+            return new DoctorDTO()
+            {
+                Speciality = doctor.Speciality,
+                Id = doctor.Id,
+                SpecialityId = doctor.SpecialityId,
+                SyndicateId = doctor.SyndicateId,
+                UserId = doctor.UserId
+            };
+        }
 	}
 }

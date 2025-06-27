@@ -78,15 +78,17 @@ namespace VDG_Web_Api.src.Repositories
 				throw new InvalidOperationException($"Faild to delet the message, Error: {e.Message}", e);
 			}
 		}
-		public async Task SendConsultationRequestAsync(Ticket ticket)
+		 public async Task SendConsultationRequestAsync(Ticket ticket, TicketMessage ticketMessage)
 		{
-			if (ticket == null)
-			{
-				throw new KeyNotFoundException("The ticket has not found.");
-			}
 			try
 			{
+
 				_context.Tickets.Add(ticket);
+				await _context.SaveChangesAsync();
+
+				ticketMessage.TicketId = ticket.Id;
+
+				_context.TicketMessages.Add(ticketMessage);
 				await _context.SaveChangesAsync();
 			}
 			catch (Exception e)
