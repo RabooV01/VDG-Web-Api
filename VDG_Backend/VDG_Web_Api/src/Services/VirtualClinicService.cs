@@ -16,6 +16,14 @@ public class VirtualClinicService : IVirtualClinicService
 		_doctorService = doctorService;
 	}
 
+	public ClinicWorkTimeDTO MapToDTO(ClinicWorkTime wt) => new() 
+	{
+		Id = wt.Id,
+		ClinicId = wt.ClinicId,
+		StartWorkHours = wt.StartWorkHours,
+		EndWorkHours = wt.EndWorkHours
+	};
+
 	public VirtualClinicDTO MapToDTO(VirtualClinic clinic)
 		=> new()
 		{
@@ -113,10 +121,10 @@ public class VirtualClinicService : IVirtualClinicService
 		return clinicDTO;
 	}
 
-	public Task<IEnumerable<ClinicWorkTime>> GetClinicWorkTimes(int clinicId)
+	public async Task<IEnumerable<ClinicWorkTimeDTO>> GetClinicWorkTimes(int clinicId)
 	{
-		return Task.FromResult((new List<ClinicWorkTime>() { new ClinicWorkTime() { Id = 1, ClinicId = 2, StartWorkHours = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)), EndWorkHours = TimeOnly.FromTimeSpan(TimeSpan.FromHours(14)) } }).AsEnumerable());
-		throw new NotImplementedException();
+		var workTimes = await _clinicRepository.GetClinicWorkTimes(clinicId);
+		return workTimes.Select(wt => MapToDTO(wt));
 	}
 
 	public Task RemoveClinicWorkTime(int workTimeId)

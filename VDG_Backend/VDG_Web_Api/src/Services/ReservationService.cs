@@ -79,12 +79,14 @@ public class ReservationService : IReservationService
 	{
 		if (!reservationDto.IsValidReservation())
 		{
-			throw new ArgumentNullException("Reservation is invalid");
+			throw new ArgumentException("Reservation is invalid");
 		}
 
 		Reservation reservation = MapToEntity(reservationDto);
 
-		var existUserAppointmentsDoctorIds = (await GetUserReservationsAsync(reservation.UserId!.Value)).Select(r => r.VirtualDto!.DoctorId);
+		var existUserAppointmentsDoctorIds = (await GetUserReservationsAsync(reservation.UserId!.Value))
+		.Where(r => r.ReservationDto!.ScheduledAt > DateTime.Now)
+		.Select(r => r.VirtualDto!.DoctorId);
 		var currentAppointmentDoctorId = (await _virtualClinicService.GetClinicById(reservationDto.VirtualId!.Value)).Doctor?.Id;
 
 		bool HasAppointment = existUserAppointmentsDoctorIds.Any(c => c == currentAppointmentDoctorId);

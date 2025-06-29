@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VDG_Web_Api.src.Data;
 
@@ -11,9 +12,11 @@ using VDG_Web_Api.src.Data;
 namespace VDG_Web_Api.Migrations
 {
     [DbContext(typeof(VdgDbDemoContext))]
-    partial class VdgDbDemoContextModelSnapshot : ModelSnapshot
+    [Migration("20250629115038_WorkTimeChangedToTime")]
+    partial class WorkTimeChangedToTime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

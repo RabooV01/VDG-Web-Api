@@ -1,9 +1,9 @@
 ﻿CREATE TABLE [dbo].[Post] (
     [Id]        INT          IDENTITY (1, 1) NOT NULL,
-    [Doctor_Id] VARCHAR (16) NULL,
+    [Doctor_Id] INT,
     [Content]   TEXT         NULL,
     CONSTRAINT [PK__Post__3214EC07FAD031E1] PRIMARY KEY CLUSTERED ([Id] ASC),
-    CONSTRAINT [Post_Doctor_FK] FOREIGN KEY ([Doctor_Id]) REFERENCES [dbo].[Doctor] ([Syndicate_Id])
+    CONSTRAINT [Post_Doctor_FK] FOREIGN KEY ([Doctor_Id]) REFERENCES [dbo].[Doctor]([Id])
 );
 
 

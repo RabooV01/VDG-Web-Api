@@ -53,6 +53,7 @@ public class VirtualClinicRepository : IVirtualClinicRepository
 	{
 		var workTimes = await _context.ClinicWorkTimes
 			.Where(w => w.ClinicId == clinicId)
+			.OrderBy(cw => cw.StartWorkHours)
 			.ToListAsync();
 
 		return workTimes;

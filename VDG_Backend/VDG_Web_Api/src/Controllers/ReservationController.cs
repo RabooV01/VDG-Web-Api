@@ -50,5 +50,22 @@ namespace VDG_Web_Api.src.Controllers
 				return Problem(ex.Message);
 			}
 		}
+
+		//authorized to both user and doctor
+		[HttpPost("Preview")]
+		public async Task<ActionResult> MakePreviewReservation(ReservationDTO r)
+		{
+			r.Type = Models.BookingTypes.Preview;
+			try
+			{
+				await _reservationService.BookAppointmentAsync(r);
+				// must schedule confirmation payment
+				return Created();
+			}
+			catch (Exception e)
+			{
+				return BadRequest(e.Message);
+			}
+		}
 	}
 }

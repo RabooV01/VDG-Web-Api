@@ -67,6 +67,7 @@
     <Build Include="Tables\Ticket.sql" />
     <Build Include="Tables\Ticket_Message.sql" />
     <Build Include="Tables\Virtual_Clinic.sql" />
+    <Build Include="Tables\ClinicWorkTime.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />

@@ -9,7 +9,7 @@ public interface IVirtualClinicService
 	public Task<VirtualClinicDTO> GetClinicById(int clinicId);
 	public Task<VirtualClinicDTO> GetClinicsByDoctorId(int doctorId);
 	public Task AddClinic(VirtualClinicDTO clinic);
-	public Task<IEnumerable<ClinicWorkTime>> GetClinicWorkTimes(int clinicId);
+	public Task<IEnumerable<ClinicWorkTimeDTO>> GetClinicWorkTimes(int clinicId);
 	public Task AddClinicWorkTime(ClinicWorkTimeDTO workTimeDTO);
 	public Task RemoveClinicWorkTime(int workTimeId);
 	public Task UpdateClinic(VirtualClinicDTO clinicDTO);

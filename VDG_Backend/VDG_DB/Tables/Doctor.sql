@@ -1,8 +1,11 @@
 ﻿CREATE TABLE [dbo].[Doctor] (
+    [Id]            INT IDENTITY,
     [Syndicate_Id]  VARCHAR (16) NOT NULL,
     [User_Id]       INT          NULL,
     [Speciality_Id] INT          NULL,
-    CONSTRAINT [PK__Doctor__B5BD6B27701103BA] PRIMARY KEY CLUSTERED ([Syndicate_Id] ASC),
+    [Ticket_Status] NVARCHAR(64),
+    [Ticket_Cost] INT
+    CONSTRAINT [PK__Doctor__B5BD6B27701103BA] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [Doctor_Speciality_FK] FOREIGN KEY ([Speciality_Id]) REFERENCES [dbo].[Speciality] ([Id]),
     CONSTRAINT [Doctor_User_FK] FOREIGN KEY ([User_Id]) REFERENCES [dbo].[User] ([Id])
 );
