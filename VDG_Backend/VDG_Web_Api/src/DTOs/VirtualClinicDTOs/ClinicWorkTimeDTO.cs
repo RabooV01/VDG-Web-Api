@@ -6,7 +6,7 @@ public class ClinicWorkTimeDTO
 
 	public int ClinicId { get; set; }
 
-	public TimeOnly? StartWorkHours { get; set; }
+	public DateTime StartWorkHours { get; set; }
 
-	public TimeOnly? EndWorkHours { get; set; }
+	public DateTime EndWorkHours { get; set; }
 }

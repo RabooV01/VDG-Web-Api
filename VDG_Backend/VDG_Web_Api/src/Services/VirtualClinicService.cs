@@ -22,7 +22,7 @@ public class VirtualClinicService : IVirtualClinicService
 			Status = clinic.Status,
 			Location = clinic.Location,
 			AvgService = clinic.AvgService,
-			Doctor = clinic.Doctor,
+			Doctor = new(),
 			PreviewCost = clinic.PreviewCost
 		};
 
@@ -35,14 +35,14 @@ public class VirtualClinicService : IVirtualClinicService
 			Status = clinicDTO.Status,
 			PreviewCost = clinicDTO.PreviewCost,
 			AvgService = clinicDTO.AvgService,
-			Doctor = clinicDTO.Doctor
+			Doctor = new()
 		};
 
 	public async Task AddClinic(VirtualClinicDTO clinic)
 	{
-		if (clinic.StartWorkHours == null || clinic.EndWorkHours == null)
+		if (clinic.StartWorkHours > clinic.EndWorkHours)
 		{
-			throw new ArgumentNullException("Must provide initial workTime range");
+			throw new ArgumentNullException("invalid worktimes");
 		}
 
 		try
@@ -113,6 +113,7 @@ public class VirtualClinicService : IVirtualClinicService
 
 	public Task<IEnumerable<ClinicWorkTime>> GetClinicWorkTimes(int clinicId)
 	{
+		return Task.FromResult((new List<ClinicWorkTime>() { new ClinicWorkTime() { Id = 1, ClinicId = 2, StartWorkHours = DateTime.Now, EndWorkHours = DateTime.Now.AddHours(4) } }).AsEnumerable());
 		throw new NotImplementedException();
 	}
 
@@ -126,8 +127,8 @@ public class VirtualClinicService : IVirtualClinicService
 		throw new NotImplementedException();
 	}
 
-    public Task<VirtualClinicDTO> GetClinicsByDoctorId(int doctorId)
-    {
-        throw new NotImplementedException();
-    }
+	public Task<VirtualClinicDTO> GetClinicsByDoctorId(int doctorId)
+	{
+		throw new NotImplementedException();
+	}
 }

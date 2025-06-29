@@ -1,4 +1,4 @@
-using VDG_Web_Api.src.Models;
+using VDG_Web_Api.src.DTOs.DoctorDTOs;
 
 namespace VDG_Web_Api.src.DTOs.VirtualClinicDTOs;
 
@@ -8,7 +8,7 @@ public class VirtualClinicDTO
 
 	public int? DoctorId { get; set; }
 
-	public virtual Doctor? Doctor { get; set; }
+	public virtual DoctorDTO? Doctor { get; set; }
 
 	public DateTime StartWorkHours { get; set; }
 

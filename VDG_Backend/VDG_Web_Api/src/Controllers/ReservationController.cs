@@ -8,13 +8,13 @@ namespace VDG_Web_Api.src.Controllers
 	[ApiController]
 	public class ReservationController : ControllerBase
 	{
-        private readonly IReservationService _reservationService;
+		private readonly IReservationService _reservationService;
 
-        //TODO Reservation Operations and routings
-        public ReservationController(IReservationService reservationService)
-        {
-            _reservationService = reservationService;
-        }
+		//TODO Reservation Operations and routings
+		public ReservationController(IReservationService reservationService)
+		{
+			_reservationService = reservationService;
+		}
 
 		[HttpGet("User/{userId}")]
 		public async Task<ActionResult<IEnumerable<UserReservationDTO>>> GetUserReservations([FromRoute] int userId, [FromQuery] DateOnly? date)
@@ -34,7 +34,7 @@ namespace VDG_Web_Api.src.Controllers
 			}
 		}
 		[HttpGet("Clinic/{clinicId}")]
-		public async Task<ActionResult<IEnumerable<ClinicReservationDTO>>> GetClinicReservations([FromRoute] int clinicId, [FromQuery] DateOnly? date)
+		public async Task<ActionResult<IEnumerable<ClinicReservationDTO>>> GetClinicReservations([FromRoute] int clinicId, [FromQuery] DateOnly date)
 		{
 			try
 			{
@@ -50,5 +50,5 @@ namespace VDG_Web_Api.src.Controllers
 				return Problem(ex.Message);
 			}
 		}
-    }
+	}
 }

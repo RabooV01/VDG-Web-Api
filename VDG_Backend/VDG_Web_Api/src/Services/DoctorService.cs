@@ -12,16 +12,16 @@ namespace VDG_Web_Api.src.Services
 		{
 			throw new NotImplementedException();
 		}
-		 public DoctorDTO MapToDoctorDto(Doctor doctor)
-        {
-            return new DoctorDTO()
-            {
-                Speciality = doctor.Speciality,
-                Id = doctor.Id,
-                SpecialityId = doctor.SpecialityId,
-                SyndicateId = doctor.SyndicateId,
-                UserId = doctor.UserId
-            };
-        }
+		public DoctorDTO MapToDoctorDto(Doctor doctor)
+		{
+			return new DoctorDTO()
+			{
+				Speciality = doctor.Speciality.name,
+				Id = doctor.Id,
+				SpecialityId = doctor.SpecialityId,
+				SyndicateId = doctor.SyndicateId,
+				UserId = doctor.UserId
+			};
+		}
 	}
 }
