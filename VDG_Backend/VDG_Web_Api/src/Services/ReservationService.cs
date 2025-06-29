@@ -1,3 +1,4 @@
+using VDG_Web_Api.Migrations;
 using VDG_Web_Api.src.DTOs.ReservationDTOs;
 using VDG_Web_Api.src.Extensions.Validation;
 using VDG_Web_Api.src.Models;
@@ -37,7 +38,7 @@ public class ReservationService : IReservationService
     public async Task<UserReservationDTO> MapToUserReservation(ReservationDTO Dto)
     {
         if (Dto.VirtualId is null)
-            throw new ArgumentNullException("Virtual clinic is not selected.");
+            throw new ArgumentException("Virtual clinic is not selected.");
 
         var virtualClinic = await _virtualClinicService.GetClinicById(Dto.VirtualId.Value);
         var userReservation = new UserReservationDTO()
@@ -83,14 +84,16 @@ public class ReservationService : IReservationService
 
         Reservation reservation = MapToEntity(reservationDto);
 
-        var userReservations = await GetUserReservationsAsync(reservation.UserId!.Value);
-
-        if(userReservations.Select(r => r.VirtualDto!.DoctorId!.Value).Contains(reservation.Virtual!.DoctorId!.Value))
+        var existUserAppointmentsDoctorIds = (await GetUserReservationsAsync(reservation.UserId!.Value)).Select(r => r.VirtualDto!.DoctorId);
+        var currentAppointmentDoctorId = (await _virtualClinicService.GetClinicById(reservationDto.VirtualId!.Value)).Doctor?.Id; 
+        
+        bool HasAppointment = existUserAppointmentsDoctorIds.Any(c => c == currentAppointmentDoctorId);
+        
+        if(HasAppointment)
         {
-            throw new InvalidOperationException("Appointment has not been reserved because an there is an exist one with same doctor");
+            throw new InvalidOperationException("Appointment has not been reserved because there is an exist one with same doctor");
         }
         
-        // TODO check same doctor
         try
         {
             await _reservationRepository.BookAppointmentAsync(reservation);
@@ -133,11 +136,27 @@ public class ReservationService : IReservationService
         }
     }
 
-    public async Task<ReservationDTO> GenerateClinicAvailableReservations(IEnumerable<Reservation> busyAppointments, int virtualId, DateOnly date)
+    public async Task<IEnumerable<ReservationDTO>> GenerateClinicAvailableReservations(IEnumerable<Reservation> busyAppointments, int virtualId, DateOnly date)
     {
         var clinic = await _virtualClinicService.GetClinicById(virtualId);
-        // TODO: get ranges, and total appointments on them, then add all into one list 
-        throw new NotImplementedException();
+        var workTimes = await _virtualClinicService.GetClinicWorkTimes(virtualId);
+        
+        List<ReservationDTO> reservations = new();
+
+        workTimes.Select(wt => 
+        {
+            DateTime lastTiming = wt.StartWorkHours;
+            while(lastTiming < wt.EndWorkHours)
+            {
+                reservations.Add(new () {
+                    ScheduledAt = lastTiming
+                });
+
+                lastTiming = lastTiming.AddMinutes(clinic.AvgService);
+            }
+            return wt;
+        });
+        return reservations;
     }
 
     public async Task<IEnumerable<ClinicReservationDTO>> GetClinicReservationsAsync(int virtualId, DateOnly? date = null)

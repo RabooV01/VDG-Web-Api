@@ -18,8 +18,8 @@ public partial class ClinicWorkTime
     public VirtualClinic? Clinic { get; set; }
 
     [Column("Start_WorkHours")]
-	public TimeOnly? StartWorkHours { get; set; }
+	public DateTime StartWorkHours { get; set; }
 
     [Column("End_WorkHours")]
-	public TimeOnly? EndWorkHours { get; set; }
+	public DateTime EndWorkHours { get; set; }
 }

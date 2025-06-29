@@ -10,13 +10,13 @@ public class VirtualClinicDTO
 
 	public virtual Doctor? Doctor { get; set; }
 
-	public TimeOnly? StartWorkHours { get; set; }
+	public DateTime StartWorkHours { get; set; }
 
-	public TimeOnly? EndWorkHours { get; set; }
+	public DateTime EndWorkHours { get; set; }
 
 	public string Status { get; set; } = "Inactive";
 
-	public double? AvgService { get; set; }
+	public int AvgService { get; set; }
 
 	public string? Location { get; set; }
 

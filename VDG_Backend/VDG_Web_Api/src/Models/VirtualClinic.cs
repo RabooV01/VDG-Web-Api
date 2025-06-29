@@ -24,7 +24,7 @@ public partial class VirtualClinic
 	public string Status { get; set; } = "Inactive";
 
 	[Column("Avg_Service")]
-	public double? AvgService { get; set; }
+	public int AvgService { get; set; }
 
 	[Column("Preview_Cost")]
 	public double? PreviewCost { get; set; }

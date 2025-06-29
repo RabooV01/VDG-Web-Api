@@ -48,6 +48,10 @@ public class ReservationRepository : IReservationRepository
             var reservations = _context.Reservations.AsQueryable();
         
             return await reservations
+            .Include(r => r.Virtual)
+                .ThenInclude(v => v.Doctor)
+                .ThenInclude(d => d.User)
+                .ThenInclude(u => u.Person)
             .Where(c => c.UserId == userId)
             .ToListAsync();
         }

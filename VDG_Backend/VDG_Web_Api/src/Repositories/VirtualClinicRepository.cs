@@ -32,7 +32,11 @@ public class VirtualClinicRepository : IVirtualClinicRepository
 
 	public async Task<VirtualClinic?> GetClinicById(int Id)
 	{
-		var clinic = await _context.VirtualClinics.FindAsync(Id);
+		var clinic = await _context.VirtualClinics
+			.Include(c => c.Doctor)
+				.ThenInclude(d => d.User)
+				.ThenInclude(u => u.Person)
+			.FirstOrDefaultAsync(c => c.Id == Id);
 		return clinic;
 	}
 

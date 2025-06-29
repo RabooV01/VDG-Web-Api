@@ -125,4 +125,9 @@ public class VirtualClinicService : IVirtualClinicService
 	{
 		throw new NotImplementedException();
 	}
+
+    public Task<VirtualClinicDTO> GetClinicsByDoctorId(int doctorId)
+    {
+        throw new NotImplementedException();
+    }
 }
