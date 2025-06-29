@@ -10,9 +10,9 @@ public class VirtualClinicDTO
 
 	public virtual DoctorDTO? Doctor { get; set; }
 
-	public DateTime StartWorkHours { get; set; }
+	public TimeOnly StartWorkHours { get; set; }
 
-	public DateTime EndWorkHours { get; set; }
+	public TimeOnly EndWorkHours { get; set; }
 
 	public string Status { get; set; } = "Inactive";
 

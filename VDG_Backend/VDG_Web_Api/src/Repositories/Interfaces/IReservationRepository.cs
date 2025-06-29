@@ -1,11 +1,10 @@
-﻿using VDG_Web_Api.src.DTOs.ReservationDTOs;
-using VDG_Web_Api.src.Models;
+﻿using VDG_Web_Api.src.Models;
 
 namespace VDG_Web_Api.src.Repositories.Interfaces
 {
 	public interface IReservationRepository
 	{
-		Task<IEnumerable<Reservation>> GetClinicReservationsAsync(int virtualId, DateOnly? day = null);
+		Task<IEnumerable<Reservation>> GetClinicReservationsAsync(int virtualId, DateOnly? date);
 		Task<IEnumerable<Reservation>> GetUserReservationsAsync(int userId);
 		public Task BookAppointmentAsync(Reservation reservation);
 		public Task CancelAppointmentAsync(int reservationId);

@@ -8,13 +8,15 @@ namespace VDG_Web_Api.src.Repositories;
 public class ReservationRepository : IReservationRepository
 {
 	private readonly VdgDbDemoContext _context;
+	private readonly IVirtualClinicRepository _virtualClinicRepository;
 
-	public ReservationRepository(VdgDbDemoContext context)
+	public ReservationRepository(VdgDbDemoContext context, IVirtualClinicRepository virtualClinicRepository)
 	{
 		_context = context;
+		_virtualClinicRepository = virtualClinicRepository;
 	}
 
-	public async Task<IEnumerable<Reservation>> GetClinicReservationsAsync(int virtualId, DateOnly? date = null)
+	public async Task<IEnumerable<Reservation>> GetClinicReservationsAsync(int virtualId, DateOnly? date)
 	{
 		if (date == null)
 		{
@@ -32,6 +34,8 @@ public class ReservationRepository : IReservationRepository
 			c.ScheduledAt.Day == date.Value.Day);
 
 			return await reservations
+			.Include(r => r.User)
+				.ThenInclude(u => u.Person)
 			.Where(c => c.VirtualId == virtualId)
 			.ToListAsync();
 		}
@@ -45,12 +49,20 @@ public class ReservationRepository : IReservationRepository
 	{
 		try
 		{
-			var reservations = _context.Reservations.AsQueryable();
-
-			return await reservations
+			var reservations = await _context.Reservations
 			.Include(r => r.Virtual)
+				.ThenInclude(v => v.Doctor)
+				.ThenInclude(d => d.User)
+				.ThenInclude(u => u.Person)
 			.Where(c => c.UserId == userId)
 			.ToListAsync();
+
+			//var clinics = reservations.Select(x => _virtualClinicRepository.GetClinicById(x.VirtualId!.Value));
+
+			//var mappedReservations = reservations.Join(clinics, x => x.VirtualId, i => i.Id, (Reservation r, VirtualClinic? vc) => { r.Virtual = vc; return r; });
+
+			return reservations;
+
 		}
 		catch (Exception ex)
 		{

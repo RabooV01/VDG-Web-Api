@@ -1,4 +1,5 @@
 using VDG_Web_Api.src.DTOs.ReservationDTOs;
+using VDG_Web_Api.src.DTOs.VirtualClinicDTOs;
 using VDG_Web_Api.src.Extensions.Validation;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
@@ -144,8 +145,10 @@ public class ReservationService : IReservationService
 
 		for (int i = 0; i < workTimes.Count(); i++)
 		{
-			DateTime lastTiming = workTimes[i].StartWorkHours;
-			while (lastTiming < workTimes[i].EndWorkHours)
+			DateTime lastTiming = DateTime.Parse($"{date} {workTimes[i].StartWorkHours}");
+			DateTime endTiming = DateTime.Parse($"{date} {workTimes[i].EndWorkHours}");
+
+			while (lastTiming < endTiming)
 			{
 				if (!reservations.ContainsKey(lastTiming))
 				{
@@ -162,7 +165,7 @@ public class ReservationService : IReservationService
 	{
 		try
 		{
-			var reservations = await _reservationRepository.GetClinicReservationsAsync(virtualId: virtualId, day: date);
+			var reservations = await _reservationRepository.GetClinicReservationsAsync(virtualId, date);
 
 			var userIds = reservations.Select(r => r.UserId)
 			.Distinct()
@@ -181,7 +184,8 @@ public class ReservationService : IReservationService
 					ReservationDto = resDTO,
 					UserDto = userDto
 				};
-			}).ToList();
+			}).OrderBy(x => x.ReservationDto?.ScheduledAt)
+			.ToList();
 		}
 		catch (InvalidOperationException ex)
 		{
@@ -199,22 +203,22 @@ public class ReservationService : IReservationService
 		{
 			var reservations = await _reservationRepository.GetUserReservationsAsync(userId);
 
-			var ClinicIds = reservations.Select(r => r.VirtualId!.Value);
-
-			var ClinicDtos = ClinicIds.Select(c => _virtualClinicService.GetClinicById(c).Result);
-
 			return reservations.Select(r =>
 			{
 				var reservationDto = MapToDto(r);
+				VirtualClinicDTO? virtualClinicDto = null;
 
-				var virtualClinicDto = ClinicDtos.FirstOrDefault(c => c.Id == r.VirtualId);
+				if (r.Virtual != null)
+				{
+					virtualClinicDto = ((VirtualClinicService)_virtualClinicService).MapToDTO(r.Virtual);
+				}
 
 				return new UserReservationDTO()
 				{
 					ReservationDto = reservationDto,
 					VirtualDto = virtualClinicDto
 				};
-			});
+			}).OrderBy(r => r.ReservationDto?.ScheduledAt);
 		}
 		catch (InvalidOperationException ex)
 		{

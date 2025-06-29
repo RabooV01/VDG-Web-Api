@@ -6,7 +6,11 @@ namespace VDG_Web_Api.src.Services
 {
 	public class DoctorService : IDoctorService
 	{
-		public DoctorService() { }
+		private readonly IUserService _userService;
+		public DoctorService(IUserService userService)
+		{
+			_userService = userService;
+		}
 
 		public Task<DoctorDTO> GetDoctorById(int doctorId)
 		{
@@ -16,11 +20,12 @@ namespace VDG_Web_Api.src.Services
 		{
 			return new DoctorDTO()
 			{
-				Speciality = doctor.Speciality.name,
+				Speciality = doctor.Speciality?.name ?? string.Empty,
 				Id = doctor.Id,
 				SpecialityId = doctor.SpecialityId,
 				SyndicateId = doctor.SyndicateId,
-				UserId = doctor.UserId
+				UserId = doctor.UserId,
+				User = _userService.MapUserToDto(doctor.User ?? new())
 			};
 		}
 	}

@@ -34,6 +34,8 @@ public class VirtualClinicRepository : IVirtualClinicRepository
 	{
 		var clinic = await _context.VirtualClinics
 			.Include(c => c.Doctor)
+				.ThenInclude(d => d.User)
+				.ThenInclude(u => u.Person)
 			.FirstOrDefaultAsync(c => c.Id == Id);
 		return clinic;
 	}

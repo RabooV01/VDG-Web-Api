@@ -8,13 +8,15 @@ namespace VDG_Web_Api.src.Services;
 public class VirtualClinicService : IVirtualClinicService
 {
 	private readonly IVirtualClinicRepository _clinicRepository;
+	private readonly IDoctorService _doctorService;
 
-	public VirtualClinicService(IVirtualClinicRepository clinicRepository)
+	public VirtualClinicService(IVirtualClinicRepository clinicRepository, IDoctorService doctorService)
 	{
 		_clinicRepository = clinicRepository;
+		_doctorService = doctorService;
 	}
 
-	private VirtualClinicDTO MapToDTO(VirtualClinic clinic)
+	public VirtualClinicDTO MapToDTO(VirtualClinic clinic)
 		=> new()
 		{
 			Id = clinic.Id,
@@ -22,11 +24,11 @@ public class VirtualClinicService : IVirtualClinicService
 			Status = clinic.Status,
 			Location = clinic.Location,
 			AvgService = clinic.AvgService,
-			Doctor = new(),
+			Doctor = ((DoctorService)_doctorService).MapToDoctorDto(clinic.Doctor ?? new()),
 			PreviewCost = clinic.PreviewCost
 		};
 
-	private VirtualClinic MapToEntity(VirtualClinicDTO clinicDTO)
+	public VirtualClinic MapToEntity(VirtualClinicDTO clinicDTO)
 		=> new()
 		{
 			Id = clinicDTO.Id,
@@ -113,7 +115,7 @@ public class VirtualClinicService : IVirtualClinicService
 
 	public Task<IEnumerable<ClinicWorkTime>> GetClinicWorkTimes(int clinicId)
 	{
-		return Task.FromResult((new List<ClinicWorkTime>() { new ClinicWorkTime() { Id = 1, ClinicId = 2, StartWorkHours = DateTime.Now, EndWorkHours = DateTime.Now.AddHours(4) } }).AsEnumerable());
+		return Task.FromResult((new List<ClinicWorkTime>() { new ClinicWorkTime() { Id = 1, ClinicId = 2, StartWorkHours = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)), EndWorkHours = TimeOnly.FromTimeSpan(TimeSpan.FromHours(14)) } }).AsEnumerable());
 		throw new NotImplementedException();
 	}
 
