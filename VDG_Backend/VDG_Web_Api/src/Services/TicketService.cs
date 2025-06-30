@@ -146,7 +146,7 @@ namespace VDG_Web_Api.src.Services
 			if (usetTickets.Where(t => t.DoctorId == ticket.DoctorId).Any(t =>
 			{
 				var status = Enum.Parse<TicketStatus>(t.Status!, true);
-				return !status.Equals(TicketStatus.closed);
+				return !status.Equals(TicketStatus.Closed);
 			}))
 			{
 				throw new Exception("You have an open ticket with this doctor");
@@ -198,7 +198,7 @@ namespace VDG_Web_Api.src.Services
 			};
 		}
 
-		public DoctorDTO MapToDoctorDto(Doctor? doctor)
+		public DoctorDTO MapToDoctorDto(Doctor doctor)
 		{
 			return new DoctorDTO()
 			{

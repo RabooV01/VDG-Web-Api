@@ -10,7 +10,7 @@ public partial class Speciality
     public int Id { get; set; }
 
     [StringLength(255)]
-    public string? name { get; set; }
+    public string name { get; set; } = string.Empty;
 
     [InverseProperty("Speciality")]
     public virtual ICollection<Doctor> Doctors { get; set; } = new List<Doctor>();

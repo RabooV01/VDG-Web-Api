@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using VDG_Web_Api.src.Data;
+using VDG_Web_Api.src.DTOs.ReservationDTOs;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 
@@ -25,19 +26,21 @@ public class ReservationRepository : IReservationRepository
 
 		try
 		{
-			var reservations = _context.Reservations.AsQueryable();
+			// var reservations = _context.Reservations.AsQueryable();
 
 			// return all reservations that related to a clinic
-			reservations = _context.Reservations.Where(c =>
-			c.ScheduledAt.Year == date.Value.Year &&
-			c.ScheduledAt.Month == date.Value.Month &&
-			c.ScheduledAt.Day == date.Value.Day);
-
-			return await reservations
+			var reservations = await _context.Reservations
 			.Include(r => r.User)
 				.ThenInclude(u => u.Person)
+			.Where(c =>
+			c.ScheduledAt.Year == date.Value.Year &&
+			c.ScheduledAt.Month == date.Value.Month &&
+			c.ScheduledAt.Day == date.Value.Day)
 			.Where(c => c.VirtualId == virtualId)
 			.ToListAsync();
+
+			return reservations;
+			
 		}
 		catch (Exception ex)
 		{

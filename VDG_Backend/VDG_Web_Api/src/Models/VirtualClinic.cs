@@ -31,7 +31,7 @@ public partial class VirtualClinic
 
 	[ForeignKey("DoctorId")]
 	[InverseProperty("VirtualClinics")]
-	public virtual Doctor? Doctor { get; set; }
+	public virtual Doctor Doctor { get; set; } = null!;
 
 	[InverseProperty("Virtual")]
 	public virtual ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();

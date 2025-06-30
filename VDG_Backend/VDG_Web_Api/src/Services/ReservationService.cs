@@ -163,18 +163,19 @@ public class ReservationService : IReservationService
 		return reservations.Select(d => MapToDto(d.Value)).ToList();
 	}
 
-	public async Task<IEnumerable<ClinicReservationDTO>> GetClinicReservationsAsync(int virtualId, DateOnly date)
+	public async Task<IEnumerable<ClinicReservationDTO>> GetClinicReservationsAsync(int virtualClinicId, DateOnly date)
 	{
 		try
 		{
-			var reservations = await _reservationRepository.GetClinicReservationsAsync(virtualId, date);
-
+			// get all reservations for a certain date
+			var reservations = await _reservationRepository.GetClinicReservationsAsync(virtualClinicId, date);
+//
 			var userIds = reservations.Select(r => r.UserId)
 			.Distinct()
 			.ToList();
 
 			var userDtos = userIds.Where(Id => Id != null).Select(Id => _userService.GetUser(Id!.Value).Result);
-			var allReservations = await GenerateClinicAvailableReservations(reservations, virtualId, date);
+			var allReservations = await GenerateClinicAvailableReservations(reservations, virtualClinicId, date);
 			return allReservations.Select(resDTO =>
 			{
 

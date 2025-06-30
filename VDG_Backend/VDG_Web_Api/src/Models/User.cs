@@ -27,7 +27,7 @@ public partial class User
 	public string? Role { get; set; }
 
 	[ForeignKey("PersonId")]
-	public virtual Person? Person { get; set; }
+	public virtual Person Person { get; set; } = null!;
 
 	[InverseProperty("User")]
 	public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();

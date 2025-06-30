@@ -2,8 +2,8 @@
 {
     public enum TicketStatus
     {
-        open,
-        pending,
-        closed
+        Open,
+        Pending,
+        Closed
     }
 }

@@ -26,9 +26,9 @@ public partial class Reservation
 
     [ForeignKey("UserId")]
     [InverseProperty("Reservations")]
-    public virtual User? User { get; set; }
+    public virtual User User { get; set; } = null!;
 
     [ForeignKey("VirtualId")]
     [InverseProperty("Reservations")]
-    public virtual VirtualClinic? Virtual { get; set; }
+    public virtual VirtualClinic Virtual { get; set; } = null!;
 }

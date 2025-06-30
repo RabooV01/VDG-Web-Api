@@ -35,7 +35,7 @@ public class BasicAuthService : IAuthService
 				Email = userRegister.Email,
 				Person = _userService.MapPersonDtoToEntity(userRegister.Person!),
 				PasswordHash = userRegister.Password,
-				Role = "User"
+				Role = "User",
 			};
 
 			await _userRepository.AddUserAsync(user);
