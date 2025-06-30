@@ -68,9 +68,13 @@ public partial class VdgDbDemoContext : DbContext
 		{
 			entity.HasKey(e => e.Id).HasName("PK__Rating__3214EC07B32B9B16");
 
-			entity.HasOne(d => d.Doctor).WithMany(p => p.Ratings).HasConstraintName("Rating_Doctor_FK");
+			entity.HasOne(d => d.Doctor).WithMany(p => p.Ratings)
+				.OnDelete(DeleteBehavior.NoAction)
+				.HasConstraintName("Rating_Doctor_FK");
 
-			entity.HasOne(d => d.User).WithMany(p => p.Ratings).HasConstraintName("Rating_User_FK");
+			entity.HasOne(d => d.User).WithMany(p => p.Ratings)
+				.OnDelete(DeleteBehavior.NoAction)
+				.HasConstraintName("Rating_User_FK");
 		});
 
 		modelBuilder.Entity<Reservation>(entity =>
@@ -96,9 +100,13 @@ public partial class VdgDbDemoContext : DbContext
 		{
 			entity.HasKey(e => e.Id).HasName("PK__Ticket__3214EC076F6CA0F8");
 
-			entity.HasOne(d => d.Doctor).WithMany(p => p.Tickets).HasConstraintName("Ticket_Doctor_FK");
+			entity.HasOne(d => d.Doctor).WithMany(p => p.Tickets)
+				.OnDelete(DeleteBehavior.NoAction)
+				.HasConstraintName("Ticket_Doctor_FK");
 
-			entity.HasOne(d => d.User).WithMany(p => p.Tickets).HasConstraintName("Ticket_User_FK");
+			entity.HasOne(d => d.User).WithMany(p => p.Tickets)
+				.OnDelete(DeleteBehavior.NoAction)
+				.HasConstraintName("Ticket_User_FK");
 		});
 
 		modelBuilder.Entity<TicketMessage>(entity =>

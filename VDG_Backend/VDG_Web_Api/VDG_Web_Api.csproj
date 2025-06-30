@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 	  <CETCompat>false</CETCompat>
+    <UserSecretsId>d91fa8f0-d6e3-4596-a8c8-58ebf5c1e736</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
