@@ -16,7 +16,7 @@ public partial class Rating
 	[Column("Doctor_Id")]
 	[StringLength(16)]
 	[Unicode(false)]
-	public string? DoctorId { get; set; }
+	public int? DoctorId { get; set; }
 
 	[Column("Avg_Wait")]
 	public double? AvgWait { get; set; }

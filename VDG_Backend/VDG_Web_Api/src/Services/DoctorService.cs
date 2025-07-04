@@ -38,9 +38,20 @@ namespace VDG_Web_Api.src.Services
             };
         }
 
-        public Task<DoctorDTO> GetDoctorById(string doctorId)
+		public Task<DoctorDTO> GetDoctorById(int doctorId)
+		{
+			throw new NotImplementedException();
+		}
+		 public DoctorDTO MapToDoctorDto(Doctor doctor)
         {
-            throw new NotImplementedException();
+            return new DoctorDTO()
+            {
+                Speciality = doctor.Speciality,
+                Id = doctor.Id,
+                SpecialityId = doctor.SpecialityId,
+                SyndicateId = doctor.SyndicateId,
+                UserId = doctor.UserId
+            };
         }
 
 

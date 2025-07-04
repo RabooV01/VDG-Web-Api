@@ -1,6 +1,5 @@
 using Microsoft.IdentityModel.Tokens;
 using VDG_Web_Api.src.DTOs.PersonDTOs;
-using VDG_Web_Api.src.Models;
 
 namespace VDG_Web_Api.src.Extensions.Validation;
 

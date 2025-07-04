@@ -87,6 +87,7 @@ namespace VDG_Web_Api.src.Repositories
 
                 throw new InvalidOperationException($"Unable to update the doctor ,error: {ex.Message}", ex);
             }
+            throw new NotImplementedException();
 
         }
 

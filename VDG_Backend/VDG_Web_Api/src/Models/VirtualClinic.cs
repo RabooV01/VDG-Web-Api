@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -11,15 +12,7 @@ public partial class VirtualClinic
 	public int Id { get; set; }
 
 	[Column("Doctor_Id")]
-	[StringLength(16)]
-	[Unicode(false)]
-	public string? DoctorId { get; set; }
-
-	[Column("Start_Work_Hours")]
-	public TimeOnly? StartWorkHours { get; set; }
-
-	[Column("End_Work_Hours")]
-	public TimeOnly? EndWorkHours { get; set; }
+	public int? DoctorId { get; set; }
 
 	[StringLength(255)]
 	[Unicode(false)]
@@ -27,21 +20,14 @@ public partial class VirtualClinic
 
 	[StringLength(255)]
 	[Unicode(false)]
-	public string? Status { get; set; }
+	[DefaultValue("Inactive")]
+	public string Status { get; set; } = "Inactive";
 
 	[Column("Avg_Service")]
 	public double? AvgService { get; set; }
 
-	[Column("Ticket_Status")]
-	[StringLength(255)]
-	[Unicode(false)]
-	public string? TicketStatus { get; set; }
-
-	[Column("Preview_Const")]
-	public double? PreviewConst { get; set; }
-
-	[Column("Ticket_Const")]
-	public double? TicketConst { get; set; }
+	[Column("Preview_Cost")]
+	public double? PreviewCost { get; set; }
 
 	[ForeignKey("DoctorId")]
 	[InverseProperty("VirtualClinics")]
@@ -49,4 +35,7 @@ public partial class VirtualClinic
 
 	[InverseProperty("Virtual")]
 	public virtual ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
+
+	[InverseProperty("Clinic")]
+	public virtual ICollection<ClinicWorkTime> WorkTimes { get; set; } = new List<ClinicWorkTime>();
 }

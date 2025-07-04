@@ -81,6 +81,14 @@ public class ReservationService : IReservationService
 
         Reservation reservation = MapToEntity(reservationDto);
 
+        var userReservations = await GetUserReservationsAsync(reservation.UserId!.Value);
+
+        if(userReservations.Select(r => r.VirtualDto!.DoctorId!.Value).Contains(reservation.Virtual!.DoctorId!.Value))
+        {
+            throw new InvalidOperationException("Appointment has not been reserved because an there is an exist one with same doctor");
+        }
+        
+        // TODO check same doctor
         try
         {
             await _reservationRepository.BookAppointmentAsync(reservation);
@@ -97,6 +105,18 @@ public class ReservationService : IReservationService
 
     public async Task CancelAppointmentAsync(int reservationId)
     {
+        var reservation = await _reservationRepository.GetReservationByIdAsync(reservationId);
+
+        if(reservation == null)
+        {
+            throw new KeyNotFoundException("No such reservation is found.");
+        }
+
+        if(reservation.ScheduledAt.Subtract(DateTime.Now).Hours < _confirmThresholdPerHours)
+        {
+            throw new ArgumentException("Appointment has been confirmed and cannot be canceled");   
+        }
+
         try
         {
             await _reservationRepository.CancelAppointmentAsync(reservationId);
@@ -111,11 +131,18 @@ public class ReservationService : IReservationService
         }
     }
 
+    public async Task<ReservationDTO> GenerateClinicAvailableReservations(IEnumerable<Reservation> busyAppointments, int virtualId, DateOnly date)
+    {
+        var clinic = await _virtualClinicService.GetClinicById(virtualId);
+        // TODO: get ranges, and total appointments on them, then add all into one list 
+        throw new NotImplementedException();
+    }
+
     public async Task<IEnumerable<ClinicReservationDTO>> GetClinicReservationsAsync(int virtualId, DateOnly? date = null)
     {
         try
         {
-            var reservations = await _reservationRepository.GetReservationsAsync(virtualId: virtualId, day: date);
+            var reservations = await _reservationRepository.GetClinicReservationsAsync(virtualId: virtualId, day: date);
 
             var userIds = reservations.Select(r => r.UserId)
             .Distinct()
@@ -150,11 +177,11 @@ public class ReservationService : IReservationService
     {
         try
         {
-            var reservations = await _reservationRepository.GetReservationsAsync(userId: userId, day: date);
+            var reservations = await _reservationRepository.GetUserReservationsAsync(userId);
 
             var ClinicIds = reservations.Select(r => r.VirtualId!.Value);
 
-            var ClinicDtos = await Task.WhenAll(ClinicIds.Select(_virtualClinicService.GetClinicById));
+            var ClinicDtos = ClinicIds.Select(c => _virtualClinicService.GetClinicById(c).Result);
 
             return reservations.Select(r =>
             {
