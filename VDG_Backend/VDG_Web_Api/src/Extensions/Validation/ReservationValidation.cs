@@ -8,11 +8,6 @@ public static class ReservationValidation
 {
     public static bool IsValidReservation(this ReservationDTO reservation)
 	{
-		if (reservation == null)
-		{
-			return false;
-		}
-
 		if (!Enum.TryParse<BookingTypes>(reservation.Type.ToString(), true, out _))
 		{
 			return false;

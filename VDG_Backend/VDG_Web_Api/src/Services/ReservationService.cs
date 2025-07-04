@@ -37,10 +37,7 @@ public class ReservationService : IReservationService
 	}
 	public async Task<UserReservationDTO> MapToUserReservation(ReservationDTO Dto)
 	{
-		if (Dto.VirtualId is null)
-			throw new ArgumentException("Virtual clinic is not selected.");
-
-		var virtualClinic = await _virtualClinicService.GetClinicById(Dto.VirtualId.Value);
+		var virtualClinic = await _virtualClinicService.GetClinicById(Dto.VirtualId);
 		var userReservation = new UserReservationDTO()
 		{
 			ReservationDto = Dto,
@@ -51,10 +48,7 @@ public class ReservationService : IReservationService
 
 	public async Task<ClinicReservationDTO> MapToClinicReservation(ReservationDTO Dto)
 	{
-		if (Dto.UserId is null)
-			throw new ArgumentNullException("User is not selected.");
-
-		var userDto = await _userService.GetUser(Dto.UserId.Value);
+		var userDto = await _userService.GetUser(Dto.UserId);
 
 		var userReservation = new ClinicReservationDTO()
 		{
@@ -84,10 +78,11 @@ public class ReservationService : IReservationService
 
 		Reservation reservation = MapToEntity(reservationDto);
 
-		var existUserAppointmentsDoctorIds = (await GetUserReservationsAsync(reservation.UserId!.Value))
-		.Where(r => r.ReservationDto!.ScheduledAt > DateTime.Now)
+		var existUserAppointmentsDoctorIds = (await GetUserReservationsAsync(reservation.UserId))
+		.Where(r => r.ReservationDto.ScheduledAt > DateTime.Now)
 		.Select(r => r.VirtualDto!.DoctorId);
-		var currentAppointmentDoctorId = (await _virtualClinicService.GetClinicById(reservationDto.VirtualId!.Value)).Doctor?.Id;
+		
+		var currentAppointmentDoctorId = (await _virtualClinicService.GetClinicById(reservationDto.VirtualId)).Doctor?.Id;
 
 		bool HasAppointment = existUserAppointmentsDoctorIds.Any(c => c == currentAppointmentDoctorId);
 
@@ -174,7 +169,7 @@ public class ReservationService : IReservationService
 			.Distinct()
 			.ToList();
 
-			var userDtos = userIds.Where(Id => Id != null).Select(Id => _userService.GetUser(Id!.Value).Result);
+			var userDtos = userIds.Select(Id => _userService.GetUser(Id).Result);
 			var allReservations = await GenerateClinicAvailableReservations(reservations, virtualClinicId, date);
 			return allReservations.Select(resDTO =>
 			{
@@ -206,21 +201,10 @@ public class ReservationService : IReservationService
 		{
 			var reservations = await _reservationRepository.GetUserReservationsAsync(userId);
 
-			return reservations.Select(r =>
+			return reservations.Select(r => new UserReservationDTO()
 			{
-				var reservationDto = MapToDto(r);
-				VirtualClinicDTO? virtualClinicDto = null;
-
-				if (r.Virtual != null)
-				{
-					virtualClinicDto = ((VirtualClinicService)_virtualClinicService).MapToDTO(r.Virtual);
-				}
-
-				return new UserReservationDTO()
-				{
-					ReservationDto = reservationDto,
-					VirtualDto = virtualClinicDto
-				};
+				ReservationDto = MapToDto(r),
+				VirtualDto = ((VirtualClinicService)_virtualClinicService).MapToDTO(r.Virtual)
 			}).OrderBy(r => r.ReservationDto?.ScheduledAt);
 		}
 		catch (InvalidOperationException ex)
@@ -239,7 +223,7 @@ public class ReservationService : IReservationService
 		{
 			throw new ArgumentException("Reservation value is invalid, No update were applied.");
 		}
-
+		var clinicReservations = await GetClinicReservationsAsync(reservationDto.VirtualId, DateOnly.FromDateTime(reservationDto.ScheduledAt));
 		Reservation reservation = MapToEntity(reservationDto);
 
 		try

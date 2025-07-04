@@ -12,10 +12,10 @@ public partial class Reservation
     public int Id { get; set; }
 
     [Column("User_Id")]
-    public int? UserId { get; set; }
+    public int UserId { get; set; }
 
     [Column("Virtual_Id")]
-    public int? VirtualId { get; set; }
+    public int VirtualId { get; set; }
 
     public DateTime ScheduledAt { get; set; }
 
