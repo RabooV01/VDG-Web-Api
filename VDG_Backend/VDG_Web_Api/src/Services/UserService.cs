@@ -10,7 +10,6 @@ public class UserService : IUserService
 {
 	private readonly IUserRepository _userRepository;
 	private readonly string FailedUserOperationMessage = "User operation failed due to unexpected error";
-	private readonly string InvalidPersonObjectMessage = "Person is invalid";
 	public UserService(IUserRepository userRepository)
 	{
 		_userRepository = userRepository;

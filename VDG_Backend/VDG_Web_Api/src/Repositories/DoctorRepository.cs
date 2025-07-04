@@ -107,13 +107,10 @@ namespace VDG_Web_Api.src.Repositories
 
         public async Task<IEnumerable<Doctor>?> GetDoctorsBySpecialityIdAsync(int specialityId)
         {
-            var specialityRepository = new SpecialityRepository();
-            var speciality = await specialityRepository.GetSpecialityAsync(specialityId);
-
-            var doctors = speciality.Doctors;
-            if (doctors == null)
-                throw new ArgumentNullException("there are no Doctors with this speciality");
-
+            var doctors = await _context.Doctors.Include(d => d.Speciality)
+                .Where(d => d.Speciality.Id == specialityId)
+                .ToListAsync();
+                
             return doctors;
         }
 

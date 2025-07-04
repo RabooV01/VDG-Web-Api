@@ -28,7 +28,7 @@ namespace VDG_Web_Api.src.Services
 		// Done 
 		public async Task DeleteMessageAsync(int id)
 		{
-			TicketMessage ticketMessage = await _ticketRepository.GetTicketMessageAsync(id);
+			TicketMessage? ticketMessage = await _ticketRepository.GetTicketMessageAsync(id);
 
 			if (ticketMessage == null)
 			{

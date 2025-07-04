@@ -1,4 +1,5 @@
 using VDG_Web_Api.src.DTOs.VirtualClinicDTOs;
+using VDG_Web_Api.src.Mapping;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services.Interfaces;
@@ -127,14 +128,31 @@ public class VirtualClinicService : IVirtualClinicService
 		return workTimes.Select(wt => MapToDTO(wt));
 	}
 
-	public Task RemoveClinicWorkTime(int workTimeId)
+	public async Task RemoveClinicWorkTime(int workTimeId)
 	{
-		throw new NotImplementedException();
+		try
+		{
+			await _clinicRepository.RemoveClinicWorkTime(workTimeId);	
+		}
+		catch (Exception e)
+		{
+			throw new InvalidOperationException($"Unable to remove clinic worktime. Error {e.Message}", e);
+		}
 	}
 
-	public Task UpdateClinic(VirtualClinicDTO clinicDTO)
+	public async Task UpdateClinic(VirtualClinicDTO clinicDTO)
 	{
-		throw new NotImplementedException();
+		try
+		{
+			VirtualClinic clinic = clinicDTO.ToEntity();
+
+			await _clinicRepository.UpdateClinic(clinic);
+		}
+		catch (System.Exception)
+		{
+			
+			throw;
+		}
 	}
 
 	public Task<VirtualClinicDTO> GetClinicsByDoctorId(int doctorId)
