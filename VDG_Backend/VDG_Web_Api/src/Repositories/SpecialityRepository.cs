@@ -7,10 +7,6 @@ namespace VDG_Web_Api.src.Repositories
     public class SpecialityRepository : ISpecialityRepository
     {
         private readonly VdgDbDemoContext _context;
-        public SpecialityRepository()
-        {
-
-        }
         public SpecialityRepository(VdgDbDemoContext context)
         {
             _context = context;

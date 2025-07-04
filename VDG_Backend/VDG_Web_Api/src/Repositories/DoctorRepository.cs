@@ -95,8 +95,8 @@ namespace VDG_Web_Api.src.Repositories
         public async Task<IEnumerable<Doctor>?> GetDoctorsByGenderAsync(string gender)
         {
             var doctors = await _context.Doctors.Include(d => d.User)
-                .ThenInclude(u => u!.Person)
-                .Where(d => d.User!.Person!.Gender == gender)
+                .ThenInclude(u => u.Person)
+                .Where(d => d.User.Person.Gender == gender)
                 .ToListAsync();
 
             if (doctors == null)

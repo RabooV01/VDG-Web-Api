@@ -13,16 +13,6 @@ public static class ReservationValidation
 			return false;
 		}
 
-		if (reservation.VirtualId == null)
-		{
-			return false;
-		}
-
-		if(reservation.UserId == null)
-		{
-			return false;
-		}
-
 		if (reservation.ScheduledAt < DateTime.UtcNow)
 		{
 			return false;
