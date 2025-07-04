@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -13,6 +14,12 @@ public partial class Doctor
 
     [Column("User_Id")]
     public int? UserId { get; set; }
+
+    [Column("Description")]
+    [DefaultValue("")]
+    [Unicode(false)]
+    [StringLength(1024)]
+    public string Description { get; set; } = string.Empty;
 
     [Column("Speciality_Id")]
     public int? SpecialityId { get; set; } = null!;
@@ -37,6 +44,7 @@ public partial class Doctor
 
     [ForeignKey("UserId")]
     public virtual User? User { get; set; }
+
 
     [InverseProperty("Doctor")]
     public virtual ICollection<VirtualClinic> VirtualClinics { get; set; } = new List<VirtualClinic>();

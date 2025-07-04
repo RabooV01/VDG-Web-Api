@@ -18,7 +18,7 @@ builder.Services.AddDbContextPool<VdgDbDemoContext>(opt => opt.UseSqlServer(buil
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+builder.Services.AddScoped<IDoctorRepository, ReservationRepository>();
 builder.Services.AddScoped<IVirtualClinicService, VirtualClinicService>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<IReservationService, ReservationService>();

@@ -7,11 +7,11 @@ namespace VDG_Web_Api.src.Services.Interfaces;
 
 public class ReservationService : IReservationService
 {
-    private readonly IReservationRepository _reservationRepository;
+    private readonly IDoctorRepository _reservationRepository;
     private readonly IVirtualClinicService _virtualClinicService;
     private readonly IUserService _userService;
 
-    public ReservationService(IReservationRepository reservationRepository,
+    public ReservationService(IDoctorRepository reservationRepository,
         IVirtualClinicService virtualClinicService,
         IUserService userService)
     {

@@ -5,7 +5,7 @@ using VDG_Web_Api.src.Repositories.Interfaces;
 
 namespace VDG_Web_Api.src.Repositories;
 
-public class ReservationRepository : IReservationRepository
+public class ReservationRepository : IDoctorRepository
 {
     private readonly VdgDbDemoContext _context;
 
