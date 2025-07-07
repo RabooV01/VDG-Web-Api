@@ -6,9 +6,9 @@ public class VirtualClinicDTO
 {
 	public int Id { get; set; }
 
-	public int? DoctorId { get; set; }
+	public int DoctorId { get; set; }
 
-	public virtual DoctorDTO? Doctor { get; set; }
+	public DoctorDTO Doctor { get; set; } = null!;
 
 	public TimeOnly StartWorkHours { get; set; }
 
@@ -18,7 +18,7 @@ public class VirtualClinicDTO
 
 	public int AvgService { get; set; }
 
-	public string? Location { get; set; }
+	public string Location { get; set; } = string.Empty;
 
-	public double? PreviewCost { get; set; }
+	public double PreviewCost { get; set; }
 }

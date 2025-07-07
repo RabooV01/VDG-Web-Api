@@ -14,14 +14,10 @@ public class VirtualClinicRepository : IVirtualClinicRepository
 		_context = context;
 	}
 
-	public async Task AddClinic(VirtualClinic clinic, ClinicWorkTime initialWorkTime)
+	public async Task AddClinic(VirtualClinic clinic)
 	{
 		_context.VirtualClinics.Add(clinic);
 		await _context.SaveChangesAsync();
-
-		initialWorkTime.ClinicId = clinic.Id;
-
-		await AddClinicWorkTime(initialWorkTime);
 	}
 
 	public async Task AddClinicWorkTime(ClinicWorkTime workTime)
@@ -36,6 +32,7 @@ public class VirtualClinicRepository : IVirtualClinicRepository
 			.Include(c => c.Doctor)
 				.ThenInclude(d => d.User)
 				.ThenInclude(u => u.Person)
+			.Include(c => c.WorkTimes)
 			.FirstOrDefaultAsync(c => c.Id == Id);
 		return clinic;
 	}
@@ -43,6 +40,7 @@ public class VirtualClinicRepository : IVirtualClinicRepository
 	public async Task<IEnumerable<VirtualClinic>> GetClinicsByDoctorId(int doctorId)
 	{
 		var doctorClinics = await _context.VirtualClinics
+			.Include(c => c.WorkTimes)
 			.Where(clinic => clinic.DoctorId.Equals(doctorId))
 			.ToListAsync();
 

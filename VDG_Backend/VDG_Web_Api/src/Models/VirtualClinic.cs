@@ -12,11 +12,11 @@ public partial class VirtualClinic
 	public int Id { get; set; }
 
 	[Column("Doctor_Id")]
-	public int? DoctorId { get; set; }
+	public int DoctorId { get; set; }
 
 	[StringLength(255)]
 	[Unicode(false)]
-	public string? Location { get; set; }
+	public string Location { get; set; } = string.Empty;
 
 	[StringLength(255)]
 	[Unicode(false)]
@@ -27,7 +27,7 @@ public partial class VirtualClinic
 	public int AvgService { get; set; }
 
 	[Column("Preview_Cost")]
-	public double? PreviewCost { get; set; }
+	public double PreviewCost { get; set; }
 
 	[ForeignKey("DoctorId")]
 	[InverseProperty("VirtualClinics")]

@@ -5,12 +5,11 @@ namespace VDG_Web_Api.src.DTOs.UserDTOs
 {
     public class UserDTO
     {
-        public int? Id { get; set; }
+        public int Id { get; set; }
 
         [EmailAddress]
-        public string Email { get; set; } = null!;
-
-        public string? Role { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
 
         public PersonDTO @Person { get; set; } = null!;
     }

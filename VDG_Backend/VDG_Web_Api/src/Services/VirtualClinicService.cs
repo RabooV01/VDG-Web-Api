@@ -17,37 +17,7 @@ public class VirtualClinicService : IVirtualClinicService
 		_doctorService = doctorService;
 	}
 
-	public ClinicWorkTimeDTO MapToDTO(ClinicWorkTime wt) => new() 
-	{
-		Id = wt.Id,
-		ClinicId = wt.ClinicId,
-		StartWorkHours = wt.StartWorkHours,
-		EndWorkHours = wt.EndWorkHours
-	};
-
-	public VirtualClinicDTO MapToDTO(VirtualClinic clinic)
-		=> new()
-		{
-			Id = clinic.Id,
-			DoctorId = clinic.DoctorId,
-			Status = clinic.Status,
-			Location = clinic.Location,
-			AvgService = clinic.AvgService,
-			Doctor = ((DoctorService)_doctorService).MapToDoctorDto(clinic.Doctor ?? new()),
-			PreviewCost = clinic.PreviewCost
-		};
-
-	public VirtualClinic MapToEntity(VirtualClinicDTO clinicDTO)
-		=> new()
-		{
-			Id = clinicDTO.Id,
-			DoctorId = clinicDTO.DoctorId,
-			Location = clinicDTO.Location,
-			Status = clinicDTO.Status,
-			PreviewCost = clinicDTO.PreviewCost,
-			AvgService = clinicDTO.AvgService,
-			Doctor = new()
-		};
+	
 
 	public async Task AddClinic(VirtualClinicDTO clinic)
 	{
@@ -68,7 +38,7 @@ public class VirtualClinicService : IVirtualClinicService
 				PreviewCost = clinic.PreviewCost
 			};
 
-			await _clinicRepository.AddClinic(virtualClinic, workTime);
+			await _clinicRepository.AddClinic(virtualClinic);
 		}
 		catch (Exception e)
 		{
@@ -148,15 +118,15 @@ public class VirtualClinicService : IVirtualClinicService
 
 			await _clinicRepository.UpdateClinic(clinic);
 		}
-		catch (System.Exception)
+		catch (Exception)
 		{
-			
 			throw;
 		}
 	}
 
-	public Task<VirtualClinicDTO> GetClinicsByDoctorId(int doctorId)
+	public async Task<VirtualClinicDTO> GetClinicsByDoctorId(int doctorId)
 	{
+		var clinics = await _clinicRepository.GetClinicsByDoctorId(doctorId);
 		throw new NotImplementedException();
 	}
 }

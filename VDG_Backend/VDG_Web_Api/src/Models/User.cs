@@ -24,7 +24,7 @@ public partial class User
 
 	[StringLength(32)]
 	[Unicode(false)]
-	public string? Role { get; set; }
+	public string Role { get; set; } = string.Empty;
 
 	[ForeignKey("PersonId")]
 	public virtual Person Person { get; set; } = null!;

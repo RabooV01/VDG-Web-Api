@@ -62,14 +62,12 @@ namespace VDG_Web_Api.src.Repositories
 
 		}
 
-		public async Task<int> AddUserAsync(User user)
+		public async Task AddUserAsync(User user)
 		{
 			try
 			{
-				await _context.People.AddAsync(user.Person!);
-				await _context.Users.AddAsync(user);
+				_context.Users.Add(user);
 				await _context.SaveChangesAsync();
-				return user.Id;
 			}
 			catch (Exception ex)
 			{
@@ -94,7 +92,8 @@ namespace VDG_Web_Api.src.Repositories
 		{
 			try
 			{
-				return await _context.Users.Include(u => u.Person).FirstOrDefaultAsync(u => email.Equals(u.Email));
+				return await _context.Users.Include(u => u.Person)
+					.FirstOrDefaultAsync(u => email.Equals(u.Email));
 			}
 			catch (Exception)
 			{
