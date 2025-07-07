@@ -2,7 +2,7 @@
 
 namespace VDG_Web_Api.src.Repositories.Interfaces
 {
-	public interface IReservationRepository
+	public interface IDoctorRepository
 	{
 		Task<IEnumerable<Reservation>> GetClinicReservationsAsync(int virtualId, DateTime date);
 		Task<IEnumerable<Reservation>> GetUserReservationsAsync(int userId);

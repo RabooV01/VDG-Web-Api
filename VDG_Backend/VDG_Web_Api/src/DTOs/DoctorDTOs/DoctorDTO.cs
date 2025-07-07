@@ -1,4 +1,4 @@
-﻿using VDG_Web_Api.src.DTOs.UserDTOs;
+using VDG_Web_Api.src.DTOs.UserDTOs;
 
 namespace VDG_Web_Api.src.DTOs.DoctorDTOs
 {
