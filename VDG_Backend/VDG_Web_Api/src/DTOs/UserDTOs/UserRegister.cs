@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using VDG_Web_Api.src.DTOs.PersonDTOs;
-using VDG_Web_Api.src.Models;
 
 namespace VDG_Web_Api.src.DTOs.UserDTOs
 {
@@ -9,7 +8,6 @@ namespace VDG_Web_Api.src.DTOs.UserDTOs
 		[EmailAddress]
 		public string Email { get; set; } = null!;
 		public string Password { get; set; } = null!;
-		public string Role { get; } = "user";
-		public PersonProfileDTO? @Person { get; set; }
+		public PersonProfileDTO @Person { get; set; } = null!;
 	}
 }

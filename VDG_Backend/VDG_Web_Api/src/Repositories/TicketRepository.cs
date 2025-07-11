@@ -38,16 +38,23 @@ namespace VDG_Web_Api.src.Repositories
 
 				if (userId != null)
 				{
-					return await tickets.Where(t => t.UserId == userId)
+					return await tickets.Include(t => t.Doctor)
+						.ThenInclude(t => t.User)
+						.ThenInclude(u => u.Person)
+						.Where(t => t.UserId == userId)
 						.ToListAsync();
 				}
+
 				if (doctorId != null)
 				{
-					return await tickets.Where(t => t.DoctorId == doctorId)
+					return await tickets
 						.Include(t => t.User)
 						.ThenInclude(u => u!.Person)
+						.Where(t => t.DoctorId == doctorId)
 						.ToListAsync();
 				}
+
+				throw new ArgumentException();
 			}
 			catch (Exception ex)
 			{
@@ -78,32 +85,21 @@ namespace VDG_Web_Api.src.Repositories
 				throw new InvalidOperationException($"Faild to delet the message, Error: {e.Message}", e);
 			}
 		}
-		 public async Task SendConsultationRequestAsync(Ticket ticket, TicketMessage ticketMessage)
+		public async Task SendConsultationRequestAsync(Ticket ticket)
 		{
 			try
 			{
-
 				_context.Tickets.Add(ticket);
-				await _context.SaveChangesAsync();
-
-				ticketMessage.TicketId = ticket.Id;
-
-				_context.TicketMessages.Add(ticketMessage);
 				await _context.SaveChangesAsync();
 			}
 			catch (Exception e)
 			{
-
-				throw new InvalidOperationException($"Faild to send the ticket, Error: {e.Message}", e);
+				throw new InvalidOperationException($"Faild to add the ticket, Error: {e.Message}", e);
 			}
 		}
 
 		public async Task SendMessageAsync(TicketMessage ticketMessage)
 		{
-			if (ticketMessage == null)
-			{
-				throw new KeyNotFoundException("The ticket message has not found.");
-			}
 			try
 			{
 				_context.TicketMessages.Add(ticketMessage);
@@ -120,15 +116,13 @@ namespace VDG_Web_Api.src.Repositories
 			var ticketMessageToUpdate = await _context.TicketMessages.FindAsync(ticketMessage.Id);
 			if (ticketMessageToUpdate == null)
 			{
-				throw new KeyNotFoundException("The ticket message has not found.");
+				throw new KeyNotFoundException("The ticket message was not found.");
 			}
-
-			ticketMessageToUpdate = ticketMessage;
 
 			try
 			{
-				_context.TicketMessages.Update(ticketMessageToUpdate);
-				await _context.SaveChangesAsync();
+				await _context.TicketMessages.Where(tm => tm.Id == ticketMessageToUpdate.Id)
+					.ExecuteUpdateAsync(tm => tm.SetProperty(p => p.Text, ticketMessage.Text));
 			}
 			catch (Exception e)
 			{

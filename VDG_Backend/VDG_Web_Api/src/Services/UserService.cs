@@ -1,5 +1,6 @@
-using VDG_Web_Api.src.DTOs.PersonDTOs;
 using VDG_Web_Api.src.DTOs.UserDTOs;
+using VDG_Web_Api.src.Extensions.Validation;
+using VDG_Web_Api.src.Mapping;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services.Interfaces;
@@ -14,74 +15,10 @@ public class UserService : IUserService
 	{
 		_userRepository = userRepository;
 	}
+
 	private string UserInvalidOperationErrorMessage(string operationName) =>
 		$"{operationName} {FailedUserOperationMessage}";
 
-	public PersonDTO MapPersonToDto(Person person) => new()
-	{
-		Id = person.Id,
-		FirstName = person.FirstName,
-		LastName = person.LastName,
-		Phone = person.Phone
-	};
-
-	public PersonProfileDTO MapPersonToProfileDTO(Person person) => new()
-	{
-		Id = person.Id,
-		FirstName = person.FirstName,
-		LastName = person.LastName,
-		Phone = person.Gender,
-		BirthDate = person.Birthdate,
-		Gender = person.Gender,
-		PersonalId = person.PersonalId
-	};
-
-	public Person MapPersonDtoToEntity(PersonDTO personDto)
-	{
-		return new Person()
-		{
-			Id = personDto.Id,
-			FirstName = personDto.FirstName,
-			LastName = personDto.LastName,
-			Phone = personDto.Phone
-		};
-	}
-
-	public Person MapPersonDtoToEntity(PersonProfileDTO personDetailsDto)
-	{
-		return new()
-		{
-			Id = personDetailsDto.Id ?? 0,
-			Birthdate = personDetailsDto.BirthDate,
-			FirstName = personDetailsDto.FirstName!,
-			LastName = personDetailsDto.LastName!,
-			Gender = personDetailsDto.Gender,
-			PersonalId = personDetailsDto.PersonalId,
-			Phone = personDetailsDto.Phone
-		};
-	}
-
-	public User MapUserDtoToEntity(UserDTO userDto)
-	{
-		return new User()
-		{
-			Id = userDto.Id!.Value,
-			Email = userDto.Email,
-			Person = MapPersonDtoToEntity(userDto.Person),
-			PersonId = userDto.Person.Id,
-			Role = userDto.Role
-		};
-	}
-	public UserDTO MapUserToDto(User user)
-	{
-		return new UserDTO()
-		{
-			Id = user.Id,
-			Email = user.Email,
-			Person = MapPersonToDto(user.Person ?? new()),
-			Role = user.Role
-		};
-	}
 
 	public async Task DeleteUserAsync(int userId)
 	{
@@ -102,16 +39,10 @@ public class UserService : IUserService
 	public async Task<UserDTO?> GetUser(int userId)
 	{
 
-		var user = await _userRepository.GetById(userId);
-
-		if (user == null)
-		{
-			throw new KeyNotFoundException("User has not been found");
-		}
-
+		var user = await _userRepository.GetById(userId) ?? throw new KeyNotFoundException("User has not been found");
 		try
 		{
-			return MapUserToDto(user);
+			return user.ToDto();
 		}
 		catch (Exception ex)
 		{
@@ -124,7 +55,7 @@ public class UserService : IUserService
 		try
 		{
 			var users = await _userRepository.GetUsers(page, limit);
-			return users.Select(MapUserToDto);
+			return users.Select(u => u.ToDto());
 		}
 		catch (Exception ex)
 		{
@@ -134,18 +65,7 @@ public class UserService : IUserService
 
 	public async Task UpdateUserAsync(UserDTO userDTO)
 	{
-		if (userDTO.Id == null)
-		{
-			throw new ArgumentNullException("User Id must be provided to complete this operation.");
-		}
-
-		var user = await _userRepository.GetById(userDTO.Id!.Value);
-
-		if (user == null)
-		{
-			throw new ArgumentNullException("Invalid User");
-		}
-
+		User user = await _userRepository.GetById(userDTO.Id) ?? throw new ArgumentException("Invalid User");
 		try
 		{
 			await _userRepository.UpdateUserAsync(user);
@@ -153,6 +73,25 @@ public class UserService : IUserService
 		catch (Exception ex)
 		{
 			throw new InvalidOperationException($"Update Failed. Error {ex.Message}", ex);
+		}
+	}
+
+	public async Task<bool> AddUser(UserRegister userRegister)
+	{
+		try
+		{
+			if (!userRegister.IsValidUser())
+			{
+				return false;
+			}
+
+			await _userRepository.AddUserAsync(userRegister.ToEntity());
+
+			return true;
+		}
+		catch (Exception)
+		{
+			throw;
 		}
 	}
 }

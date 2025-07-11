@@ -10,10 +10,6 @@ public class VirtualClinicDTO
 
 	public DoctorDTO Doctor { get; set; } = null!;
 
-	public TimeOnly StartWorkHours { get; set; }
-
-	public TimeOnly EndWorkHours { get; set; }
-
 	public string Status { get; set; } = "Inactive";
 
 	public int AvgService { get; set; }

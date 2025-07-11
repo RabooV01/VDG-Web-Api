@@ -9,40 +9,28 @@ namespace VDG_Web_Api.src.Services;
 public class VirtualClinicService : IVirtualClinicService
 {
 	private readonly IVirtualClinicRepository _clinicRepository;
-	private readonly IDoctorService _doctorService;
 
 	public VirtualClinicService(IVirtualClinicRepository clinicRepository, IDoctorService doctorService)
 	{
 		_clinicRepository = clinicRepository;
-		_doctorService = doctorService;
 	}
 
-	
-
-	public async Task AddClinic(VirtualClinicDTO clinic)
+	public async Task AddClinic(AddVirtualClinicDTO clinic)
 	{
-		if (clinic.StartWorkHours > clinic.EndWorkHours)
+		if (clinic.WorkTimes.Any(x => x.StartWorkHours >= x.EndWorkHours) || clinic.WorkTimes.Count == 0)
 		{
-			throw new ArgumentNullException("invalid worktimes");
+			throw new ArgumentException("invalid worktimes, must provide atleast one valid worktime range");
 		}
 
 		try
 		{
-			ClinicWorkTime workTime = new() { StartWorkHours = clinic.StartWorkHours, EndWorkHours = clinic.EndWorkHours };
-
-			VirtualClinic virtualClinic = new()
-			{
-				DoctorId = clinic.DoctorId,
-				AvgService = clinic.AvgService,
-				Location = clinic.Location,
-				PreviewCost = clinic.PreviewCost
-			};
+			var virtualClinic = clinic.ToEntity();
 
 			await _clinicRepository.AddClinic(virtualClinic);
 		}
 		catch (Exception e)
 		{
-			throw new InvalidOperationException($"Couldn't add clinic, Error: {e.Message}", e);
+			throw new InvalidOperationException($"Couldn't add clinic", e);
 		}
 
 	}
@@ -87,30 +75,28 @@ public class VirtualClinicService : IVirtualClinicService
 			throw new ArgumentNullException();
 		}
 
-		var clinicDTO = MapToDTO(clinic);
-
-		return clinicDTO;
+		return clinic.ToDto();
 	}
 
 	public async Task<IEnumerable<ClinicWorkTimeDTO>> GetClinicWorkTimes(int clinicId)
 	{
 		var workTimes = await _clinicRepository.GetClinicWorkTimes(clinicId);
-		return workTimes.Select(wt => MapToDTO(wt));
+		return workTimes.Select(wt => wt.ToDto());
 	}
 
 	public async Task RemoveClinicWorkTime(int workTimeId)
 	{
 		try
 		{
-			await _clinicRepository.RemoveClinicWorkTime(workTimeId);	
+			await _clinicRepository.RemoveClinicWorkTime(workTimeId);
 		}
 		catch (Exception e)
 		{
-			throw new InvalidOperationException($"Unable to remove clinic worktime. Error {e.Message}", e);
+			throw new InvalidOperationException($"Unable to remove clinic worktime.", e);
 		}
 	}
 
-	public async Task UpdateClinic(VirtualClinicDTO clinicDTO)
+	public async Task UpdateClinic(UpdateVirtualClinicDTO clinicDTO)
 	{
 		try
 		{
@@ -124,9 +110,10 @@ public class VirtualClinicService : IVirtualClinicService
 		}
 	}
 
-	public async Task<VirtualClinicDTO> GetClinicsByDoctorId(int doctorId)
+	public async Task<VirtualClinicInProfileDTO> GetClinicsByDoctorId(int doctorId)
 	{
 		var clinics = await _clinicRepository.GetClinicsByDoctorId(doctorId);
 		throw new NotImplementedException();
 	}
+
 }

@@ -5,7 +5,7 @@ using VDG_Web_Api.src.Repositories.Interfaces;
 
 namespace VDG_Web_Api.src.Repositories;
 
-public class ReservationRepository : IDoctorRepository
+public class ReservationRepository : IReservationRepository
 {
 	private readonly VdgDbDemoContext _context;
 
@@ -21,7 +21,7 @@ public class ReservationRepository : IDoctorRepository
 			var reservations = await _context.Reservations
 			.Include(r => r.User)
 				.ThenInclude(u => u.Person)
-			.Where(c => c.ScheduledAt == date && c.VirtualId == virtualId)
+			.Where(c => c.ScheduledAt.Date == date.Date && c.VirtualId == virtualId)
 			.ToListAsync();
 
 			return reservations;
@@ -41,6 +41,9 @@ public class ReservationRepository : IDoctorRepository
 				.ThenInclude(v => v.Doctor)
 				.ThenInclude(d => d.User)
 				.ThenInclude(u => u.Person)
+			.Include(r => r.Virtual)
+				.ThenInclude(v => v.Doctor)
+				.ThenInclude(d => d.Speciality)
 			.Where(c => c.UserId == userId)
 			.ToListAsync();
 

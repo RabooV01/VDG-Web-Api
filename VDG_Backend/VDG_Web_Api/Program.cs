@@ -1,5 +1,9 @@
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using VDG_Web_Api.src;
 using VDG_Web_Api.src.Data;
 using VDG_Web_Api.src.Repositories;
 using VDG_Web_Api.src.Repositories.Interfaces;
@@ -18,13 +22,48 @@ builder.Services.AddDbContext<VdgDbDemoContext>(opt => opt.UseSqlServer(builder.
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
-builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+
 builder.Services.AddScoped<IVirtualClinicRepository, VirtualClinicRepository>();
 builder.Services.AddScoped<IVirtualClinicService, VirtualClinicService>();
-builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
-builder.Services.AddScoped<IAuthService, BasicAuthService>();
+
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+builder.Services.AddScoped<ITicketService, TicketService>();
+
+builder.Services.AddScoped<ISpecialityRepository, SpecialityRepository>();
+
+builder.Services.AddScoped<IRatingRepository, RatingRepositroy>();
+builder.Services.AddScoped<IRatingService, RatingService>();
+
+JWTOptions JwtConfig = builder.Configuration.GetSection("JWT")
+	.Get<JWTOptions>()!;
+
+builder.Services.AddSingleton(JwtConfig);
+
+builder.Services.AddAuthentication() // add authentication to the builder
+	.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opt =>
+	{ // add authentication option (JWT Bearer)
+		opt.SaveToken = true;
+		opt.TokenValidationParameters = new()
+		{ // setting up validation params
+			ValidateIssuer = true, // Ensures that the issuer of the token matches the expected issuer
+			ValidIssuer = JwtConfig.Issuer,
+			ValidateAudience = true,
+			ValidAudience = JwtConfig.Audience,
+			ValidateIssuerSigningKey = true, //  Validates that the signing key used to sign the token matches our signing key
+			IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtConfig.SigningKey!)),
+			ValidateLifetime = true,
+			ClockSkew = TimeSpan.FromMinutes(1) // allowing only 1min difference
+		};
+	});
+
+
+builder.Services.AddScoped<IAuthService, JWTAuthService>();
 
 builder.Services.AddSwaggerGen();
 

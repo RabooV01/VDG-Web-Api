@@ -1,32 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using VDG_Web_Api.src.Repositories.Interfaces;
+using VDG_Web_Api.src.Services.Interfaces;
 
 namespace VDG_Web_Api.src.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class TicketController : ControllerBase
-    {
-        private readonly ITicketRepository ticketRepository;
+	[ApiController]
+	[Route("api/[controller]")]
+	public class TicketController : ControllerBase
+	{
+		private readonly ITicketService _ticketRepository;
 
-        public TicketController(ITicketRepository ticketRepository)
-        {
-            this.ticketRepository = ticketRepository;
-        }
-
-        // [HttpDelete("{id}")]
-        // public ActionResult DeleteMessage(int Id)
-        // {
-        //     try
-        //     {
-        //         ticketRepository.DeleteMessage(Id);
-        //     }
-        //     catch
-        //     {
-
-        //     }
-        // }
+		public TicketController(ITicketService ticketRepository)
+		{
+			_ticketRepository = ticketRepository;
+		}
 
 
-    }
+	}
 }

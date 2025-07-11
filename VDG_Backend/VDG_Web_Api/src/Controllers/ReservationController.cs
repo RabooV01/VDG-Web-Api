@@ -34,7 +34,7 @@ namespace VDG_Web_Api.src.Controllers
 			}
 		}
 		[HttpGet("Clinic/{clinicId}")]
-		public async Task<ActionResult<IEnumerable<ClinicReservationDTO>>> GetClinicReservations([FromRoute] int clinicId, [FromQuery] DateOnly date)
+		public async Task<ActionResult<IEnumerable<ClinicReservationDTO>>> GetClinicReservations([FromRoute] int clinicId, [FromQuery] DateTime date)
 		{
 			try
 			{
@@ -59,7 +59,9 @@ namespace VDG_Web_Api.src.Controllers
 			try
 			{
 				await _reservationService.BookAppointmentAsync(r);
-				// must schedule confirmation payment
+				
+				//TODO must schedule confirmation payment
+				
 				return Created();
 			}
 			catch (Exception e)

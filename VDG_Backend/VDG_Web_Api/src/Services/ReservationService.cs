@@ -1,6 +1,7 @@
 using VDG_Web_Api.src.DTOs.ReservationDTOs;
 using VDG_Web_Api.src.DTOs.VirtualClinicDTOs;
 using VDG_Web_Api.src.Extensions.Validation;
+using VDG_Web_Api.src.Mapping;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 
@@ -23,51 +24,7 @@ public class ReservationService : IReservationService
 		_userService = userService;
 	}
 
-	private Reservation MapToEntity(ReservationDTO Dto)
-	{
-		return new Reservation()
-		{
-			Id = Dto.Id,
-			UserId = Dto.UserId,
-			VirtualId = Dto.VirtualId,
-			Text = Dto.Text,
-			ScheduledAt = Dto.ScheduledAt,
-			Type = Dto.Type
-		};
-	}
-	public async Task<UserReservationDTO> MapToUserReservation(ReservationDTO Dto)
-	{
-		var virtualClinic = await _virtualClinicService.GetClinicById(Dto.VirtualId);
-		var userReservation = new UserReservationDTO()
-		{
-			ReservationDto = Dto,
-			VirtualDto = virtualClinic
-		};
-		return userReservation;
-	}
-
-	public async Task<ClinicReservationDTO> MapToClinicReservation(ReservationDTO Dto)
-	{
-		var userDto = await _userService.GetUser(Dto.UserId);
-
-		var userReservation = new ClinicReservationDTO()
-		{
-			ReservationDto = Dto,
-			UserDto = userDto
-		};
-
-		return userReservation;
-	}
-
-	public ReservationDTO MapToDto(Reservation reservation) => new ReservationDTO()
-	{
-		Id = reservation.Id,
-		Type = reservation.Type,
-		Text = reservation.Text,
-		ScheduledAt = reservation.ScheduledAt,
-		UserId = reservation.UserId,
-		VirtualId = reservation.VirtualId
-	};
+	
 
 	public async Task BookAppointmentAsync(ReservationDTO reservationDto)
 	{
@@ -76,10 +33,10 @@ public class ReservationService : IReservationService
 			throw new ArgumentException("Reservation is invalid");
 		}
 
-		Reservation reservation = MapToEntity(reservationDto);
+		Reservation reservation = reservationDto.ToEntity();
 
 		var existUserAppointmentsDoctorIds = (await GetUserReservationsAsync(reservation.UserId))
-		.Where(r => r.ReservationDto.ScheduledAt > DateTime.Now)
+		.Where(r => r.ScheduledAt > DateTime.Now)
 		.Select(r => r.VirtualDto!.DoctorId);
 		
 		var currentAppointmentDoctorId = (await _virtualClinicService.GetClinicById(reservationDto.VirtualId)).Doctor?.Id;
@@ -133,7 +90,7 @@ public class ReservationService : IReservationService
 		}
 	}
 
-	public async Task<IEnumerable<ReservationDTO>> GenerateClinicAvailableReservations(IEnumerable<Reservation> busyAppointments, int virtualId, DateOnly date)
+	public async Task<IEnumerable<Reservation>> GenerateClinicAvailableReservations(IEnumerable<Reservation> busyAppointments, int virtualId, DateOnly date)
 	{
 		var clinic = await _virtualClinicService.GetClinicById(virtualId);
 		var workTimes = (await _virtualClinicService.GetClinicWorkTimes(virtualId)).ToArray();
@@ -155,34 +112,20 @@ public class ReservationService : IReservationService
 				lastTiming = lastTiming.AddMinutes(clinic.AvgService);
 			}
 		}
-		return reservations.Select(d => MapToDto(d.Value)).ToList();
+		return reservations.Select(d => d.Value);
 	}
 
-	public async Task<IEnumerable<ClinicReservationDTO>> GetClinicReservationsAsync(int virtualClinicId, DateOnly date)
+	public async Task<IEnumerable<ClinicReservationDTO>> GetClinicReservationsAsync(int virtualClinicId, DateTime date)
 	{
 		try
 		{
 			// get all reservations for a certain date
 			var reservations = await _reservationRepository.GetClinicReservationsAsync(virtualClinicId, date);
 //
-			var userIds = reservations.Select(r => r.UserId)
-			.Distinct()
-			.ToList();
-
-			var userDtos = userIds.Select(Id => _userService.GetUser(Id).Result);
-			var allReservations = await GenerateClinicAvailableReservations(reservations, virtualClinicId, date);
-			return allReservations.Select(resDTO =>
-			{
-
-
-				var userDto = userDtos.FirstOrDefault(user => user?.Id == resDTO.UserId);
-
-				return new ClinicReservationDTO()
-				{
-					ReservationDto = resDTO,
-					UserDto = userDto
-				};
-			}).OrderBy(x => x.ReservationDto?.ScheduledAt)
+			
+			var allReservations = await GenerateClinicAvailableReservations(reservations, virtualClinicId, DateOnly.FromDateTime(date));
+			return allReservations.Select(r => r.ToClinicReservationDto())
+			.OrderBy(x => x.ScheduledAt)
 			.ToList();
 		}
 		catch (InvalidOperationException ex)
@@ -201,11 +144,8 @@ public class ReservationService : IReservationService
 		{
 			var reservations = await _reservationRepository.GetUserReservationsAsync(userId);
 
-			return reservations.Select(r => new UserReservationDTO()
-			{
-				ReservationDto = MapToDto(r),
-				VirtualDto = ((VirtualClinicService)_virtualClinicService).MapToDTO(r.Virtual)
-			}).OrderBy(r => r.ReservationDto?.ScheduledAt);
+			return reservations.Select(r => r.ToUserReservationDto())
+				.OrderBy(r => r.ScheduledAt);
 		}
 		catch (InvalidOperationException ex)
 		{
@@ -223,8 +163,16 @@ public class ReservationService : IReservationService
 		{
 			throw new ArgumentException("Reservation value is invalid, No update were applied.");
 		}
-		var clinicReservations = await GetClinicReservationsAsync(reservationDto.VirtualId, DateOnly.FromDateTime(reservationDto.ScheduledAt));
-		Reservation reservation = MapToEntity(reservationDto);
+
+		var clinicReservations = await GetClinicReservationsAsync(reservationDto.VirtualId, reservationDto.ScheduledAt);
+		bool isValid = !clinicReservations.Any(r => r.ScheduledAt == reservationDto.ScheduledAt && r.Id != reservationDto.Id);
+
+		if(!isValid)
+		{
+			throw new ArgumentException("Appointment already has been taken, select another time in order to change");
+		}
+
+		Reservation reservation = reservationDto.ToEntity();
 
 		try
 		{

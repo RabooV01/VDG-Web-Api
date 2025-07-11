@@ -16,7 +16,7 @@ namespace VDG_Web_Api.src.Repositories
         {
             try
             {
-                await _context.Doctors.AddAsync(doctor);
+                _context.Doctors.Add(doctor);
                 await _context.SaveChangesAsync();
                 return doctor.Id;
             }
@@ -42,7 +42,7 @@ namespace VDG_Web_Api.src.Repositories
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Unable to ِremove this doctor,error:[{ex.Message}]", ex);
+                throw new InvalidOperationException($"Unable to remove this doctor, Error:[{ex.Message}]", ex);
             }
         }
 
@@ -58,7 +58,7 @@ namespace VDG_Web_Api.src.Repositories
         public async Task<IEnumerable<Doctor>?> GetDoctorsByNameAsync(string Name)
         {
             var doctors = await _context.Doctors.Include(d => d.User)
-                .ThenInclude(u => u!.Person)
+                .ThenInclude(u => u.Person)
                 .Where(d => ($"{d.User!.Person!.FirstName} {d.User.Person.LastName}").Contains(Name))
                 .ToListAsync();
 
@@ -117,6 +117,7 @@ namespace VDG_Web_Api.src.Repositories
 
         public async Task<Doctor?> GetDoctorBySyndicateIdAsync(string syndicateId)
         {
+            
             Doctor? doctor = await _context.Doctors.FindAsync(syndicateId);
             if (doctor == null)
                 throw new ArgumentNullException("this Doctor is not found");

@@ -5,7 +5,7 @@ using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services.Interfaces;
 
-public class BasicAuthService : IAuthService
+public class BasicAuthService
 {
 	private readonly IUserRepository _userRepository;
 	private readonly IUserService _userService;

@@ -32,6 +32,8 @@ public class VirtualClinicRepository : IVirtualClinicRepository
 			.Include(c => c.Doctor)
 				.ThenInclude(d => d.User)
 				.ThenInclude(u => u.Person)
+			.Include(c => c.Doctor)
+				.ThenInclude(d => d.Speciality)
 			.Include(c => c.WorkTimes)
 			.FirstOrDefaultAsync(c => c.Id == Id);
 		return clinic;

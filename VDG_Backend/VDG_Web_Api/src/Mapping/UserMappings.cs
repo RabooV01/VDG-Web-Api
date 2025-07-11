@@ -54,5 +54,23 @@ namespace VDG_Web_Api.src.Mapping
 				Gender = person.Gender,
 				PersonalId = person.PersonalId
 			};
+		public static Person ToEntity(this PersonProfileDTO personProfileDTO)
+			=> new()
+			{
+				FirstName = personProfileDTO.FirstName,
+				LastName = personProfileDTO.LastName,
+				Phone = personProfileDTO.Phone,
+				Birthdate = personProfileDTO.BirthDate,
+				Gender = personProfileDTO.Gender,
+				PersonalId = personProfileDTO.PersonalId
+			};
+
+		public static User ToEntity(this UserRegister userRegister)
+			=> new()
+			{
+				Email = userRegister.Email,
+				PasswordHash = userRegister.Password,
+				Person = userRegister.Person.ToEntity()
+			};
 	}
 }

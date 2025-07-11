@@ -1,7 +1,7 @@
-﻿using VDG_Web_Api.src.DTOs.DoctorDTOs;
-using VDG_Web_Api.src.DTOs.TicketDTOs;
+﻿using VDG_Web_Api.src.DTOs.TicketDTOs;
 using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.Extensions.Validation;
+using VDG_Web_Api.src.Mapping;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services.Interfaces;
@@ -14,15 +14,11 @@ namespace VDG_Web_Api.src.Services
 	{
 		private readonly int UpdateAndDeleteThreshold = 5;
 		private readonly ITicketRepository _ticketRepository;
-		private readonly IUserService _userService;
-		public readonly IDoctorService _doctorService;
 
 
-		public TicketService(ITicketRepository ticketRepository, IUserService userService, IDoctorService doctorService)
+		public TicketService(ITicketRepository ticketRepository)
 		{
 			this._ticketRepository = ticketRepository;
-			this._userService = userService;
-			this._doctorService = doctorService;
 		}
 
 		// Done 
@@ -37,7 +33,7 @@ namespace VDG_Web_Api.src.Services
 
 			if (DateTime.Now.Subtract(ticketMessage.Date).Minutes > UpdateAndDeleteThreshold)
 			{
-				throw new Exception($"The minimum time to remove the message has passed");
+				throw new Exception($"Cannot remove this message anymore");
 			}
 
 			try
@@ -54,14 +50,11 @@ namespace VDG_Web_Api.src.Services
 		public async Task UpdateMessageAsync(TicketMessageDTO ticketMessageDTO)
 		{
 
-			var ticketMessage = MapToTicketMessage(ticketMessageDTO);
-			if (ticketMessageDTO == null)
-			{
-				throw new ArgumentNullException($"No such Message");
-			}
+			TicketMessage ticketMessage = ticketMessageDTO.ToEntity();
+
 			if (DateTime.Now.Subtract(ticketMessage.Date).Minutes > UpdateAndDeleteThreshold)
 			{
-				throw new Exception($"The minimum time to remove the message has passed");
+				throw new InvalidOperationException($"The minimum time to remove the message has passed");
 			}
 
 			try
@@ -71,90 +64,59 @@ namespace VDG_Web_Api.src.Services
 			catch (Exception ex)
 			{
 
-				throw new InvalidOperationException($"Could not update, Error: {ex.Message}", ex);
+				throw new InvalidOperationException($"Could not update", ex);
 			}
 		}
 		// Done 
 		public async Task<IEnumerable<DoctorTicketDTO>> GetDoctorConsultationsAsync(int doctorId)
 		{
-
-			if (doctorId <= 0)
-			{
-				throw new Exception($"No such doctor with this id: {doctorId}");
-			}
 			try
 			{
 				var doctorConsultations = await _ticketRepository.GetConsultationsAsync(doctorId, null);
 
-				return (IEnumerable<DoctorTicketDTO>)doctorConsultations.Select(async d =>
-				{
-					var ticketDto = MapToTicketDto(d);
-
-					var user = await _userService.GetUser(ticketDto.UserId ?? 0);
-
-					var fname = user?.Person.FirstName;
-					var lname = user?.Person.LastName;
-
-					return new DoctorTicketDTO() { TicketDto = ticketDto, UserFirstName = fname, UserLastName = lname };
-				}).ToList();
-
-
+				return doctorConsultations.Select(d => d.ToDoctorTicketDto());
 			}
 			catch (Exception ex)
 			{
-
-				throw new InvalidOperationException($"Could not retrive data, Error: {ex.Message}", ex);
+				throw new InvalidOperationException($"failed loading tickets", ex);
 			}
 		}
 		// Done
 		public async Task<IEnumerable<UserTicketDTO>> GetUserConsultationsAsync(int userId)
 		{
-			if (userId <= 0)
-			{
-				throw new Exception($"No such doctor with this id: {userId}");
-			}
 			try
 			{
 				var userConsultaions = await _ticketRepository.GetConsultationsAsync(null, userId);
 
-				return userConsultaions.Select(u =>
-				{
-					var ticketDto = MapToTicketDto(u);
-
-					var doctorDto = _doctorService.GetDoctorById(ticketDto.DoctorId ?? 0).Result;
-
-					return new UserTicketDTO() { DoctorDto = doctorDto, TicketDto = ticketDto };
-
-				});
+				return userConsultaions.Select(u => u.ToUserTicketDto());
 			}
 			catch (Exception ex)
 			{
-
-				throw new InvalidOperationException($"Could not retrive data, Error: {ex.Message}", ex);
+				throw new InvalidOperationException($"failed loading tickets", ex);
 			}
 		}
-		// Done
-		public async Task SendConsultationRequest(TicketDTO ticketDto, TicketMessageDTO ticketMessageDto)
-		{
-			if (ticketDto == null || ticketMessageDto == null || !ticketDto.IsValidTicket() || !ticketMessageDto.IsValidTicketMessage())
-			{
-				throw new ArgumentNullException($"No such Message");
-			}
-			Ticket ticket = MapToTicket(ticketDto);
-			var usetTickets = await _ticketRepository.GetConsultationsAsync(userId: ticket.UserId!.Value);
+		private bool HasTicketWithDoctor(IEnumerable<Ticket> tickets, int doctorId) =>
+			tickets.Where(t => t.DoctorId == doctorId && t.Status != TicketStatus.Closed).Count() > 0;
 
-			if (usetTickets.Where(t => t.DoctorId == ticket.DoctorId).Any(t =>
+
+		public async Task SendConsultationRequest(AddTicketDTO addTicketDTO)
+		{
+			if (addTicketDTO.TicketMessage.IsValidTicketMessage() || string.IsNullOrEmpty(addTicketDTO.Text))
 			{
-				var status = Enum.Parse<TicketStatus>(t.Status!, true);
-				return !status.Equals(TicketStatus.Closed);
-			}))
+				throw new ArgumentException("Ticket invalid");
+			}
+
+			var usetTickets = await _ticketRepository.GetConsultationsAsync(userId: addTicketDTO.UserId);
+
+			if (HasTicketWithDoctor(usetTickets, addTicketDTO.DoctorId))
 			{
 				throw new Exception("You have an open ticket with this doctor");
 			}
+
 			try
 			{
-				var ticketMessage = MapToTicketMessage(ticketMessageDto);
-				await _ticketRepository.SendConsultationRequestAsync(ticket, ticketMessage);
+				Ticket ticket = addTicketDTO.ToEntity();
+				await _ticketRepository.SendConsultationRequestAsync(ticket);
 			}
 			catch (Exception ex)
 			{
@@ -169,9 +131,10 @@ namespace VDG_Web_Api.src.Services
 			{
 				throw new ArgumentNullException("No such Message");
 			}
+
 			try
 			{
-				TicketMessage ticketMessage = MapToTicketMessage(ticketMessageDto);
+				TicketMessage ticketMessage = ticketMessageDto.ToEntity();
 				await _ticketRepository.SendMessageAsync(ticketMessage);
 			}
 			catch (Exception ex)
@@ -179,59 +142,6 @@ namespace VDG_Web_Api.src.Services
 
 				throw new InvalidOperationException($"Could not send, Error: {ex.Message}", ex);
 			}
-		}
-
-		// Mapping 
-
-
-		public TicketDTO MapToTicketDto(Ticket ticket)
-		{
-			return new TicketDTO()
-			{
-				CloseDate = ticket.CloseDate,
-				Id = ticket.Id,
-				DoctorId = ticket.DoctorId,
-				Status = ticket.Status,
-				UserId = ticket.UserId,
-
-
-			};
-		}
-
-		public DoctorDTO MapToDoctorDto(Doctor doctor)
-		{
-			return new DoctorDTO()
-			{
-				Speciality = doctor.Speciality.name,
-				Id = doctor.Id,
-				SpecialityId = doctor.SpecialityId,
-				SyndicateId = doctor.SyndicateId,
-				UserId = doctor.UserId
-			};
-		}
-
-		public Ticket MapToTicket(TicketDTO ticketDto)
-		{
-			return new Ticket()
-			{
-				DoctorId = ticketDto.DoctorId,
-				Status = ticketDto.Status,
-				UserId = ticketDto.UserId,
-				CloseDate = ticketDto.CloseDate,
-				Id = ticketDto.Id,
-			};
-		}
-
-		public TicketMessage MapToTicketMessage(TicketMessageDTO ticketMessageDto)
-		{
-			return new TicketMessage()
-			{
-				Id = ticketMessageDto.Id,
-				TicketId = ticketMessageDto.TicketId,
-				Date = ticketMessageDto.Date,
-				OwnerId = ticketMessageDto.OwnerId,
-				Text = ticketMessageDto.Text,
-			};
 		}
 	}
 }
