@@ -4,8 +4,10 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using VDG_Web_Api.src.DTOs.UserDTOs;
+using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Services.Interfaces;
 
+[Obsolete("will be removed")]
 public class BasicAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
 	private readonly IAuthService _authService;
@@ -46,7 +48,12 @@ public class BasicAuthHandler : AuthenticationHandler<AuthenticationSchemeOption
 
 		try
 		{
-			UserDTO user = await _authService.ValidateUser(userLogin);
+			User? user = await _authService.ValidateUser(userLogin);
+
+			if (user == null)
+			{
+				throw new InvalidOperationException();
+			}
 
 			var userFullName = $"{user.Person.FirstName} {user.Person.LastName}";
 
@@ -55,7 +62,7 @@ public class BasicAuthHandler : AuthenticationHandler<AuthenticationSchemeOption
 				new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()!),
 			new Claim(ClaimTypes.Name, userFullName),
 			new Claim(ClaimTypes.Email, user.Email),
-			new Claim(ClaimTypes.Role, user.Role!)
+			new Claim(ClaimTypes.Role, user.Role.ToString())
 			], "Basic");
 
 			var userPrincipal = new ClaimsPrincipal(claimsIdentity);

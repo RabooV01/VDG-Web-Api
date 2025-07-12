@@ -5,6 +5,5 @@
 		public int UserId { get; set; }
 		public int DoctorId { get; set; }
 		public string Text { get; set; } = string.Empty;
-		public TicketMessageDTO TicketMessage { get; set; } = null!;
 	}
 }

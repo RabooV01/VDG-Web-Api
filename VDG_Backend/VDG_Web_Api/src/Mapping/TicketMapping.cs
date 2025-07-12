@@ -72,8 +72,7 @@ namespace VDG_Web_Api.src.Mapping
 			{
 				UserId = addTicketDTO.UserId,
 				DoctorId = addTicketDTO.DoctorId,
-				CloseDate = null,
-				TicketMessages = [addTicketDTO.TicketMessage.ToEntity()]
+				CloseDate = null
 			};
 	}
 }

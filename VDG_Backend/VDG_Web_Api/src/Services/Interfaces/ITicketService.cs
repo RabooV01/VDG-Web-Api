@@ -10,5 +10,6 @@ namespace VDG_Web_Api.src.Services.Interfaces
 		public Task UpdateMessageAsync(TicketMessageDTO message);
 		public Task DeleteMessageAsync(int id);
 		public Task SendConsultationRequest(AddTicketDTO addTicketDTO);
+		public Task<IEnumerable<TicketMessageDTO>> GetTicketMessages(int ticketId);
 	}
 }

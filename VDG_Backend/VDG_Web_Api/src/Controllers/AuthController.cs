@@ -18,7 +18,7 @@ namespace VDG_Web_Api.src.Controllers
 			_userService = userService;
 		}
 
-		[HttpPost]
+		[HttpPost("Register")]
 		public async Task<ActionResult> Register(UserRegister userRegister)
 		{
 			try

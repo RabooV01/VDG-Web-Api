@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using VDG_Web_Api.src.Enums;
 
 namespace VDG_Web_Api.src.Models;
 
@@ -24,7 +25,7 @@ public partial class User
 
 	[StringLength(32)]
 	[Unicode(false)]
-	public string Role { get; set; } = string.Empty;
+	public UserRole Role { get; set; } = UserRole.User;
 
 	[ForeignKey("PersonId")]
 	public virtual Person Person { get; set; } = null!;

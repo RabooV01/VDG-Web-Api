@@ -1,6 +1,5 @@
 ﻿using VDG_Web_Api.src.DTOs.TicketDTOs;
 using VDG_Web_Api.src.Enums;
-using VDG_Web_Api.src.Extensions.Validation;
 using VDG_Web_Api.src.Mapping;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
@@ -101,7 +100,7 @@ namespace VDG_Web_Api.src.Services
 
 		public async Task SendConsultationRequest(AddTicketDTO addTicketDTO)
 		{
-			if (addTicketDTO.TicketMessage.IsValidTicketMessage() || string.IsNullOrEmpty(addTicketDTO.Text))
+			if (string.IsNullOrEmpty(addTicketDTO.Text))
 			{
 				throw new ArgumentException("Ticket invalid");
 			}
@@ -116,6 +115,7 @@ namespace VDG_Web_Api.src.Services
 			try
 			{
 				Ticket ticket = addTicketDTO.ToEntity();
+				ticket.TicketMessages = [new() { Text = addTicketDTO.Text, OwnerId = addTicketDTO.UserId, Date = DateTime.Now }];
 				await _ticketRepository.SendConsultationRequestAsync(ticket);
 			}
 			catch (Exception ex)
@@ -141,6 +141,19 @@ namespace VDG_Web_Api.src.Services
 			{
 
 				throw new InvalidOperationException($"Could not send, Error: {ex.Message}", ex);
+			}
+		}
+
+		public async Task<IEnumerable<TicketMessageDTO>> GetTicketMessages(int ticketId)
+		{
+			try
+			{
+				var messages = await _ticketRepository.GetTicketMessagesAsync(ticketId);
+				return messages.Select(m => m.ToDto());
+			}
+			catch (Exception)
+			{
+				throw;
 			}
 		}
 	}
