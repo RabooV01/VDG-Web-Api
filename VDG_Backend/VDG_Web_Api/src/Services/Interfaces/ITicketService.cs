@@ -1,4 +1,5 @@
 ﻿using VDG_Web_Api.src.DTOs.TicketDTOs;
+using VDG_Web_Api.src.Enums;
 
 namespace VDG_Web_Api.src.Services.Interfaces
 {
@@ -11,5 +12,6 @@ namespace VDG_Web_Api.src.Services.Interfaces
 		public Task DeleteMessageAsync(int id);
 		public Task SendConsultationRequest(AddTicketDTO addTicketDTO);
 		public Task<IEnumerable<TicketMessageDTO>> GetTicketMessages(int ticketId);
+		public Task ChangeTicketStatus(int ticketId, TicketStatus ticketStatus);
 	}
 }

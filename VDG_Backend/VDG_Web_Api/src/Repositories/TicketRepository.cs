@@ -26,7 +26,7 @@ namespace VDG_Web_Api.src.Repositories
 				throw new InvalidOperationException($"Error while retrieving data. {ex.Message}", ex);
 			}
 		}
-		public async Task<IEnumerable<Ticket>> GetConsultationsAsync(int? doctorId = null, int? userId = null)
+		public async Task<IEnumerable<Ticket>> GetTicketsAsync(int? doctorId = null, int? userId = null)
 		{
 			if (doctorId != null && userId != null)
 			{
@@ -60,7 +60,7 @@ namespace VDG_Web_Api.src.Repositories
 			{
 				throw new InvalidOperationException($"Error while retrieving data. {ex.Message}", ex);
 			}
-			throw new InvalidOperationException($"Unexpected error occured in {nameof(GetConsultationsAsync)} method controlflow.");
+			throw new InvalidOperationException($"Unexpected error occured in {nameof(GetTicketsAsync)} method controlflow.");
 		}
 
 
@@ -141,6 +141,27 @@ namespace VDG_Web_Api.src.Repositories
 			{
 
 				throw new Exception($"Faild while retriving data,Error:{ex.Message}", ex);
+			}
+		}
+
+		public async Task<Ticket?> GetTicketByIdAsync(int ticketId)
+		{
+			var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId);
+			return ticket;
+		}
+
+		public async Task UpdateTicketStatusAsync(Ticket ticket)
+		{
+			try
+			{
+				await _context.Tickets.Where(t => t.Id == ticket.Id)
+					.ExecuteUpdateAsync(t => t.SetProperty(p => p.Status, ticket.Status)
+					.SetProperty(p => p.CloseDate, ticket.CloseDate));
+			}
+			catch (Exception)
+			{
+
+				throw;
 			}
 		}
 	}

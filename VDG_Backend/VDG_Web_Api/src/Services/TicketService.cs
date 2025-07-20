@@ -71,7 +71,7 @@ namespace VDG_Web_Api.src.Services
 		{
 			try
 			{
-				var doctorConsultations = await _ticketRepository.GetConsultationsAsync(doctorId, null);
+				var doctorConsultations = await _ticketRepository.GetTicketsAsync(doctorId, null);
 
 				return doctorConsultations.Select(d => d.ToDoctorTicketDto());
 			}
@@ -85,7 +85,7 @@ namespace VDG_Web_Api.src.Services
 		{
 			try
 			{
-				var userConsultaions = await _ticketRepository.GetConsultationsAsync(null, userId);
+				var userConsultaions = await _ticketRepository.GetTicketsAsync(null, userId);
 
 				return userConsultaions.Select(u => u.ToUserTicketDto());
 			}
@@ -105,7 +105,7 @@ namespace VDG_Web_Api.src.Services
 				throw new ArgumentException("Ticket invalid");
 			}
 
-			var usetTickets = await _ticketRepository.GetConsultationsAsync(userId: addTicketDTO.UserId);
+			var usetTickets = await _ticketRepository.GetTicketsAsync(userId: addTicketDTO.UserId);
 
 			if (HasTicketWithDoctor(usetTickets, addTicketDTO.DoctorId))
 			{
@@ -153,6 +153,41 @@ namespace VDG_Web_Api.src.Services
 			}
 			catch (Exception)
 			{
+				throw;
+			}
+		}
+
+		public async Task ChangeTicketStatus(int ticketId, TicketStatus ticketStatus)
+		{
+			var ticket = await _ticketRepository.GetTicketByIdAsync(ticketId);
+
+			if (ticket == null)
+			{
+				throw new KeyNotFoundException("No such ticket was found");
+			}
+
+			bool isValidChange = (ticket.Status == TicketStatus.Open && ticketStatus == TicketStatus.Closed) ||
+				(ticket.Status == TicketStatus.Pending && (ticketStatus == TicketStatus.Open || ticketStatus == TicketStatus.Rejected));
+
+			if (!isValidChange)
+			{
+				throw new InvalidOperationException("cannot change state of this ticket");
+			}
+
+			ticket.Status = ticketStatus;
+
+			if (ticketStatus == TicketStatus.Closed)
+			{
+				ticket.CloseDate = DateTime.Now;
+			}
+
+			try
+			{
+				await _ticketRepository.UpdateTicketStatusAsync(ticket);
+			}
+			catch (Exception)
+			{
+
 				throw;
 			}
 		}

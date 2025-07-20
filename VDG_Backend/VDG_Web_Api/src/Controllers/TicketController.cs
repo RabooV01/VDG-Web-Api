@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using VDG_Web_Api.src.DTOs.TicketDTOs;
+using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.Services.Interfaces;
 
 namespace VDG_Web_Api.src.Controllers
@@ -20,13 +20,13 @@ namespace VDG_Web_Api.src.Controllers
 		{
 			try
 			{
-				ticketDTO.UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+				//ticketDTO.UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 				await _ticketService.SendConsultationRequest(ticketDTO);
 				return Created();
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
-				return BadRequest(e.Message);
+				return Problem();
 			}
 		}
 
@@ -78,7 +78,7 @@ namespace VDG_Web_Api.src.Controllers
 		{
 			try
 			{
-				ticketMessage.OwnerId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+				//ticketMessage.OwnerId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 				ticketMessage.Date = DateTime.Now;
 
 				await _ticketService.SendMessageAsync(ticketMessage);
@@ -91,12 +91,17 @@ namespace VDG_Web_Api.src.Controllers
 			}
 		}
 
-		[HttpPost("{ticketId}/Accept")]
+		[HttpPut("{ticketId}/Accept")]
 		public async Task<ActionResult> AcceptTicket(int ticketId)
 		{
 			try
 			{
-
+				await _ticketService.ChangeTicketStatus(ticketId, TicketStatus.Open);
+				return NoContent();
+			}
+			catch (InvalidOperationException ex)
+			{
+				return BadRequest(ex.Message);
 			}
 			catch (Exception)
 			{
@@ -105,12 +110,17 @@ namespace VDG_Web_Api.src.Controllers
 			}
 		}
 
-		[HttpPost("{ticketId}/Reject")]
+		[HttpPut("{ticketId}/Reject")]
 		public async Task<ActionResult> RejectTicket(int ticketId)
 		{
 			try
 			{
-
+				await _ticketService.ChangeTicketStatus(ticketId, TicketStatus.Rejected);
+				return NoContent();
+			}
+			catch (InvalidOperationException ex)
+			{
+				return BadRequest(ex.Message);
 			}
 			catch (Exception)
 			{
@@ -119,12 +129,17 @@ namespace VDG_Web_Api.src.Controllers
 			}
 		}
 
-		[HttpPost("{ticketId}/Close")]
+		[HttpPut("{ticketId}/Close")]
 		public async Task<ActionResult> CloseTicket(int ticketId)
 		{
 			try
 			{
-
+				await _ticketService.ChangeTicketStatus(ticketId, TicketStatus.Closed);
+				return NoContent();
+			}
+			catch (InvalidOperationException ex)
+			{
+				return BadRequest(ex.Message);
 			}
 			catch (Exception)
 			{
