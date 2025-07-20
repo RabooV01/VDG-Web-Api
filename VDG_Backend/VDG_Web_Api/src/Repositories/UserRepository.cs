@@ -49,9 +49,9 @@ namespace VDG_Web_Api.src.Repositories
 			try
 			{
 				var users = await _context.Users
-					.Include(u => u.Person) // Eager load the related Person entity
+					.Include(u => u.Person)
 					.Skip((page - 1) * limit) // Apply pagination
-					.Take(limit) // Limit the number of users returned
+					.Take(limit) 
 					.ToListAsync();
 				return users;
 			}
@@ -93,7 +93,7 @@ namespace VDG_Web_Api.src.Repositories
 			try
 			{
 				return await _context.Users.Include(u => u.Person)
-					.FirstOrDefaultAsync(u => email.Equals(u.Email));
+					.FirstOrDefaultAsync(u => email == u.Email);
 			}
 			catch (Exception)
 			{

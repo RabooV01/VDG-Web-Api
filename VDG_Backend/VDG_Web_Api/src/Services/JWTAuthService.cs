@@ -34,7 +34,7 @@ public class JWTAuthService : IAuthService
 		var tokenHandler = new JwtSecurityTokenHandler();
 
 		Claim[] claims = [new (ClaimTypes.NameIdentifier, user.Id.ToString()),
-			new (ClaimTypes.Name, $"{user.Person.FirstName} {user.Person.LastName}"),
+			new (ClaimTypes.Name, $"{user.Person.FirstName};{user.Person.LastName}"),
 			new (ClaimTypes.Email, user.Email),
 			new (ClaimTypes.Role, user.Role.ToString())];
 

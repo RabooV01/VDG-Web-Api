@@ -21,7 +21,7 @@ public class ReservationRepository : IReservationRepository
 			var reservations = await _context.Reservations
 			.Include(r => r.User)
 				.ThenInclude(u => u.Person)
-			.Where(c => c.ScheduledAt.Date == date.Date && c.VirtualId == virtualId)
+			.Where(c => c.VirtualId == virtualId && c.ScheduledAt.Date == date.Date)
 			.ToListAsync();
 
 			return reservations;

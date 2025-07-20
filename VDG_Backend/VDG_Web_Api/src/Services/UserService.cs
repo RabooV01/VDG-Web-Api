@@ -65,7 +65,7 @@ public class UserService : IUserService
 
 	public async Task UpdateUserAsync(UserDTO userDTO)
 	{
-		User user = await _userRepository.GetById(userDTO.Id) ?? throw new ArgumentException("Invalid User");
+		User user = await _userRepository.GetById(userDTO.UserId) ?? throw new ArgumentException("Invalid User");
 		try
 		{
 			await _userRepository.UpdateUserAsync(user);

@@ -10,9 +10,9 @@ namespace VDG_Web_Api.src.Mapping
 			=> new()
 			{
 				Email = userDTO.Email,
-				Id = userDTO.Id,
-				Person = userDTO.Person.ToEntity(),
-				PersonId = userDTO.Person.Id,
+				Id = userDTO.UserId,
+				Person = userDTO.GetPerson(),
+				PersonId = userDTO.PersonId,
 				Role = userDTO.Role
 			};
 
@@ -20,24 +20,36 @@ namespace VDG_Web_Api.src.Mapping
 			=> new()
 			{
 				Email = user.Email,
-				Id = user.Id,
+				UserId = user.Id,
 				Role = user.Role,
-				Person = user.Person.ToDto()
+				FirstName = user.Person.FirstName,
+				LastName = user.Person.LastName,
+				PersonId = user.PersonId,
+				Phone = user.Person.Phone
 			};
 
 		public static Person ToEntity(this PersonDTO personDTO)
 			=> new()
 			{
-				Id = personDTO.Id,
+				Id = personDTO.PersonId,
 				FirstName = personDTO.FirstName,
 				LastName = personDTO.LastName,
 				Phone = personDTO.Phone
 			};
 
+		public static Person GetPerson(this UserDTO userDTO)
+			=> new()
+			{
+				Id = userDTO.PersonId,
+				FirstName = userDTO.FirstName,
+				LastName = userDTO.LastName,
+				Phone = userDTO.Phone
+			};
+
 		public static PersonDTO ToDto(this Person person)
 			=> new()
 			{
-				Id = person.Id,
+				PersonId = person.Id,
 				FirstName = person.FirstName,
 				LastName = person.LastName,
 				Phone = person.Phone

@@ -12,7 +12,7 @@ public partial class User
 	public int Id { get; set; }
 
 	[Column("Person_Id")]
-	public int? PersonId { get; set; }
+	public int PersonId { get; set; }
 
 	[StringLength(128)]
 	[Unicode(false)]

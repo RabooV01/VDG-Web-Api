@@ -8,4 +8,6 @@ public class UpdateVirtualClinicDTO
     public string Status { get; set; } = string.Empty;
 	public double PreviewCost { get; set; }
     public string Location { get; set; } = string.Empty;
+    public string? Name { get; set; }
+    public string? LocationCoords { get; set; }
 }

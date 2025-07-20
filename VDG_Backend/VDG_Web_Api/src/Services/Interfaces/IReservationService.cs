@@ -8,5 +8,5 @@ public interface IReservationService
 	public Task<IEnumerable<UserReservationDTO>> GetUserReservationsAsync(int userId, DateOnly? date = null);
 	public Task BookAppointmentAsync(ReservationDTO reservation);
 	public Task CancelAppointmentAsync(int reservationId);
-	public Task EditAppointmentAsync(ReservationDTO reservation);
+	public Task<bool> EditAppointmentAsync(ReservationDTO reservation);
 }

@@ -5,8 +5,19 @@ namespace VDG_Web_Api.src.Mapping;
 
 public static class VirtualClinicMapping
 {
+	public static string ToHolidaysString(this IEnumerable<DayOfWeek> dayOfWeeks)
+	{
+		string Holidays = "";
+		foreach (var holiday in dayOfWeeks)
+		{
+			Holidays = $"{Holidays}{holiday};";
+		}
+		return Holidays;
+	}
 	public static VirtualClinic ToEntity(this VirtualClinicDTO virtualClinicDTO)
-		=> new()
+	{
+
+		return new()
 		{
 			Id = virtualClinicDTO.Id,
 			DoctorId = virtualClinicDTO.DoctorId,
@@ -14,8 +25,12 @@ public static class VirtualClinicMapping
 			AvgService = virtualClinicDTO.AvgService,
 			PreviewCost = virtualClinicDTO.PreviewCost,
 			Status = virtualClinicDTO.Status,
+			Name = virtualClinicDTO.Name,
+			Holidays = virtualClinicDTO.Holidays.ToHolidaysString(),
+			LocationCoords = virtualClinicDTO.LocationCoords,
 			Doctor = virtualClinicDTO.Doctor.ToEntity()
 		};
+	}
 
 	public static ClinicWorkTime ToEntity(this ClinicWorkTimeDTO clinicWorkTimeDTO)
 		=> new()
@@ -43,7 +58,12 @@ public static class VirtualClinicMapping
 			Location = clinic.Location,
 			AvgService = clinic.AvgService,
 			Doctor = clinic.Doctor.ToDto(),
-			PreviewCost = clinic.PreviewCost
+			PreviewCost = clinic.PreviewCost,
+			Name = clinic.Name,
+			Holidays = string.IsNullOrEmpty(clinic.Holidays) ? new() : clinic.Holidays.Split(';')
+				.Select(d => Enum.Parse<DayOfWeek>(d))
+				.ToList(),
+			WorkTimes = clinic.WorkTimes.Select(wt => wt.ToDto()).ToList()
 		};
 
 	public static VirtualClinic ToEntity(this AddVirtualClinicDTO clinicDTO)
@@ -53,6 +73,10 @@ public static class VirtualClinicMapping
 			Location = clinicDTO.Location,
 			PreviewCost = clinicDTO.PreviewCost,
 			AvgService = clinicDTO.AvgService,
+			LocationCoords = clinicDTO.LocationCoords,
+			Holidays = clinicDTO.Holidays.ToHolidaysString(),
+			Name = clinicDTO.Name,
+			Status = "active",
 			WorkTimes = clinicDTO.WorkTimes.Select(x => x.ToEntity()).ToList()
 		};
 

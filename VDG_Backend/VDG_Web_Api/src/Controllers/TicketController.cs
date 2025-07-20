@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using VDG_Web_Api.src.DTOs.TicketDTOs;
 using VDG_Web_Api.src.Services.Interfaces;
 
@@ -19,6 +20,7 @@ namespace VDG_Web_Api.src.Controllers
 		{
 			try
 			{
+				ticketDTO.UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 				await _ticketService.SendConsultationRequest(ticketDTO);
 				return Created();
 			}
@@ -57,7 +59,7 @@ namespace VDG_Web_Api.src.Controllers
 			}
 		}
 
-		[HttpGet("{ticketId}")]
+		[HttpGet("{ticketId}/Messages")]
 		public async Task<ActionResult<TicketDTO>> GetTicket(int ticketId)
 		{
 			try
@@ -68,6 +70,66 @@ namespace VDG_Web_Api.src.Controllers
 			catch (Exception)
 			{
 				return BadRequest();
+			}
+		}
+
+		[HttpPost("{ticketId}/Message")]
+		public async Task<ActionResult> SendMessage(TicketMessageDTO ticketMessage)
+		{
+			try
+			{
+				ticketMessage.OwnerId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+				ticketMessage.Date = DateTime.Now;
+
+				await _ticketService.SendMessageAsync(ticketMessage);
+
+				return Created();
+			}
+			catch (Exception)
+			{
+				return Problem();
+			}
+		}
+
+		[HttpPost("{ticketId}/Accept")]
+		public async Task<ActionResult> AcceptTicket(int ticketId)
+		{
+			try
+			{
+
+			}
+			catch (Exception)
+			{
+
+				throw;
+			}
+		}
+
+		[HttpPost("{ticketId}/Reject")]
+		public async Task<ActionResult> RejectTicket(int ticketId)
+		{
+			try
+			{
+
+			}
+			catch (Exception)
+			{
+
+				throw;
+			}
+		}
+
+		[HttpPost("{ticketId}/Close")]
+		public async Task<ActionResult> CloseTicket(int ticketId)
+		{
+			try
+			{
+
+			}
+			catch (Exception)
+			{
+
+				throw;
 			}
 		}
 	}

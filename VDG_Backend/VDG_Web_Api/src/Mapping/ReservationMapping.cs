@@ -36,7 +36,7 @@ public static class ReservationMapping
 			Type = reservation.Type,
 			UserId = reservation.UserId,
 			VirtualId = reservation.VirtualId,
-			UserDto = reservation.User.ToDto()
+			User = reservation.User?.ToDto()
 		};
 
 	public static UserReservationDTO ToUserReservationDto(this Reservation reservation)
@@ -48,6 +48,6 @@ public static class ReservationMapping
 		   Type = reservation.Type,
 		   UserId = reservation.UserId,
 		   VirtualId = reservation.VirtualId,
-		   VirtualDto = reservation.Virtual?.ToDto()
+		   VirtualClinic = reservation.Virtual?.ToDto()
 	   };
 }

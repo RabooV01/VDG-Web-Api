@@ -11,17 +11,22 @@ public partial class VirtualClinic
 	[Key]
 	public int Id { get; set; }
 
+	public string? Name { get; set; }
+
 	[Column("Doctor_Id")]
 	public int DoctorId { get; set; }
 
 	[StringLength(255)]
 	[Unicode(false)]
 	public string Location { get; set; } = string.Empty;
+	public string? LocationCoords { get; set; }
 
 	[StringLength(255)]
 	[Unicode(false)]
 	[DefaultValue("Inactive")]
 	public string Status { get; set; } = "Inactive";
+
+	public string Holidays { get; set; } = string.Empty;
 
 	[Column("Avg_Service")]
 	public int AvgService { get; set; }

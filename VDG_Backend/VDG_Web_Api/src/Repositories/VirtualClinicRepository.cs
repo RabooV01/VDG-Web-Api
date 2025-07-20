@@ -76,7 +76,8 @@ public class VirtualClinicRepository : IVirtualClinicRepository
 		if (clinicWorkTime == null)
 			return;
 
-		await _context.ClinicWorkTimes.Where(c => c.Id == workTimeId).ExecuteDeleteAsync();
+		_context.ClinicWorkTimes.Remove(clinicWorkTime);
+		await _context.SaveChangesAsync();
 	}
 
 	public async Task UpdateClinic(VirtualClinic clinic)
