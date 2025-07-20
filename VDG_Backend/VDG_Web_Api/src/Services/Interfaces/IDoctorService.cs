@@ -5,5 +5,9 @@ namespace VDG_Web_Api.src.Services.Interfaces
 	public interface IDoctorService
 	{
 		public Task<DoctorDTO> GetDoctorById(int doctorId);
+		public Task AddDoctor(AddDoctorDTO doctorDTO);
+		public Task DeleteDoctor(int doctorId);
+		public Task UpdateDoctorDescription(int doctorId, string description);
+		public Task UpdateDoctorConsultationSettings(DoctorSettings doctorSettings, int doctorId);
 	}
 }

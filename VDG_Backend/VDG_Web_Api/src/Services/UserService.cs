@@ -1,3 +1,4 @@
+using VDG_Web_Api.src.DTOs.PersonDTOs;
 using VDG_Web_Api.src.DTOs.UserDTOs;
 using VDG_Web_Api.src.Extensions.Validation;
 using VDG_Web_Api.src.Mapping;
@@ -63,9 +64,10 @@ public class UserService : IUserService
 		}
 	}
 
-	public async Task UpdateUserAsync(UserDTO userDTO)
+	public async Task UpdateUserAsync(PersonProfileDTO personProfile, int userId)
 	{
-		User user = await _userRepository.GetById(userDTO.UserId) ?? throw new ArgumentException("Invalid User");
+		User user = await _userRepository.GetById(userId) ?? throw new ArgumentException("Invalid User");
+		user.Person = personProfile.ToEntity();
 		try
 		{
 			await _userRepository.UpdateUserAsync(user);
@@ -93,5 +95,17 @@ public class UserService : IUserService
 		{
 			throw;
 		}
+	}
+
+	public async Task<UserProfileDTO> LoadUserProfile(int userId)
+	{
+		var user = await _userRepository.GetById(userId);
+
+		if (user == null)
+		{
+			throw new KeyNotFoundException("No such user");
+		}
+
+		return user.ToProfileDto();
 	}
 }

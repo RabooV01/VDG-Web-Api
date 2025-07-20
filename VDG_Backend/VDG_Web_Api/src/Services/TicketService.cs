@@ -20,6 +20,26 @@ namespace VDG_Web_Api.src.Services
 			this._ticketRepository = ticketRepository;
 		}
 
+		public async Task<TicketDTO> GetTicketByIdAsync(int ticketId)
+		{
+			try
+			{
+				var ticket = await _ticketRepository.GetTicketByIdAsync(ticketId);
+
+				if (ticket == null)
+				{
+					throw new KeyNotFoundException("No such ticket was found");
+				}
+
+				return ticket.ToDto();
+			}
+			catch (Exception)
+			{
+
+				throw;
+			}
+		}
+
 		// Done 
 		public async Task DeleteMessageAsync(int id)
 		{

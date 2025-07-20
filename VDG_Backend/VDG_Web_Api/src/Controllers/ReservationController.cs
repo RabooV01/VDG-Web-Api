@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using VDG_Web_Api.src.DTOs.ReservationDTOs;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Services.Interfaces;
@@ -7,6 +8,7 @@ namespace VDG_Web_Api.src.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	[Authorize]
 	public class ReservationController : ControllerBase
 	{
 		private readonly IReservationService _reservationService;
@@ -53,6 +55,7 @@ namespace VDG_Web_Api.src.Controllers
 		}
 
 		[HttpPost("Revision")]
+		[Authorize(Roles = "Doctor")]
 		public async Task<ActionResult> MakeRevision(ReservationDTO reservationDTO)
 		{
 			try

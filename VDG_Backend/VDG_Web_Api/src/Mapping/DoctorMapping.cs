@@ -5,6 +5,16 @@ namespace VDG_Web_Api.src.Mapping;
 
 public static class DoctorMapping
 {
+	public static Doctor ToEntity(this AddDoctorDTO doctorDTO)
+		=> new()
+		{
+			UserId = doctorDTO.UserId,
+			Description = doctorDTO.Description,
+			SpecialityId = doctorDTO.SpecialityId,
+			SyndicateId = doctorDTO.SyndicateId,
+			TicketCost = doctorDTO.TicketCost,
+			TicketOption = doctorDTO.TicketOptions
+		};
 	public static Doctor ToEntity(this DoctorDTO doctorDTO)
 		=> new()
 		{

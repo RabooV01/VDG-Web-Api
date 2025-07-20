@@ -1,14 +1,13 @@
 using VDG_Web_Api.src.DTOs.PersonDTOs;
+using VDG_Web_Api.src.Enums;
 
 namespace VDG_Web_Api.src.DTOs.UserDTOs;
 
-public class UserProfileDTO
+public class UserProfileDTO : PersonProfileDTO
 {
-    public PersonProfileDTO @Person { get; set; } = null!;
+	public int? UserId { get; set; }
 
-    public int? Id { get; set; }
+	public string Email { get; set; } = null!;
 
-    public string Email { get; set; } = null!;
-
-    public string? Role { get; set; }
+	public UserRole Role { get; set; }
 }

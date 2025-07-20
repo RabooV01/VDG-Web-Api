@@ -58,7 +58,7 @@ namespace VDG_Web_Api.src.Mapping
 		public static PersonProfileDTO ToPersonProfileDto(this Person person)
 			=> new()
 			{
-				Id = person.Id,
+				PersonId = person.Id,
 				FirstName = person.FirstName,
 				LastName = person.LastName,
 				Phone = person.Phone,
@@ -74,7 +74,8 @@ namespace VDG_Web_Api.src.Mapping
 				Phone = personProfileDTO.Phone,
 				Birthdate = personProfileDTO.BirthDate,
 				Gender = personProfileDTO.Gender,
-				PersonalId = personProfileDTO.PersonalId
+				PersonalId = personProfileDTO.PersonalId,
+				Id = personProfileDTO.PersonId
 			};
 
 		public static User ToEntity(this UserRegister userRegister)
@@ -83,6 +84,21 @@ namespace VDG_Web_Api.src.Mapping
 				Email = userRegister.Email,
 				PasswordHash = userRegister.Password,
 				Person = userRegister.Person.ToEntity()
+			};
+
+		public static UserProfileDTO ToProfileDto(this User user)
+			=> new()
+			{
+				FirstName = user.Person.FirstName,
+				LastName = user.Person.LastName,
+				Phone = user.Person.Phone,
+				PersonId = user.Person.Id,
+				PersonalId = user.Person.PersonalId,
+				BirthDate = user.Person.Birthdate,
+				Gender = user.Person.Gender,
+				Email = user.Email,
+				Role = user.Role,
+				UserId = user.Id
 			};
 	}
 }
