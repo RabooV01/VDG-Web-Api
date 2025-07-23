@@ -68,7 +68,11 @@ builder.Services.AddAuthentication() // add authentication to the builder
 
 
 builder.Services.AddScoped<IAuthService, JWTAuthService>();
-
+builder.Services.AddCors(x => {
+	x.AddPolicy("Any", x => x.AllowAnyHeader()
+	.AllowAnyMethod()
+	.AllowAnyOrigin());
+});
 builder.Services.AddSwaggerGen(c =>
 {
 
@@ -118,5 +122,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors("Any");
 
 app.Run();
