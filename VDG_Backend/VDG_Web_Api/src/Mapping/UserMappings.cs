@@ -1,5 +1,6 @@
 ﻿using VDG_Web_Api.src.DTOs.PersonDTOs;
 using VDG_Web_Api.src.DTOs.UserDTOs;
+using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.Models;
 
 namespace VDG_Web_Api.src.Mapping
@@ -13,7 +14,7 @@ namespace VDG_Web_Api.src.Mapping
 				Id = userDTO.UserId,
 				Person = userDTO.GetPerson(),
 				PersonId = userDTO.PersonId,
-				Role = userDTO.Role
+				Role = Enum.Parse<UserRole>(userDTO.Role, true)
 			};
 
 		public static UserDTO ToDto(this User user)
@@ -21,7 +22,7 @@ namespace VDG_Web_Api.src.Mapping
 			{
 				Email = user.Email,
 				UserId = user.Id,
-				Role = user.Role,
+				Role = user.Role.ToString(),
 				FirstName = user.Person.FirstName,
 				LastName = user.Person.LastName,
 				PersonId = user.PersonId,

@@ -1,4 +1,5 @@
 using VDG_Web_Api.src.DTOs.DoctorDTOs;
+using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.Models;
 
 namespace VDG_Web_Api.src.Mapping;
@@ -36,7 +37,7 @@ public static class DoctorMapping
 			Phone = doctor.User.Person.Phone,
 			UserId = doctor.UserId,
 			Email = doctor.User.Email,
-			Role = doctor.User.Role,
+			Role = doctor.User.Role.ToString(),
 			Description = doctor.Description
 		};
 
@@ -46,7 +47,7 @@ public static class DoctorMapping
 			Id = doctorDTO.UserId,
 			PersonId = doctorDTO.PersonId,
 			Email = doctorDTO.Email,
-			Role = doctorDTO.Role,
+			Role = Enum.Parse<UserRole>(doctorDTO.Role, true),
 			Person = doctorDTO.GetPerson()
 		};
 

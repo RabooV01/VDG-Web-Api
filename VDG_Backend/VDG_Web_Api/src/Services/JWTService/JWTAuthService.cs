@@ -5,9 +5,11 @@ using System.Security.Claims;
 using System.Text;
 using VDG_Web_Api.src;
 using VDG_Web_Api.src.DTOs.UserDTOs;
+using VDG_Web_Api.src.Mapping;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services.Interfaces;
+using VDG_Web_Api.src.Services.JWTService;
 
 public class JWTAuthService : IAuthService
 {
@@ -22,7 +24,7 @@ public class JWTAuthService : IAuthService
 		_key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SigningKey));
 	}
 
-	public async Task<string> AuthenticateAsync(UserLogin login)
+	public async Task<AuthResponse> AuthenticateAsync(UserLogin login)
 	{
 		var user = await ValidateUser(login);
 
@@ -49,7 +51,17 @@ public class JWTAuthService : IAuthService
 
 		var token = tokenHandler.CreateToken(tokenDiscriptor);
 
-		return tokenHandler.WriteToken(token);
+		AuthResponse response = new()
+		{
+			Token = new()
+			{
+				AccessToken = tokenHandler.WriteToken(token),
+				ExpiresIn = _jwtOptions.Expiration
+			},
+			User = user.ToDto()
+		};
+
+		return response;
 	}
 
 	public async Task<User?> ValidateUser(UserLogin userLogin)

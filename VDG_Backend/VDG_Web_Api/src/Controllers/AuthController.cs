@@ -40,8 +40,8 @@ namespace VDG_Web_Api.src.Controllers
 		{
 			try
 			{
-				var accessToken = await _authService.AuthenticateAsync(user);
-				return Ok(accessToken);
+				var response = await _authService.AuthenticateAsync(user);
+				return Ok(response);
 			}
 			catch (Exception ex)
 			{
