@@ -13,7 +13,6 @@ namespace VDG_Web_Api.src.Controllers
 	{
 		private readonly IReservationService _reservationService;
 
-		//TODO Reservation Operations and routings
 		public ReservationController(IReservationService reservationService)
 		{
 			_reservationService = reservationService;
