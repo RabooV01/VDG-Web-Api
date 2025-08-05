@@ -8,7 +8,7 @@ namespace VDG_Web_Api.src.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	[Authorize(Policy = "Doctor-Admin")]
+	[Authorize]
 	public class DoctorController : ControllerBase
 	{
 		private readonly IDoctorService _doctorService;
@@ -21,7 +21,7 @@ namespace VDG_Web_Api.src.Controllers
 		}
 
 		[HttpGet("{doctorId}")]
-		public async Task<ActionResult> GetDoctor(int doctorId)
+		public async Task<ActionResult<DoctorDTO>> GetDoctor(int doctorId)
 		{
 			try
 			{
