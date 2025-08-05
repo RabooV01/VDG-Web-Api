@@ -110,10 +110,18 @@ public class VirtualClinicService : IVirtualClinicService
 		}
 	}
 
-	public async Task<VirtualClinicInProfileDTO> GetClinicsByDoctorId(int doctorId)
+	public async Task<IEnumerable<VirtualClinicInProfileDTO>> GetClinicsByDoctorId(int doctorId)
 	{
-		var clinics = await _clinicRepository.GetClinicsByDoctorId(doctorId);
-		throw new NotImplementedException();
+		try
+		{
+			var clinics = await _clinicRepository.GetClinicsByDoctorId(doctorId);
+
+			return clinics.Select(c => c.ToClinicInProfileDto());
+		}
+		catch (Exception)
+		{
+			throw;
+		}
 	}
 
 }

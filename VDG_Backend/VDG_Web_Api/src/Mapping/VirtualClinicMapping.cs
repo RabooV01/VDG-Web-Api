@@ -5,6 +5,18 @@ namespace VDG_Web_Api.src.Mapping;
 
 public static class VirtualClinicMapping
 {
+	public static VirtualClinicInProfileDTO ToClinicInProfileDto(this VirtualClinic clinic)
+		=> new()
+		{
+			Id = clinic.Id,
+			DoctorId = clinic.DoctorId,
+			EndWorkHours = clinic.WorkTimes.OrderByDescending(w => w.EndWorkHours).FirstOrDefault()?.EndWorkHours ?? new TimeOnly(0),
+			StartWorkHours = clinic.WorkTimes.OrderBy(w => w.StartWorkHours).FirstOrDefault()?.StartWorkHours ?? new TimeOnly(0),
+			Location = clinic.Location,
+			PreviewCost = clinic.PreviewCost,
+			Status = clinic.Status,
+			Name = clinic.Name
+		};
 	public static string ToHolidaysString(this IEnumerable<DayOfWeek> dayOfWeeks)
 	{
 		string Holidays = "";
@@ -88,6 +100,8 @@ public static class VirtualClinicMapping
 			DoctorId = updateVirtualClinicDTO.DoctorId,
 			Location = updateVirtualClinicDTO.Location,
 			PreviewCost = updateVirtualClinicDTO.PreviewCost,
-			Status = updateVirtualClinicDTO.Status
+			Status = updateVirtualClinicDTO.Status,
+			Name = updateVirtualClinicDTO.Name,
+			LocationCoords = updateVirtualClinicDTO.LocationCoords
 		};
 }
