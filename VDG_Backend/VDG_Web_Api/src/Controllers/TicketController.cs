@@ -77,7 +77,7 @@ namespace VDG_Web_Api.src.Controllers
 		}
 
 		[HttpGet("{ticketId}/Messages")]
-		public async Task<ActionResult<IEnumerable<TicketMessageDTO>>> GetTicket(int ticketId)
+		public async Task<ActionResult<IEnumerable<TicketMessageDTO>>> GetTicketMessages(int ticketId)
 		{
 			try
 			{

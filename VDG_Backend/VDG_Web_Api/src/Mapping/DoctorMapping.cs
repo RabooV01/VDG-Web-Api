@@ -25,12 +25,21 @@ public static class DoctorMapping
 			User = doctorDTO.GetUser()
 		};
 
+	public static DoctorInfo ToInfo(this Doctor doctor)
+		=> new()
+		{
+			Id = doctor.Id,
+			FirstName = doctor.User.Person.FirstName,
+			LastName = doctor.User.Person.LastName ?? string.Empty,
+			Speciality = doctor.Speciality.Name
+		};
+
 	public static DoctorDTO ToDto(this Doctor doctor)
 		=> new()
 		{
 			DoctorId = doctor.Id,
 			SpecialityId = doctor.SpecialityId,
-			Speciality = doctor.Speciality.name,
+			Speciality = doctor.Speciality.Name,
 			PersonId = doctor.User.PersonId,
 			FirstName = doctor.User.Person.FirstName,
 			LastName = doctor.User.Person.LastName,

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VDG_Web_Api.src.DTOs.ReservationDTOs;
+using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Services.Interfaces;
 
@@ -12,10 +13,34 @@ namespace VDG_Web_Api.src.Controllers
 	public class ReservationController : ControllerBase
 	{
 		private readonly IReservationService _reservationService;
+		private readonly IClaimService _claimService;
 
-		public ReservationController(IReservationService reservationService)
+		public ReservationController(IReservationService reservationService, IClaimService claimService)
 		{
 			_reservationService = reservationService;
+			_claimService = claimService;
+		}
+
+		[HttpPut("{reservationId}/Preview")]
+		public async Task<ActionResult> PreviewAppointment(int reservationId)
+		{
+			try
+			{
+				await _reservationService.PreviewReservation(reservationId);
+				return NoContent();
+			}
+			catch (UnauthorizedAccessException)
+			{
+				return Unauthorized();
+			}
+			catch (ArgumentException ex)
+			{
+				return BadRequest(ex);
+			}
+			catch (Exception e)
+			{
+				return Problem(e.Message);
+			}
 		}
 
 		[HttpGet("User/{userId}")]
@@ -23,12 +48,26 @@ namespace VDG_Web_Api.src.Controllers
 		{
 			try
 			{
+				if (!_claimService.GetCurrentUserRole().Equals(UserRole.Admin))
+				{
+					userId = _claimService.GetCurrentUserId();
+				}
+
 				var reservations = await _reservationService.GetUserReservationsAsync(userId, date);
+
 				return Ok(reservations);
 			}
 			catch (InvalidOperationException ex)
 			{
 				return BadRequest(ex.Message);
+			}
+			catch (UnauthorizedAccessException)
+			{
+				return Unauthorized();
+			}
+			catch (ArgumentException ex)
+			{
+				return BadRequest(ex);
 			}
 			catch (Exception ex)
 			{
@@ -43,9 +82,17 @@ namespace VDG_Web_Api.src.Controllers
 				var reservations = await _reservationService.GetClinicReservationsAsync(clinicId, date);
 				return Ok(reservations);
 			}
-			catch (InvalidOperationException ex)
+			catch (ArgumentNullException)
 			{
-				return BadRequest(ex.Message);
+				return NoContent();
+			}
+			catch (UnauthorizedAccessException)
+			{
+				return Unauthorized();
+			}
+			catch (Exception ex) when (ex is ArgumentException || ex is InvalidOperationException)
+			{
+				return BadRequest(ex);
 			}
 			catch (Exception ex)
 			{
@@ -64,10 +111,17 @@ namespace VDG_Web_Api.src.Controllers
 
 				return Created();
 			}
-			catch (Exception)
+			catch (UnauthorizedAccessException)
 			{
-
-				throw;
+				return Unauthorized();
+			}
+			catch (Exception ex) when (ex is ArgumentException || ex is InvalidOperationException)
+			{
+				return BadRequest(ex);
+			}
+			catch (Exception e)
+			{
+				return Problem(e.Message);
 			}
 		}
 

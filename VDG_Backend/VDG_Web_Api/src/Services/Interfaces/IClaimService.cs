@@ -6,5 +6,6 @@ namespace VDG_Web_Api.src.Services.Interfaces
 	{
 		public int GetCurrentUserId();
 		public UserRole GetCurrentUserRole();
+		public bool IsAdmin();
 	}
 }

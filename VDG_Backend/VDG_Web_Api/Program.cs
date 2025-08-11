@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Text.Json.Serialization;
 using VDG_Web_Api.src;
 using VDG_Web_Api.src.Data;
 using VDG_Web_Api.src.Enums;
@@ -14,7 +15,11 @@ using VDG_Web_Api.src.Services.Interfaces;
 var builder = WebApplication.CreateBuilder();
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+	.AddJsonOptions(options =>
+	{
+		options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+	});
 builder.Services.AddHttpContextAccessor();
 
 //builder.Services.AddOpenApi();
@@ -68,7 +73,8 @@ builder.Services.AddAuthentication() // add authentication to the builder
 
 
 builder.Services.AddScoped<IAuthService, JWTAuthService>();
-builder.Services.AddCors(x => {
+builder.Services.AddCors(x =>
+{
 	x.AddPolicy("Any", x => x.AllowAnyHeader()
 	.AllowAnyMethod()
 	.AllowAnyOrigin());
@@ -118,6 +124,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
 
 app.UseAuthorization();
 

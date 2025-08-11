@@ -1,4 +1,5 @@
 using VDG_Web_Api.src.DTOs.VirtualClinicDTOs;
+using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.Mapping;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
@@ -9,10 +10,13 @@ namespace VDG_Web_Api.src.Services;
 public class VirtualClinicService : IVirtualClinicService
 {
 	private readonly IVirtualClinicRepository _clinicRepository;
-
-	public VirtualClinicService(IVirtualClinicRepository clinicRepository, IDoctorService doctorService)
+	private readonly IClaimService _claimService;
+	private readonly IDoctorRepository _doctorRepository;
+	public VirtualClinicService(IVirtualClinicRepository clinicRepository, IDoctorService doctorService, IClaimService claimService, IDoctorRepository doctorRepository)
 	{
 		_clinicRepository = clinicRepository;
+		_claimService = claimService;
+		_doctorRepository = doctorRepository;
 	}
 
 	public async Task AddClinic(AddVirtualClinicDTO clinic)
@@ -20,6 +24,18 @@ public class VirtualClinicService : IVirtualClinicService
 		if (clinic.WorkTimes.Any(x => x.StartWorkHours >= x.EndWorkHours) || clinic.WorkTimes.Count == 0)
 		{
 			throw new ArgumentException("invalid worktimes, must provide atleast one valid worktime range");
+		}
+
+		var doctor = await _doctorRepository.GetDoctorByIdAsync(_claimService.GetCurrentUserId());
+
+		if (doctor == null && !_claimService.GetCurrentUserRole().Equals(UserRole.Admin))
+		{
+			throw new UnauthorizedAccessException();
+		}
+
+		if (doctor!.Id != clinic.DoctorId && !_claimService.GetCurrentUserRole().Equals(UserRole.Admin))
+		{
+			clinic.DoctorId = doctor.Id;
 		}
 
 		try

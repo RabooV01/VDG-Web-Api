@@ -156,5 +156,20 @@ namespace VDG_Web_Api.src.Repositories
 				throw;
 			}
 		}
+
+		public async Task<Doctor?> GetDoctorByUserId(int userId)
+		{
+			try
+			{
+				var doctor = await _context.Doctors.Include(d => d.User)
+					.FirstOrDefaultAsync(d => d.UserId == userId);
+				return doctor;
+			}
+			catch (Exception)
+			{
+
+				throw;
+			}
+		}
 	}
 }

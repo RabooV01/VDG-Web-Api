@@ -10,17 +10,17 @@ public class ReservationService : IReservationService
 {
 	private readonly IReservationRepository _reservationRepository;
 	private readonly IVirtualClinicService _virtualClinicService;
-	private readonly IUserService _userService;
+	private readonly IClaimService _claimService;
 
 	private readonly static int _confirmThresholdPerHours = 24;
 
 	public ReservationService(IReservationRepository reservationRepository,
 		IVirtualClinicService virtualClinicService,
-		IUserService userService)
+		IClaimService claimService)
 	{
 		_reservationRepository = reservationRepository;
 		_virtualClinicService = virtualClinicService;
-		_userService = userService;
+		_claimService = claimService;
 	}
 
 
@@ -47,7 +47,7 @@ public class ReservationService : IReservationService
 
 			var existUserAppointmentsDoctorIds = (await GetUserReservationsAsync(reservation.UserId))
 			.Where(r => r.ScheduledAt > DateTime.Now)
-			.Select(r => r.VirtualClinic!.DoctorId);
+			.Select(r => r.VirtualClinic!.Doctor.Id);
 
 			if (await HasConflict(reservationDto))
 			{
@@ -99,35 +99,43 @@ public class ReservationService : IReservationService
 		{
 			throw;
 		}
-		catch (Exception ex)
+		catch (Exception)
 		{
-			throw new InvalidOperationException($"Error occured while canceling the appointment: {ex.Message}", ex);
+			throw;
 		}
 	}
 
 	public async Task<Dictionary<DateTime, Reservation>> GenerateClinicAvailableReservations(int virtualId, DateTime date)
 	{
-		// get all reservations for a certain date
-		Dictionary<DateTime, Reservation> reservations = (await _reservationRepository.GetClinicReservationsAsync(virtualId, date)).ToDictionary(x => x.ScheduledAt);
-		var clinic = await _virtualClinicService.GetClinicById(virtualId);
-		var workTimes = clinic.WorkTimes.ToArray();
-
-		for (int i = 0; i < workTimes.Length; i++)
+		try
 		{
-			DateTime lastTiming = DateTime.Parse($"{date.Date.Add(workTimes[i].StartWorkHours.ToTimeSpan())}");
-			DateTime endTiming = DateTime.Parse($"{date.Add(workTimes[i].EndWorkHours.ToTimeSpan())}");
+			// get all reservations for a certain date
+			Dictionary<DateTime, Reservation> reservations = (await _reservationRepository.GetClinicReservationsAsync(virtualId, date)).ToDictionary(x => x.ScheduledAt);
+			var clinic = await _virtualClinicService.GetClinicById(virtualId);
+			var workTimes = clinic.WorkTimes.ToArray();
 
-			while (lastTiming < endTiming)
+			for (int i = 0; i < workTimes.Length; i++)
 			{
-				if (!reservations.ContainsKey(lastTiming))
-				{
-					reservations.Add(lastTiming, new() { ScheduledAt = lastTiming });
-				}
+				DateTime lastTiming = DateTime.Parse($"{date.Date.Add(workTimes[i].StartWorkHours.ToTimeSpan())}");
 
-				lastTiming = lastTiming.AddMinutes(clinic.AvgService);
+				DateTime endTiming = DateTime.Parse($"{date.Add(workTimes[i].EndWorkHours.ToTimeSpan())}");
+
+				while (lastTiming < endTiming)
+				{
+					if (lastTiming > DateTime.Now && !reservations.ContainsKey(lastTiming))
+					{
+						reservations.Add(lastTiming, new() { ScheduledAt = lastTiming });
+					}
+
+					lastTiming = lastTiming.AddMinutes(clinic.AvgService);
+				}
 			}
+			return reservations;
 		}
-		return reservations;
+		catch (Exception)
+		{
+			throw;
+		}
 	}
 
 	public async Task<IEnumerable<ClinicReservationDTO>> GetClinicReservationsAsync(int virtualClinicId, DateTime date)
@@ -187,13 +195,14 @@ public class ReservationService : IReservationService
 
 	public async Task<bool> EditAppointmentAsync(ReservationDTO reservationDto)
 	{
-		if (!reservationDto.IsValidReservation())
-		{
-			throw new ArgumentException("Reservation value is invalid, No update was applied.");
-		}
 
 		try
 		{
+			if (!reservationDto.IsValidReservation())
+			{
+				throw new ArgumentException("Reservation value is invalid, No update was applied.");
+			}
+
 			var currentClinic = await _virtualClinicService.GetClinicById(reservationDto.VirtualId);
 
 			bool isHoliday = currentClinic.Holidays.Any(h => h.Equals(reservationDto.ScheduledAt.DayOfWeek));
@@ -213,13 +222,33 @@ public class ReservationService : IReservationService
 
 			return true;
 		}
-		catch (ArgumentException)
-		{
-			throw;
-		}
 		catch (InvalidOperationException ex)
 		{
 			throw new InvalidOperationException($"Update failed, Error: {ex.Message}", ex);
+		}
+		catch (Exception)
+		{
+			throw;
+		}
+	}
+
+	public async Task PreviewReservation(int reservationId)
+	{
+		try
+		{
+			var reservation = await _reservationRepository.GetReservationByIdAsync(reservationId);
+			if (reservation == null)
+			{
+				throw new ArgumentException($"Reservation is not valid", nameof(reservationId));
+			}
+			var clinic = await _virtualClinicService.GetClinicById(reservation.VirtualId);
+
+			if (clinic.Doctor.UserId != _claimService.GetCurrentUserId() && !_claimService.IsAdmin())
+			{
+				throw new UnauthorizedAccessException();
+			}
+
+			await _reservationRepository.PreviewReservation(reservationId);
 		}
 		catch (Exception)
 		{

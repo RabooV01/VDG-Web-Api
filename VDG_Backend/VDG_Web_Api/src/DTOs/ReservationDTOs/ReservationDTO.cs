@@ -1,3 +1,4 @@
+using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.Models;
 
 namespace VDG_Web_Api.src.DTOs.ReservationDTOs;
@@ -10,4 +11,5 @@ public class ReservationDTO
 	public string Text { get; set; } = string.Empty;
 	public DateTime ScheduledAt { get; set; }
 	public BookingTypes Type { get; set; }
+	public ReservationStatus Status { get; set; }
 }

@@ -1,3 +1,4 @@
+using VDG_Web_Api.src.DTOs.ReservationDTOs;
 using VDG_Web_Api.src.DTOs.VirtualClinicDTOs;
 using VDG_Web_Api.src.Models;
 
@@ -16,6 +17,18 @@ public static class VirtualClinicMapping
 			PreviewCost = clinic.PreviewCost,
 			Status = clinic.Status,
 			Name = clinic.Name
+		};
+
+	public static UserReservationDTO ToClinicHighlightDto(this Reservation reservation)
+		=> new()
+		{
+			Id = reservation.Id,
+			VirtualClinic = reservation.Virtual.ToClinicInfo(),
+			ScheduledAt = reservation.ScheduledAt,
+			Text = reservation.Text,
+			UserId = reservation.UserId,
+			Type = reservation.Type,
+			VirtualId = reservation.VirtualId
 		};
 	public static string ToHolidaysString(this IEnumerable<DayOfWeek> dayOfWeeks)
 	{
@@ -60,6 +73,15 @@ public static class VirtualClinicMapping
 		StartWorkHours = wt.StartWorkHours,
 		EndWorkHours = wt.EndWorkHours
 	};
+
+	public static VirtualClinicInfo ToClinicInfo(this VirtualClinic clinic)
+		=> new()
+		{
+			Id = clinic.Id,
+			Doctor = clinic.Doctor.ToInfo(),
+			Location = clinic.Location,
+			Name = clinic.Name ?? string.Empty
+		};
 
 	public static VirtualClinicDTO ToDto(this VirtualClinic clinic)
 		=> new()

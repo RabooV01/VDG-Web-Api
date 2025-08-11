@@ -4,5 +4,5 @@ namespace VDG_Web_Api.src.DTOs.ReservationDTOs;
 
 public class UserReservationDTO : ReservationDTO
 {
-	public VirtualClinicDTO? VirtualClinic { get; set; } = null!;
+	public VirtualClinicInfo VirtualClinic { get; set; } = null!;
 }

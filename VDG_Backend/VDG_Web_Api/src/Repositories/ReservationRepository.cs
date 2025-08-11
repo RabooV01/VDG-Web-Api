@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using VDG_Web_Api.src.Data;
+using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 
@@ -122,5 +123,18 @@ public class ReservationRepository : IReservationRepository
 			.Include(r => r.User)
 				.ThenInclude(u => u.Person)
 			.FirstOrDefaultAsync(r => r.Id == reservationId);
+	}
+
+	public async Task PreviewReservation(int reservationId)
+	{
+		try
+		{
+			await _context.Reservations.Where(r => r.Id == reservationId)
+				.ExecuteUpdateAsync(r => r.SetProperty(p => p.Status, ReservationStatus.Previewed));
+		}
+		catch (Exception e)
+		{
+			throw new Exception("Could not set reservation to previewed.", e);
+		}
 	}
 }

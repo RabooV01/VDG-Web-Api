@@ -12,6 +12,7 @@ namespace VDG_Web_Api.src.Repositories.Interfaces
 		public Task<Doctor?> GetDoctorBySyndicateIdAsync(string syndicateId);
 		public Task UpdateDoctorDescription(string description, int doctorId);
 		public Task UpdateDoctorSettings(int doctorId, TicketOptions ticketOptions, double ticketCost);
+		public Task<Doctor?> GetDoctorByUserId(int userId);
 
 		// search items
 		public Task<IEnumerable<Doctor>?> GetDoctorsBySpecialityIdAsync(int specialityId);

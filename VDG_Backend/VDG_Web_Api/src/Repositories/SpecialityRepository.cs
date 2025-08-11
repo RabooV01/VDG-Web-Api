@@ -16,7 +16,7 @@ namespace VDG_Web_Api.src.Repositories
         {
             try
             {
-                var speciality = new Speciality() { name = name };
+                var speciality = new Speciality() { Name = name };
                 await _context.Specialities.AddAsync(speciality);
                 await _context.SaveChangesAsync();
                 return speciality.Id;
