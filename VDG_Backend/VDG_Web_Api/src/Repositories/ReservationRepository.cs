@@ -137,4 +137,45 @@ public class ReservationRepository : IReservationRepository
 			throw new Exception("Could not set reservation to previewed.", e);
 		}
 	}
+
+	public async Task<IEnumerable<Reservation>> GetClinicReservationInMonth(int clinicId, DateTime date)
+	{
+		try
+		{
+			var fromDate = date.AddDays(-1 * date.Day + 1);
+			var ToDate = fromDate.AddMonths(1);
+
+			var reservations = await _context.Reservations
+				.Where(r => r.VirtualId == clinicId && r.ScheduledAt.Date >= fromDate && r.ScheduledAt < ToDate)
+				.ToListAsync();
+
+			return reservations;
+		}
+		catch (Exception e)
+		{
+			throw new Exception("Error occured while retrieving data.", e);
+		}
+	}
+
+	//public async Task<int> GetClinicReservationCapacity(int clinicId)
+	//{
+	//	try
+	//	{
+	//		var clinic = await _context.VirtualClinics.Include(c => c.WorkTimes)
+	//			.Where(c => c.Id == clinicId)
+	//			.FirstOrDefaultAsync();
+
+	//		if (clinic == null)
+	//		{
+	//			throw new ArgumentException("Invalid clinic.", nameof(clinic));
+	//		}
+
+	//		var capacity = clinic.WorkTimes.
+	//	}
+	//	catch (Exception)
+	//	{
+
+	//		throw;
+	//	}
+	//}
 }

@@ -1,4 +1,5 @@
 using VDG_Web_Api.src.DTOs.ReservationDTOs;
+using VDG_Web_Api.src.DTOs.VirtualClinicDTOs;
 using VDG_Web_Api.src.Extensions.Validation;
 using VDG_Web_Api.src.Mapping;
 using VDG_Web_Api.src.Models;
@@ -22,8 +23,6 @@ public class ReservationService : IReservationService
 		_virtualClinicService = virtualClinicService;
 		_claimService = claimService;
 	}
-
-
 
 	public async Task BookAppointmentAsync(ReservationDTO reservationDto)
 	{
@@ -104,6 +103,22 @@ public class ReservationService : IReservationService
 			throw;
 		}
 	}
+	public IEnumerable<TimeOnly> ExtractSlotsFromWorkTimes(IEnumerable<ClinicWorkTimeDTO> workTimes, int avgService)
+	{
+		List<TimeOnly> times = new();
+		foreach (var workTime in workTimes)
+		{
+			TimeOnly lastTiming = workTime.StartWorkHours;
+
+			TimeOnly endTiming = workTime.EndWorkHours;
+			while (lastTiming < endTiming)
+			{
+				times.Add(lastTiming);
+				lastTiming = lastTiming.AddMinutes(avgService);
+			}
+		}
+		return times;
+	}
 
 	public async Task<Dictionary<DateTime, Reservation>> GenerateClinicAvailableReservations(int virtualId, DateTime date)
 	{
@@ -113,21 +128,14 @@ public class ReservationService : IReservationService
 			Dictionary<DateTime, Reservation> reservations = (await _reservationRepository.GetClinicReservationsAsync(virtualId, date)).ToDictionary(x => x.ScheduledAt);
 			var clinic = await _virtualClinicService.GetClinicById(virtualId);
 			var workTimes = clinic.WorkTimes.ToArray();
+			var extractedTimes = ExtractSlotsFromWorkTimes(workTimes, clinic.AvgService);
 
-			for (int i = 0; i < workTimes.Length; i++)
+			foreach (var time in extractedTimes)
 			{
-				DateTime lastTiming = DateTime.Parse($"{date.Date.Add(workTimes[i].StartWorkHours.ToTimeSpan())}");
-
-				DateTime endTiming = DateTime.Parse($"{date.Add(workTimes[i].EndWorkHours.ToTimeSpan())}");
-
-				while (lastTiming < endTiming)
+				var dateTime = date.Date.Add(time.ToTimeSpan());
+				if (dateTime > DateTime.Now && !reservations.ContainsKey(dateTime))
 				{
-					if (lastTiming > DateTime.Now && !reservations.ContainsKey(lastTiming))
-					{
-						reservations.Add(lastTiming, new() { ScheduledAt = lastTiming });
-					}
-
-					lastTiming = lastTiming.AddMinutes(clinic.AvgService);
+					reservations.Add(dateTime, new() { ScheduledAt = dateTime });
 				}
 			}
 			return reservations;
@@ -249,6 +257,31 @@ public class ReservationService : IReservationService
 			}
 
 			await _reservationRepository.PreviewReservation(reservationId);
+		}
+		catch (Exception)
+		{
+			throw;
+		}
+	}
+
+	public async Task<IEnumerable<ReservationDayBusyness>> GetMonthBusyness(int clinicId, DateTime date)
+	{
+		try
+		{
+			var reservations = await _reservationRepository.GetClinicReservationInMonth(clinicId, date);
+			var clinic = await _virtualClinicService.GetClinicById(clinicId);
+			var totalTimes = ExtractSlotsFromWorkTimes(clinic.WorkTimes, clinic.AvgService).Count();
+
+			var ReservationBusyness = reservations.GroupBy(r => r.ScheduledAt.Date).Select(g =>
+			{
+				var percent = ((double)g.Count() * 100) / totalTimes;
+				return new ReservationDayBusyness()
+				{
+					Day = DateOnly.FromDateTime(g.Key),
+					BusynessPercent = $"{percent:F2}"
+				};
+			});
+			return ReservationBusyness;
 		}
 		catch (Exception)
 		{

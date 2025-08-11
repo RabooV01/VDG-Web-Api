@@ -11,5 +11,7 @@ namespace VDG_Web_Api.src.Repositories.Interfaces
 		public Task UpdateAppointmentAsync(Reservation reservation);
 		public Task<Reservation?> GetReservationByIdAsync(int reservationId);
 		public Task PreviewReservation(int reservationId);
+		public Task<IEnumerable<Reservation>> GetClinicReservationInMonth(int clinicId, DateTime date);
+		//public Task<int> GetClinicReservationCapacity(int clinicId);
 	}
 }
