@@ -55,7 +55,8 @@ namespace VDG_Web_Api.src.Mapping
 				UserId = ticket.UserId,
 				CloseDate = ticket.CloseDate,
 				DoctorName = $"{ticket.Doctor.User.Person.FirstName} {ticket.Doctor.User.Person.LastName}",
-				OpenDate = firstMessageDate
+				OpenDate = firstMessageDate,
+				DoctorSpeciality = ticket.Doctor.Speciality.Name
 			};
 
 		public static DoctorTicketDTO ToDoctorTicketDto(this Ticket ticket, DateTime firstMessageDate)

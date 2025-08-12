@@ -70,9 +70,9 @@ namespace VDG_Web_Api.src.Controllers
 				var tickets = await _ticketService.GetDoctorConsultationsAsync(doctorId);
 				return Ok(tickets);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				return BadRequest();
+				return BadRequest(ex.Message);
 			}
 		}
 

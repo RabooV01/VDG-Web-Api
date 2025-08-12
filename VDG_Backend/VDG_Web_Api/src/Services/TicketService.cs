@@ -93,7 +93,7 @@ namespace VDG_Web_Api.src.Services
 			{
 				var doctorConsultations = await _ticketRepository.GetTicketsAsync(doctorId, null);
 
-				return doctorConsultations.Select(d => d.ToDoctorTicketDto(d.TicketMessages.Select(t => t.Date).Order().First()));
+				return doctorConsultations.Select(d => d.ToDoctorTicketDto(d.TicketMessages.Select(t => t.Date).Order().FirstOrDefault()));
 			}
 			catch (Exception ex)
 			{
@@ -101,6 +101,7 @@ namespace VDG_Web_Api.src.Services
 			}
 		}
 		// Done
+
 		public async Task<IEnumerable<UserTicketDTO>> GetUserConsultationsAsync(int userId)
 		{
 			try

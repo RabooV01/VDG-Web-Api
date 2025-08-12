@@ -53,8 +53,6 @@ namespace VDG_Web_Api.src.Repositories
 				.Include(d => d.User)
 				.ThenInclude(u => u.Person)
 				.FirstOrDefaultAsync(d => d.Id == doctorId);
-			if (doctor == null)
-				throw new ArgumentNullException("this Doctor is not found");
 
 			return doctor;
 		}
