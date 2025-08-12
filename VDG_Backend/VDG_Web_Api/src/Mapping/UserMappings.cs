@@ -2,6 +2,7 @@
 using VDG_Web_Api.src.DTOs.UserDTOs;
 using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.Models;
+using VDG_Web_Api.src.Services.JWTService;
 
 namespace VDG_Web_Api.src.Mapping
 {
@@ -15,6 +16,17 @@ namespace VDG_Web_Api.src.Mapping
 				Person = userDTO.GetPerson(),
 				PersonId = userDTO.PersonId,
 				Role = Enum.Parse<UserRole>(userDTO.Role, true)
+			};
+
+		public static UserAuthData ToAuthData(this User user, int? doctorId)
+			=> new()
+			{
+				Email = user.Email,
+				DoctorId = doctorId,
+				FirstName = user.Person.FirstName,
+				UserId = user.Id,
+				LastName = user.Person.LastName,
+				Role = user.Role.ToString()
 			};
 
 		public static UserDTO ToDto(this User user)

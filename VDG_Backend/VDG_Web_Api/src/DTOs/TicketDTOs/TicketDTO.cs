@@ -9,6 +9,7 @@ namespace VDG_Web_Api.src.DTOs.TicketDTOs
 		public int UserId { get; set; }
 		public int DoctorId { get; set; }
 		public TicketStatus Status { get; set; }
+		public DateTime OpenDate { get; set; }
 		public DateTime? CloseDate { get; set; }
 	}
 }

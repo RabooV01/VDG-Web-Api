@@ -41,6 +41,7 @@ namespace VDG_Web_Api.src.Repositories
 					return await tickets.Include(t => t.Doctor)
 						.ThenInclude(t => t.User)
 						.ThenInclude(u => u.Person)
+						.Include(t => t.TicketMessages)
 						.Where(t => t.UserId == userId)
 						.ToListAsync();
 				}
@@ -50,6 +51,7 @@ namespace VDG_Web_Api.src.Repositories
 					return await tickets
 						.Include(t => t.User)
 						.ThenInclude(u => u!.Person)
+						.Include(t => t.TicketMessages)
 						.Where(t => t.DoctorId == doctorId)
 						.ToListAsync();
 				}

@@ -30,8 +30,8 @@ namespace VDG_Web_Api.src.Services
 				{
 					throw new KeyNotFoundException("No such ticket was found");
 				}
-
-				return ticket.ToDto();
+				var date = ticket.TicketMessages.Select(t => t.Date).Order().FirstOrDefault();
+				return ticket.ToDto(date);
 			}
 			catch (Exception)
 			{
@@ -93,7 +93,7 @@ namespace VDG_Web_Api.src.Services
 			{
 				var doctorConsultations = await _ticketRepository.GetTicketsAsync(doctorId, null);
 
-				return doctorConsultations.Select(d => d.ToDoctorTicketDto());
+				return doctorConsultations.Select(d => d.ToDoctorTicketDto(d.TicketMessages.Select(t => t.Date).Order().First()));
 			}
 			catch (Exception ex)
 			{
@@ -107,7 +107,7 @@ namespace VDG_Web_Api.src.Services
 			{
 				var userConsultaions = await _ticketRepository.GetTicketsAsync(null, userId);
 
-				return userConsultaions.Select(u => u.ToUserTicketDto());
+				return userConsultaions.Select(u => u.ToUserTicketDto(u.TicketMessages.Select(t => t.Date).Order().FirstOrDefault()));
 			}
 			catch (Exception ex)
 			{

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VDG_Web_Api.src.DTOs.UserDTOs;
 using VDG_Web_Api.src.Services.Interfaces;
+using VDG_Web_Api.src.Services.JWTService;
 
 namespace VDG_Web_Api.src.Controllers
 {
@@ -36,7 +37,7 @@ namespace VDG_Web_Api.src.Controllers
 			}
 		}
 		[HttpPost]
-		public async Task<ActionResult> Authenticate(UserLogin user)
+		public async Task<ActionResult<AuthResponse>> Authenticate(UserLogin user)
 		{
 			try
 			{
