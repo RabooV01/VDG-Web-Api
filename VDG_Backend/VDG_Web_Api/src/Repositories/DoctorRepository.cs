@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using VDG_Web_Api.src.Data;
 using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.Models;
@@ -167,6 +168,31 @@ namespace VDG_Web_Api.src.Repositories
 			{
 
 				throw;
+			}
+		}
+
+		public async Task<IEnumerable<Doctor>> GetDoctors(int page, int pageSize, int? specialityId = null, string? name = null)
+		{
+			try
+			{
+				Expression<Func<Doctor, bool>> doctorFilterExpression = doctor => (specialityId == null || doctor.SpecialityId == specialityId) &&
+				(name == null || $"{doctor.User.Person.FirstName} {doctor.User.Person.LastName}".Contains(name));
+
+				var doctors = await _context.Doctors.Include(d => d.User)
+					.ThenInclude(u => u.Person)
+					.Include(d => d.Speciality)
+					.Where(doctorFilterExpression)
+					.OrderByDescending(doctor => doctor.User.Person.FirstName)
+					.ThenBy(doctor => doctor.User.Person.LastName)
+					.Skip((page - 1) * pageSize)
+					.Take(pageSize)
+					.ToListAsync();
+
+				return doctors;
+			}
+			catch (Exception e)
+			{
+				throw new Exception("Error while retrieving data.", e);
 			}
 		}
 	}

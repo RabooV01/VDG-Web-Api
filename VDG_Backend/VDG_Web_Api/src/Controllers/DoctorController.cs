@@ -20,6 +20,20 @@ namespace VDG_Web_Api.src.Controllers
 			_claimService = claimService;
 		}
 
+		[HttpGet("GetAll")]
+		public async Task<ActionResult<IEnumerable<DoctorDTO>>> GetAll(int page = 1, int pageSize = 20, int? specialityId = null, string? name = null)
+		{
+			try
+			{
+				var doctors = await _doctorService.GetAllDoctors(page, pageSize, specialityId, name);
+				return Ok(doctors);
+			}
+			catch (Exception e)
+			{
+				return BadRequest(e.Message);
+			}
+		}
+
 		[HttpGet("{doctorId}")]
 		public async Task<ActionResult<DoctorDTO>> GetDoctor(int doctorId)
 		{

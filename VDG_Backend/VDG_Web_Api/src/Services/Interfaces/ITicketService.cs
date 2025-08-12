@@ -14,5 +14,6 @@ namespace VDG_Web_Api.src.Services.Interfaces
 		public Task<IEnumerable<TicketMessageDTO>> GetTicketMessages(int ticketId);
 		public Task ChangeTicketStatus(int ticketId, TicketStatus ticketStatus);
 		public Task<TicketDTO> GetTicketByIdAsync(int ticketId);
+		public Task DeleteTicket(int ticketId);
 	}
 }

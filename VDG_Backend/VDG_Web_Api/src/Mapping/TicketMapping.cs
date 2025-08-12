@@ -46,7 +46,7 @@ namespace VDG_Web_Api.src.Mapping
 				Text = ticketMessage.Text
 			};
 
-		public static UserTicketDTO ToUserTicketDto(this Ticket ticket, DateTime firstMessageDate)
+		public static UserTicketDTO ToUserTicketDto(this Ticket ticket, TicketMessage firstMessage)
 			=> new()
 			{
 				Id = ticket.Id,
@@ -55,11 +55,12 @@ namespace VDG_Web_Api.src.Mapping
 				UserId = ticket.UserId,
 				CloseDate = ticket.CloseDate,
 				DoctorName = $"{ticket.Doctor.User.Person.FirstName} {ticket.Doctor.User.Person.LastName}",
-				OpenDate = firstMessageDate,
-				DoctorSpeciality = ticket.Doctor.Speciality.Name
+				DoctorSpeciality = ticket.Doctor.Speciality.Name,
+				OpenDate = firstMessage.Date,
+				Description = firstMessage.Text.Length > 40 ? $"{firstMessage.Text[0..40]}..." : firstMessage.Text
 			};
 
-		public static DoctorTicketDTO ToDoctorTicketDto(this Ticket ticket, DateTime firstMessageDate)
+		public static DoctorTicketDTO ToDoctorTicketDto(this Ticket ticket, TicketMessage firstMessage)
 			=> new()
 			{
 				Id = ticket.Id,
@@ -68,7 +69,8 @@ namespace VDG_Web_Api.src.Mapping
 				UserId = ticket.UserId,
 				CloseDate = ticket.CloseDate,
 				UserName = $"{ticket.User.Person.FirstName} {ticket.User.Person.LastName}",
-				OpenDate = firstMessageDate
+				OpenDate = firstMessage.Date,
+				Description = firstMessage.Text.Length > 40 ? $"{firstMessage.Text[0..40]}..." : firstMessage.Text
 			};
 
 		public static Ticket ToEntity(this AddTicketDTO addTicketDTO)

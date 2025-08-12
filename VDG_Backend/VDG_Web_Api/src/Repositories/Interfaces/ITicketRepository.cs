@@ -13,5 +13,6 @@ namespace VDG_Web_Api.src.Repositories.Interfaces
 		public Task UpdateMessageAsync(TicketMessage ticketMessage);
 		public Task UpdateTicketStatusAsync(Ticket ticket);
 		public Task DeleteMessageAsync(int Id);
+		public Task DeleteTicket(int ticketId);
 	}
 }

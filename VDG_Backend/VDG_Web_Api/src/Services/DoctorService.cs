@@ -12,7 +12,18 @@ namespace VDG_Web_Api.src.Services
 		{
 			_doctorRepository = doctorRepository;
 		}
-
+		public async Task<IEnumerable<DoctorDTO>> GetAllDoctors(int page, int pageSize, int? specialityId, string? name)
+		{
+			try
+			{
+				var doctors = await _doctorRepository.GetDoctors(page, pageSize, specialityId, name);
+				return doctors.Select(d => d.ToDto());
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
 		public async Task AddDoctor(AddDoctorDTO doctorDTO)
 		{
 			try

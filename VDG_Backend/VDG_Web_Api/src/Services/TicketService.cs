@@ -47,7 +47,7 @@ namespace VDG_Web_Api.src.Services
 
 			if (ticketMessage == null)
 			{
-				throw new ArgumentNullException($"No such ticket with this id: {id}");
+				throw new ArgumentNullException(nameof(id), $"No such ticket with this id: {id}");
 			}
 
 			if (DateTime.Now.Subtract(ticketMessage.Date).Minutes > UpdateAndDeleteThreshold)
@@ -93,7 +93,7 @@ namespace VDG_Web_Api.src.Services
 			{
 				var doctorConsultations = await _ticketRepository.GetTicketsAsync(doctorId, null);
 
-				return doctorConsultations.Select(d => d.ToDoctorTicketDto(d.TicketMessages.Select(t => t.Date).Order().FirstOrDefault()));
+				return doctorConsultations.Select(d => d.ToDoctorTicketDto(d.TicketMessages.OrderBy(t => t.Date).First()));
 			}
 			catch (Exception ex)
 			{
@@ -108,7 +108,7 @@ namespace VDG_Web_Api.src.Services
 			{
 				var userConsultaions = await _ticketRepository.GetTicketsAsync(null, userId);
 
-				return userConsultaions.Select(u => u.ToUserTicketDto(u.TicketMessages.Select(t => t.Date).Order().FirstOrDefault()));
+				return userConsultaions.Select(u => u.ToUserTicketDto(u.TicketMessages.OrderBy(t => t.Date).First()));
 			}
 			catch (Exception ex)
 			{
@@ -209,6 +209,18 @@ namespace VDG_Web_Api.src.Services
 			catch (Exception)
 			{
 
+				throw;
+			}
+		}
+
+		public async Task DeleteTicket(int ticketId)
+		{
+			try
+			{
+				await _ticketRepository.DeleteTicket(ticketId);
+			}
+			catch (Exception)
+			{
 				throw;
 			}
 		}

@@ -223,5 +223,33 @@ namespace VDG_Web_Api.src.Controllers
 				throw;
 			}
 		}
+
+		[HttpDelete("Message/{messageId}")]
+		public async Task<ActionResult> DeleteMessage(int messageId)
+		{
+			try
+			{
+				await _ticketService.DeleteMessageAsync(messageId);
+				return NoContent();
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+		[HttpDelete("{tickedId}")]
+		public async Task<ActionResult> DeleteTicket(int tickedId)
+		{
+			try
+			{
+				await _ticketService.DeleteTicket(tickedId);
+				return NoContent();
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
 	}
 }
