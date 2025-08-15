@@ -266,21 +266,23 @@ public class ReservationService : IReservationService
 
 	public async Task<IEnumerable<ReservationDayBusyness>> GetMonthBusyness(int clinicId, DateTime date)
 	{
+		// TODO generate all days, and then assign values.
 		try
 		{
 			var reservations = await _reservationRepository.GetClinicReservationInMonth(clinicId, date);
 			var clinic = await _virtualClinicService.GetClinicById(clinicId);
 			var totalTimes = ExtractSlotsFromWorkTimes(clinic.WorkTimes, clinic.AvgService).Count();
 
-			var ReservationBusyness = reservations.GroupBy(r => r.ScheduledAt.Date).Select(g =>
-			{
-				var percent = ((double)g.Count() * 100) / totalTimes;
-				return new ReservationDayBusyness()
+			var ReservationBusyness = Enumerable.Range(1, DateTime.DaysInMonth(date.Year, date.Month))
+				.Select(day => new DateTime(date.Year, date.Month, day))
+				.GroupJoin(reservations, day => day,
+				reservation => reservation.ScheduledAt.Date,
+				(date, reservations) => new ReservationDayBusyness()
 				{
-					Day = DateOnly.FromDateTime(g.Key),
-					BusynessPercent = $"{percent:F2}"
-				};
-			});
+					Day = DateOnly.FromDateTime(date),
+					BusynessPercent = $"{(double)reservations.Count() * 100 / (totalTimes == 0 ? 1 : totalTimes):F2}"
+				});
+
 			return ReservationBusyness;
 		}
 		catch (Exception)

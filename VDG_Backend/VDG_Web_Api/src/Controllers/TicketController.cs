@@ -94,7 +94,7 @@ namespace VDG_Web_Api.src.Controllers
 				bool isAdmin = _claimService.GetCurrentUserRole().Equals(UserRole.Admin);
 
 
-				if (!isAdmin && ticket.UserId != currentUserId && currentUserId != doctorId)
+				if (!isAdmin && ticket.UserId != currentUserId && ticket.DoctorId != doctorId)
 				{
 					return Unauthorized();
 				}

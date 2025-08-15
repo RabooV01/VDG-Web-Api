@@ -88,7 +88,7 @@ public class VirtualClinicService : IVirtualClinicService
 
 		if (clinic == null)
 		{
-			throw new ArgumentNullException();
+			throw new ArgumentNullException(nameof(clinic), "invalid clinic");
 		}
 
 		return clinic.ToDto();
