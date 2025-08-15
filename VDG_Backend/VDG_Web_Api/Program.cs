@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using VDG_Web_Api.src;
 using VDG_Web_Api.src.Data;
 using VDG_Web_Api.src.Enums;
+using VDG_Web_Api.src.FileHandler;
 using VDG_Web_Api.src.Repositories;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services;
@@ -48,6 +49,7 @@ builder.Services.AddScoped<ISpecialityRepository, SpecialityRepository>();
 
 builder.Services.AddScoped<IRatingRepository, RatingRepositroy>();
 builder.Services.AddScoped<IRatingService, RatingService>();
+builder.Services.AddTransient<IFileHandler, FileHandler>();
 
 JWTOptions JwtConfig = builder.Configuration.GetSection("JWT")
 	.Get<JWTOptions>()!;
