@@ -35,11 +35,9 @@ public class ReservationService : IReservationService
 		{
 			var currentClinic = await _virtualClinicService.GetClinicById(reservationDto.VirtualId);
 
-			bool isHoliday = currentClinic.Holidays.Any(h => h.Equals(reservationDto.ScheduledAt.DayOfWeek));
-
-			if (isHoliday)
+			if (!currentClinic.WorkTimes.Any(wt => wt.Day == reservationDto.ScheduledAt.DayOfWeek.ToString()))
 			{
-				throw new ArgumentException("appointments cannot be on a holiday");
+				throw new OperationCanceledException("Appointments cannot be on holidays.");
 			}
 
 			Reservation reservation = reservationDto.ToEntity();
@@ -128,7 +126,7 @@ public class ReservationService : IReservationService
 			Dictionary<DateTime, Reservation> reservations = (await _reservationRepository.GetClinicReservationsAsync(virtualId, date)).ToDictionary(x => x.ScheduledAt);
 			var clinic = await _virtualClinicService.GetClinicById(virtualId);
 			var workTimes = clinic.WorkTimes.ToArray();
-			var extractedTimes = ExtractSlotsFromWorkTimes(workTimes, clinic.AvgService);
+			var extractedTimes = ExtractSlotsFromWorkTimes(workTimes.Where(wt => wt.Day == date.DayOfWeek.ToString()), clinic.AvgService);
 
 			foreach (var time in extractedTimes)
 			{
@@ -213,12 +211,12 @@ public class ReservationService : IReservationService
 
 			var currentClinic = await _virtualClinicService.GetClinicById(reservationDto.VirtualId);
 
-			bool isHoliday = currentClinic.Holidays.Any(h => h.Equals(reservationDto.ScheduledAt.DayOfWeek));
+			//bool isHoliday = currentClinic.Holidays.Any(h => h.Equals(reservationDto.ScheduledAt.DayOfWeek));
 
-			if (isHoliday)
-			{
-				throw new ArgumentException("appointments cannot be on a holiday");
-			}
+			//if (isHoliday)
+			//{
+			//	throw new ArgumentException("appointments cannot be on a holiday");
+			//}
 
 			if (await HasConflict(reservationDto))
 			{

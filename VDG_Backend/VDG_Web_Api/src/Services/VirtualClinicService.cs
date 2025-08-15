@@ -19,14 +19,24 @@ public class VirtualClinicService : IVirtualClinicService
 		_doctorRepository = doctorRepository;
 	}
 
+	private List<ClinicWorkTime> GenerateWorkingTime(WorkTimeInitialize workTimeInit)
+	{
+		IEnumerable<ClinicWorkTime> workTimes = new List<ClinicWorkTime>();
+		return Enumerable.Range(0, 6)
+			.Where(day => !workTimeInit.Holidays.Contains((DayOfWeek)day))
+			.GroupJoin(workTimes, day => day, workTime => (int)workTime.DayOfWeek,
+			(day, workTime) => new ClinicWorkTime()
+			{
+				DayOfWeek = (DayOfWeek)day,
+				ClinicId = workTimeInit.ClinicId,
+				StartWorkHours = workTimeInit.StartWorkHours,
+				EndWorkHours = workTimeInit.EndWorkHours
+			}).ToList();
+	}
+
 	public async Task AddClinic(AddVirtualClinicDTO clinic)
 	{
-		if (clinic.WorkTimes.Any(x => x.StartWorkHours >= x.EndWorkHours) || clinic.WorkTimes.Count == 0)
-		{
-			throw new ArgumentException("invalid worktimes, must provide atleast one valid worktime range");
-		}
-
-		var doctor = await _doctorRepository.GetDoctorByIdAsync(_claimService.GetCurrentUserId());
+		var doctor = await _doctorRepository.GetDoctorByUserId(_claimService.GetCurrentUserId());
 
 		if (doctor == null && !_claimService.GetCurrentUserRole().Equals(UserRole.Admin))
 		{
@@ -41,7 +51,7 @@ public class VirtualClinicService : IVirtualClinicService
 		try
 		{
 			var virtualClinic = clinic.ToEntity();
-
+			virtualClinic.WorkTimes = GenerateWorkingTime(clinic.WorkTime);
 			await _clinicRepository.AddClinic(virtualClinic);
 		}
 		catch (Exception e)
@@ -53,15 +63,10 @@ public class VirtualClinicService : IVirtualClinicService
 
 	public async Task AddClinicWorkTime(ClinicWorkTimeDTO workTimeDTO)
 	{
-		ClinicWorkTime workTime = new()
-		{
-			ClinicId = workTimeDTO.ClinicId,
-			StartWorkHours = workTimeDTO.StartWorkHours,
-			EndWorkHours = workTimeDTO.EndWorkHours
-		};
 
 		try
 		{
+			ClinicWorkTime workTime = workTimeDTO.ToEntity();
 			await _clinicRepository.AddClinicWorkTime(workTime);
 		}
 		catch (Exception e)

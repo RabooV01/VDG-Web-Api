@@ -16,6 +16,8 @@ public partial class ClinicWorkTime
 	[InverseProperty("WorkTimes")]
 	public VirtualClinic? Clinic { get; set; }
 
+	public DayOfWeek DayOfWeek { get; set; }
+
 	[Column("Start_WorkHours")]
 	public TimeOnly StartWorkHours { get; set; }
 

@@ -51,7 +51,6 @@ public static class VirtualClinicMapping
 			PreviewCost = virtualClinicDTO.PreviewCost,
 			Status = virtualClinicDTO.Status,
 			Name = virtualClinicDTO.Name,
-			Holidays = virtualClinicDTO.Holidays.ToHolidaysString(),
 			LocationCoords = virtualClinicDTO.LocationCoords,
 			Doctor = virtualClinicDTO.Doctor.ToEntity()
 		};
@@ -63,7 +62,8 @@ public static class VirtualClinicMapping
 			Id = clinicWorkTimeDTO.Id,
 			ClinicId = clinicWorkTimeDTO.ClinicId,
 			StartWorkHours = clinicWorkTimeDTO.StartWorkHours,
-			EndWorkHours = clinicWorkTimeDTO.EndWorkHours
+			EndWorkHours = clinicWorkTimeDTO.EndWorkHours,
+			DayOfWeek = Enum.Parse<DayOfWeek>(clinicWorkTimeDTO.Day)
 		};
 
 	public static ClinicWorkTimeDTO ToDto(this ClinicWorkTime wt) => new()
@@ -71,7 +71,8 @@ public static class VirtualClinicMapping
 		Id = wt.Id,
 		ClinicId = wt.ClinicId,
 		StartWorkHours = wt.StartWorkHours,
-		EndWorkHours = wt.EndWorkHours
+		EndWorkHours = wt.EndWorkHours,
+		Day = wt.DayOfWeek.ToString()
 	};
 
 	public static VirtualClinicInfo ToClinicInfo(this VirtualClinic clinic)
@@ -94,9 +95,6 @@ public static class VirtualClinicMapping
 			Doctor = clinic.Doctor.ToDto(),
 			PreviewCost = clinic.PreviewCost,
 			Name = clinic.Name,
-			Holidays = string.IsNullOrEmpty(clinic.Holidays) ? new() : clinic.Holidays.Split(';')
-				.Select(d => Enum.Parse<DayOfWeek>(d))
-				.ToList(),
 			WorkTimes = clinic.WorkTimes.Select(wt => wt.ToDto()).ToList()
 		};
 
@@ -108,10 +106,8 @@ public static class VirtualClinicMapping
 			PreviewCost = clinicDTO.PreviewCost,
 			AvgService = clinicDTO.AvgService,
 			LocationCoords = clinicDTO.LocationCoords,
-			Holidays = clinicDTO.Holidays.ToHolidaysString(),
 			Name = clinicDTO.Name,
-			Status = "active",
-			WorkTimes = clinicDTO.WorkTimes.Select(x => x.ToEntity()).ToList()
+			Status = "active"
 		};
 
 	public static VirtualClinic ToEntity(this UpdateVirtualClinicDTO updateVirtualClinicDTO)
