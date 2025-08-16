@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VDG_Web_Api.src.Data;
 
@@ -11,9 +12,11 @@ using VDG_Web_Api.src.Data;
 namespace VDG_Web_Api.Migrations
 {
     [DbContext(typeof(VdgDbDemoContext))]
-    partial class VdgDbDemoContextModelSnapshot : ModelSnapshot
+    [Migration("20250816114016_PromotionRequests")]
+    partial class PromotionRequests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -202,9 +205,6 @@ namespace VDG_Web_Api.Migrations
                     b.Property<DateTime?>("ResponseDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("SpecialityId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -218,8 +218,6 @@ namespace VDG_Web_Api.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("RespondBy");
-
-                    b.HasIndex("SpecialityId");
 
                     b.HasIndex("UserId");
 
@@ -542,12 +540,6 @@ namespace VDG_Web_Api.Migrations
                         .HasForeignKey("RespondBy")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("VDG_Web_Api.src.Models.Speciality", "Speciality")
-                        .WithMany()
-                        .HasForeignKey("SpecialityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("VDG_Web_Api.src.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -555,8 +547,6 @@ namespace VDG_Web_Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Admin");
-
-                    b.Navigation("Speciality");
 
                     b.Navigation("User");
                 });

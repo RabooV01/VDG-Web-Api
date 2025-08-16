@@ -11,5 +11,8 @@ namespace VDG_Web_Api.src.DTOs.DoctorDTOs
 		public string Speciality { get; set; } = string.Empty;
 
 		public string Description { get; set; } = string.Empty;
+
+		public string TicketOption { get; set; } = string.Empty;
+		public double TicketCost { get; set; }
 	}
 }

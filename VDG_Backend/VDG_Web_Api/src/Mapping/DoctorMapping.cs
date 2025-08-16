@@ -22,7 +22,9 @@ public static class DoctorMapping
 			Id = doctorDTO.DoctorId,
 			UserId = doctorDTO.UserId,
 			SpecialityId = doctorDTO.SpecialityId,
-			User = doctorDTO.GetUser()
+			User = doctorDTO.GetUser(),
+			TicketCost = doctorDTO.TicketCost,
+			TicketOption = Enum.Parse<TicketOptions>(doctorDTO.TicketOption)
 		};
 
 	public static DoctorInfo ToInfo(this Doctor doctor)
@@ -47,7 +49,9 @@ public static class DoctorMapping
 			UserId = doctor.UserId,
 			Email = doctor.User.Email,
 			Role = doctor.User.Role.ToString(),
-			Description = doctor.Description
+			Description = doctor.Description,
+			TicketCost = doctor.TicketCost,
+			TicketOption = doctor.TicketOption.ToString()
 		};
 
 	public static User GetUser(this DoctorDTO doctorDTO)
