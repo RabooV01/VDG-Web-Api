@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using VDG_Web_Api.src.Enums;
 
 namespace VDG_Web_Api.src.Models;
 
@@ -11,7 +12,7 @@ public partial class User
 	public int Id { get; set; }
 
 	[Column("Person_Id")]
-	public int? PersonId { get; set; }
+	public int PersonId { get; set; }
 
 	[StringLength(128)]
 	[Unicode(false)]
@@ -24,10 +25,10 @@ public partial class User
 
 	[StringLength(32)]
 	[Unicode(false)]
-	public string? Role { get; set; }
+	public UserRole Role { get; set; } = UserRole.User;
 
 	[ForeignKey("PersonId")]
-	public virtual Person? Person { get; set; }
+	public virtual Person Person { get; set; } = null!;
 
 	[InverseProperty("User")]
 	public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();

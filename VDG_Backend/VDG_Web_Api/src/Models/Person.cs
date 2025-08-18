@@ -12,13 +12,13 @@ public partial class Person
 
 	[Column("First_Name")]
 	[StringLength(64)]
-	public string FirstName { get; set; } = null!;
+	public string FirstName { get; set; } = string.Empty;
 
 	[Column("Last_Name")]
 	[StringLength(64)]
-	public string LastName { get; set; } = null!;
+	public string? LastName { get; set; }
 
-	public DateOnly? Birthdate { get; set; }
+	public DateOnly? Birthdate { get; set; } = null!;
 
 	[StringLength(12)]
 	public string? Gender { get; set; }

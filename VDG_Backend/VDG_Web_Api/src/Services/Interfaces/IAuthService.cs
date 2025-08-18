@@ -1,10 +1,11 @@
-using Microsoft.AspNetCore.Authentication;
 using VDG_Web_Api.src.DTOs.UserDTOs;
+using VDG_Web_Api.src.Models;
+using VDG_Web_Api.src.Services.JWTService;
 
 namespace VDG_Web_Api.src.Services.Interfaces;
 
 public interface IAuthService
 {
-    public Task<bool> AuthenticateAsync(UserRegister userRegister);
-    public Task<UserDTO> ValidateUser(UserLogin userLogin);
+	public Task<AuthResponse> AuthenticateAsync(UserLogin userRegister);
+	public Task<User?> ValidateUser(UserLogin userLogin);
 }

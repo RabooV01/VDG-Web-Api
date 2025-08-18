@@ -4,9 +4,11 @@ namespace VDG_Web_Api.src.Services.Interfaces;
 
 public interface IReservationService
 {
-    public Task<IEnumerable<ClinicReservationDTO>> GetClinicReservationsAsync(int virtualId, DateOnly? date = null);
-    public Task<IEnumerable<UserReservationDTO>> GetUserReservationsAsync(int userId, DateOnly? date = null);
-    public Task BookAppointmentAsync(ReservationDTO reservation);
-    public Task CancelAppointmentAsync(int reservationId);
-    public Task EditAppointmentAsync(ReservationDTO reservation);
+	public Task<IEnumerable<ClinicReservationDTO>> GetClinicReservationsAsync(int virtualClinicId, DateTime date);
+	public Task<IEnumerable<UserReservationDTO>> GetUserReservationsAsync(int userId, DateOnly? date = null);
+	public Task BookAppointmentAsync(ReservationDTO reservation);
+	public Task CancelAppointmentAsync(int reservationId);
+	public Task<bool> EditAppointmentAsync(ReservationDTO reservation);
+	public Task PreviewReservation(int reservationId);
+	public Task<IEnumerable<ReservationDayBusyness>> GetMonthBusyness(int clinicId, DateTime date);
 }

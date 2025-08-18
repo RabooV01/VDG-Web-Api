@@ -34,26 +34,33 @@ GO
 
 IF NOT EXISTS (SELECT 1 FROM Doctor)
 BEGIN
-	INSERT INTO [Doctor] (Syndicate_Id, Speciality_Id, [User_Id]) VALUES
-	('A499KH', 1, 3),
-	('A459ZH', 2, 6);
+	INSERT INTO [Doctor] (Syndicate_Id, Speciality_Id, [User_Id], Ticket_Status, Ticket_Cost) VALUES
+	('A499KH', 1, 3, 'Open', 25000),
+	('A459ZH', 2, 6, 'Open', 20000);
 END
 GO
 
 IF NOT EXISTS(SELECT 1 FROM Virtual_Clinic)
 BEGIN
-INSERT INTO Virtual_Clinic (Doctor_Id, Avg_Service, Start_Work_Hours, End_Work_Hours, Preview_Const, Ticket_Const, Ticket_Status, [Status], [Location]) VALUES
-	('A499KH', 30, '09:00:00', '17:00:00', 50, 20, 'Open', 'Active', 'City Hospital'),
-	('A459ZH', 45, '10:00:00', '18:00:00', 70, 25, 'Request', 'Active', 'Downtown Clinic');
+INSERT INTO Virtual_Clinic (Doctor_Id, Avg_Service, Start_Work_Hours, End_Work_Hours, Preview_Const, [Status], [Location]) VALUES
+	('1', 30, 50, 20, 'Open', 'Active', 'City Hospital'),
+	('2', 45, 70, 25, 'Request', 'Active', 'Downtown Clinic');
+END
+
+IF NOT EXISTS (SELECT 1 FROM ClinicWorkTime)
+BEGIN
+	INSERT INTO ClinicWorkTime(VirtualClinic_Id, Start_WorkHours, End_WorkHours) VALUES
+	(1, '09:00', '02:00'),
+	(2, '09:00', '02:00');
 END
 
 IF NOT EXISTS (SELECT 1 FROM Reservation)
 BEGIN
 	INSERT INTO [Reservation] (User_Id, Virtual_Id, ScheduledAt, Text, Type) VALUES
-	(1, 'A499KH', '2023-10-03 09:00:00', 'Annual Check-up with Dr. John', 'Preview'),
-	(2, 'A499KH', '2023-10-03 10:00:00', 'Follow-up appointment with Dr. John', 'Revision'),
-	(1, 'A459ZH', '2023-10-04 14:00:00', 'Initial Consultation with Dr. Smith', 'Preview'),
-	(3, 'A459ZH', '2023-10-05 16:00:00', 'Routine Check-up with Dr. Smith', 'Revision'),
-	(2, 'A499KH', '2023-10-06 11:00:00', 'Specialist Consultation with Dr. John', 'Preview');
+	(1, 1, '2023-10-03 09:00:00', 'Annual Check-up with Dr. John', 'Preview'),
+	(2, 1, '2023-10-03 10:00:00', 'Follow-up appointment with Dr. John', 'Revision'),
+	(1, 2, '2023-10-04 14:00:00', 'Initial Consultation with Dr. Smith', 'Preview'),
+	(3, 2, '2023-10-05 16:00:00', 'Routine Check-up with Dr. Smith', 'Revision'),
+	(2, 1, '2023-10-06 11:00:00', 'Specialist Consultation with Dr. John', 'Preview');
 END
 GO

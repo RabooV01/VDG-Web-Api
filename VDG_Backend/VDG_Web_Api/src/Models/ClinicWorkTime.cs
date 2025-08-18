@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -12,14 +11,16 @@ public partial class ClinicWorkTime
 
 	[Column("Clinic_Id")]
 	public int ClinicId { get; set; }
-    
-    [ForeignKey("ClinicId")]
-    [InverseProperty("WorkTimes")]
-    public VirtualClinic? Clinic { get; set; }
 
-    [Column("Start_WorkHours")]
-	public TimeOnly? StartWorkHours { get; set; }
+	[ForeignKey("ClinicId")]
+	[InverseProperty("WorkTimes")]
+	public VirtualClinic? Clinic { get; set; }
 
-    [Column("End_WorkHours")]
-	public TimeOnly? EndWorkHours { get; set; }
+	public DayOfWeek DayOfWeek { get; set; }
+
+	[Column("Start_WorkHours")]
+	public TimeOnly StartWorkHours { get; set; }
+
+	[Column("End_WorkHours")]
+	public TimeOnly EndWorkHours { get; set; }
 }

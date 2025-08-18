@@ -1,7 +1,6 @@
-﻿using VDG_Web_Api.src.DTOs.DoctorDTOs;
-using VDG_Web_Api.src.DTOs.TicketDTOs;
+﻿using VDG_Web_Api.src.DTOs.TicketDTOs;
 using VDG_Web_Api.src.Enums;
-using VDG_Web_Api.src.Extensions.Validation;
+using VDG_Web_Api.src.Mapping;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services.Interfaces;
@@ -10,228 +9,220 @@ using VDG_Web_Api.src.Services.Interfaces;
 
 namespace VDG_Web_Api.src.Services
 {
-    public class TicketService : ITicketService
-    {
-        private readonly int UpdateAndDeleteThreshold = 5;
-        private readonly ITicketRepository _ticketRepository;
-        private readonly IUserService _userService;
-        public readonly IDoctorService _doctorService;
+	public class TicketService : ITicketService
+	{
+		private readonly int UpdateAndDeleteThreshold = 5;
+		private readonly ITicketRepository _ticketRepository;
 
 
-        public TicketService(ITicketRepository ticketRepository, IUserService userService, IDoctorService doctorService)
-        {
-            this._ticketRepository = ticketRepository;
-            this._userService = userService;
-            this._doctorService = doctorService;
-        }
+		public TicketService(ITicketRepository ticketRepository)
+		{
+			this._ticketRepository = ticketRepository;
+		}
 
-        // Done 
-        public async Task DeleteMessageAsync(int id)
-        {
-            TicketMessage ticketMessage = await _ticketRepository.GetTicketMessageAsync(id);
+		public async Task<TicketDTO> GetTicketByIdAsync(int ticketId)
+		{
+			try
+			{
+				var ticket = await _ticketRepository.GetTicketByIdAsync(ticketId);
 
-            if (ticketMessage == null)
-            {
-                throw new ArgumentNullException($"No such ticket with this id: {id}");
-            }
+				if (ticket == null)
+				{
+					throw new KeyNotFoundException("No such ticket was found");
+				}
+				var date = ticket.TicketMessages.Select(t => t.Date).Order().FirstOrDefault();
+				return ticket.ToDto(date);
+			}
+			catch (Exception)
+			{
 
-            if (DateTime.Now.Subtract(ticketMessage.Date).Minutes > UpdateAndDeleteThreshold)
-            {
-                throw new Exception($"The minimum time to remove the message has passed");
-            }
+				throw;
+			}
+		}
 
-            try
-            {
-                await _ticketRepository.DeleteMessageAsync(id);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Faild to delete the ticket meassge, Error: {ex.Message}", ex);
-            }
-        }
+		// Done 
+		public async Task DeleteMessageAsync(int id)
+		{
+			TicketMessage? ticketMessage = await _ticketRepository.GetTicketMessageAsync(id);
 
-        // Done 
-        public async Task UpdateMessageAsync(TicketMessageDTO ticketMessageDTO)
-        {
+			if (ticketMessage == null)
+			{
+				throw new ArgumentNullException(nameof(id), $"No such ticket with this id: {id}");
+			}
 
-            var ticketMessage = MapToTicketMessage(ticketMessageDTO);
-            if (ticketMessageDTO == null)
-            {
-                throw new ArgumentNullException($"No such Message");
-            }
-            if (DateTime.Now.Subtract(ticketMessage.Date).Minutes > UpdateAndDeleteThreshold)
-            {
-                throw new Exception($"The minimum time to remove the message has passed");
-            }
+			if (DateTime.Now.Subtract(ticketMessage.Date).Minutes > UpdateAndDeleteThreshold)
+			{
+				throw new Exception($"Cannot remove this message anymore");
+			}
 
-            try
-            {
-                await _ticketRepository.UpdateMessageAsync(ticketMessage);
-            }
-            catch (Exception ex)
-            {
+			try
+			{
+				await _ticketRepository.DeleteMessageAsync(id);
+			}
+			catch (Exception ex)
+			{
+				throw new InvalidOperationException($"Faild to delete the ticket meassge, Error: {ex.Message}", ex);
+			}
+		}
 
-                throw new InvalidOperationException($"Could not update, Error: {ex.Message}", ex);
-            }
-        }
-        // Done 
-        public async Task<IEnumerable<DoctorTicketDTO>> GetDoctorConsultationsAsync(int doctorId)
-        {
+		// Done 
+		public async Task UpdateMessageAsync(TicketMessageDTO ticketMessageDTO)
+		{
 
-            if (doctorId <= 0)
-            {
-                throw new Exception($"No such doctor with this id: {doctorId}");
-            }
-            try
-            {
-                var doctorConsultations = await _ticketRepository.GetConsultationsAsync(doctorId, null);
+			TicketMessage ticketMessage = ticketMessageDTO.ToEntity();
 
-                return (IEnumerable<DoctorTicketDTO>)doctorConsultations.Select(async d =>
-                {
-                    var ticketDto = MapToTicketDto(d);
+			if (DateTime.Now.Subtract(ticketMessage.Date).Minutes > UpdateAndDeleteThreshold)
+			{
+				throw new InvalidOperationException($"The minimum time to remove the message has passed");
+			}
 
-                    var user = await _userService.GetUser(ticketDto.UserId ?? 0);
+			try
+			{
+				await _ticketRepository.UpdateMessageAsync(ticketMessage);
+			}
+			catch (Exception ex)
+			{
 
-                    var fname = user?.Person.FirstName;
-                    var lname = user?.Person.LastName;
+				throw new InvalidOperationException($"Could not update", ex);
+			}
+		}
+		// Done 
+		public async Task<IEnumerable<DoctorTicketDTO>> GetDoctorConsultationsAsync(int doctorId)
+		{
+			try
+			{
+				var doctorConsultations = await _ticketRepository.GetTicketsAsync(doctorId, null);
 
-                    return new DoctorTicketDTO() { TicketDto = ticketDto, UserFirstName = fname, UserLastName = lname };
-                }).ToList();
+				return doctorConsultations.Select(d => d.ToDoctorTicketDto(d.TicketMessages.OrderBy(t => t.Date).First()));
+			}
+			catch (Exception ex)
+			{
+				throw new InvalidOperationException($"failed loading tickets", ex);
+			}
+		}
+		// Done
 
+		public async Task<IEnumerable<UserTicketDTO>> GetUserConsultationsAsync(int userId)
+		{
+			try
+			{
+				var userConsultaions = await _ticketRepository.GetTicketsAsync(null, userId);
 
-            }
-            catch (Exception ex)
-            {
-
-                throw new InvalidOperationException($"Could not retrive data, Error: {ex.Message}", ex);
-            }
-        }
-        // Done
-        public async Task<IEnumerable<UserTicketDTO>> GetUserConsultationsAsync(int userId)
-        {
-            if (userId <= 0)
-            {
-                throw new Exception($"No such doctor with this id: {userId}");
-            }
-            try
-            {
-                var userConsultaions = await _ticketRepository.GetConsultationsAsync(null, userId);
-
-                return userConsultaions.Select(u =>
-                {
-                    var ticketDto = MapToTicketDto(u);
-
-                    var doctorDto = _doctorService.GetDoctorById(ticketDto.DoctorId ?? 0);
-
-                    return new UserTicketDTO() { DoctorDto = doctorDto, TicketDto = ticketDto };
-
-                });
-            }
-            catch (Exception ex)
-            {
-
-                throw new InvalidOperationException($"Could not retrive data, Error: {ex.Message}", ex);
-            }
-        }
-        // Done
-        public async Task SendConsultationRequest(TicketDTO ticketDto, TicketMessageDTO ticketMessageDto)
-        {
-            if (ticketDto == null || ticketMessageDto == null || !ticketDto.IsValidTicket() || !ticketMessageDto.IsValidTicketMessage())
-            {
-                throw new ArgumentNullException($"No such Message");
-            }
-            Ticket ticket = MapToTicket(ticketDto);
-            var usetTickets = await _ticketRepository.GetConsultationsAsync(userId: ticket.UserId!.Value);
-
-            if (usetTickets.Where(t => t.DoctorId == ticket.DoctorId).Any(t =>
-            {
-                var status = Enum.Parse<TicketStatus>(t.Status!, true);
-                return !status.Equals(TicketStatus.closed);
-            }))
-            {
-                throw new Exception("You have an open ticket with this doctor");
-            }
-            try
-            {
-                var ticketMessage = MapToTicketMessage(ticketMessageDto);
-                await _ticketRepository.SendConsultationRequestAsync(ticket, ticketMessage);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Could not send, Error: {ex.Message}", ex);
-            }
-        }
-
-        // Done 
-        public async Task SendMessageAsync(TicketMessageDTO ticketMessageDto)
-        {
-            if (ticketMessageDto == null)
-            {
-                throw new ArgumentNullException("No such Message");
-            }
-            try
-            {
-                TicketMessage ticketMessage = MapToTicketMessage(ticketMessageDto);
-                await _ticketRepository.SendMessageAsync(ticketMessage);
-            }
-            catch (Exception ex)
-            {
-
-                throw new InvalidOperationException($"Could not send, Error: {ex.Message}", ex);
-            }
-        }
-
-        // Mapping 
+				return userConsultaions.Select(u => u.ToUserTicketDto(u.TicketMessages.OrderBy(t => t.Date).First()));
+			}
+			catch (Exception ex)
+			{
+				throw new InvalidOperationException($"failed loading tickets", ex);
+			}
+		}
+		private bool HasTicketWithDoctor(IEnumerable<Ticket> tickets, int doctorId) =>
+			tickets.Where(t => t.DoctorId == doctorId && t.Status != TicketStatus.Closed).Count() > 0;
 
 
-        public TicketDTO MapToTicketDto(Ticket ticket)
-        {
-            return new TicketDTO()
-            {
-                CloseDate = ticket.CloseDate,
-                Id = ticket.Id,
-                DoctorId = ticket.DoctorId,
-                Status = ticket.Status,
-                UserId = ticket.UserId,
+		public async Task SendConsultationRequest(AddTicketDTO addTicketDTO)
+		{
+			if (string.IsNullOrEmpty(addTicketDTO.Text))
+			{
+				throw new ArgumentException("Ticket invalid");
+			}
 
+			var usetTickets = await _ticketRepository.GetTicketsAsync(userId: addTicketDTO.UserId);
 
-            };
-        }
+			if (HasTicketWithDoctor(usetTickets, addTicketDTO.DoctorId))
+			{
+				throw new Exception("You have an open ticket with this doctor");
+			}
 
-        public DoctorDTO MapToDoctorDto(Doctor? doctor)
-        {
-            return new DoctorDTO()
-            {
-                Speciality = doctor.Speciality,
-                Id = doctor.Id,
-                SpecialityId = doctor.SpecialityId,
-                SyndicateId = doctor.SyndicateId,
-                UserId = doctor.UserId
-            };
-        }
+			try
+			{
+				Ticket ticket = addTicketDTO.ToEntity();
+				ticket.TicketMessages = [new() { Text = addTicketDTO.Text, OwnerId = addTicketDTO.UserId, Date = DateTime.Now }];
+				await _ticketRepository.SendConsultationRequestAsync(ticket);
+			}
+			catch (Exception ex)
+			{
+				throw new InvalidOperationException($"Could not send, Error: {ex.Message}", ex);
+			}
+		}
 
-        public Ticket MapToTicket(TicketDTO ticketDto)
-        {
-            return new Ticket()
-            {
-                DoctorId = ticketDto.DoctorId,
-                Status = ticketDto.Status,
-                UserId = ticketDto.UserId,
-                CloseDate = ticketDto.CloseDate,
-                Id = ticketDto.Id,
-            };
-        }
+		// Done 
+		public async Task SendMessageAsync(TicketMessageDTO ticketMessageDto)
+		{
+			if (ticketMessageDto == null)
+			{
+				throw new ArgumentNullException("No such Message");
+			}
 
-        public TicketMessage MapToTicketMessage(TicketMessageDTO ticketMessageDto)
-        {
-            return new TicketMessage()
-            {
-                Id = ticketMessageDto.Id,
-                TicketId = ticketMessageDto.TicketId,
-                Date = ticketMessageDto.Date,
-                OwnerId = ticketMessageDto.OwnerId,
-                Text = ticketMessageDto.Text,
-            };
-        }
-    }
+			try
+			{
+				TicketMessage ticketMessage = ticketMessageDto.ToEntity();
+				await _ticketRepository.SendMessageAsync(ticketMessage);
+			}
+			catch (Exception ex)
+			{
+
+				throw new InvalidOperationException($"Could not send, Error: {ex.Message}", ex);
+			}
+		}
+
+		public async Task<IEnumerable<TicketMessageDTO>> GetTicketMessages(int ticketId)
+		{
+			try
+			{
+				var messages = await _ticketRepository.GetTicketMessagesAsync(ticketId);
+				return messages.Select(m => m.ToDto());
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
+
+		public async Task ChangeTicketStatus(int ticketId, TicketStatus ticketStatus)
+		{
+			var ticket = await _ticketRepository.GetTicketByIdAsync(ticketId);
+
+			if (ticket == null)
+			{
+				throw new KeyNotFoundException("No such ticket was found");
+			}
+
+			bool isValidChange = (ticket.Status == TicketStatus.Open && ticketStatus == TicketStatus.Closed) ||
+				(ticket.Status == TicketStatus.Pending && (ticketStatus == TicketStatus.Open || ticketStatus == TicketStatus.Rejected));
+
+			if (!isValidChange)
+			{
+				throw new InvalidOperationException("cannot change state of this ticket");
+			}
+
+			ticket.Status = ticketStatus;
+
+			if (ticketStatus == TicketStatus.Closed)
+			{
+				ticket.CloseDate = DateTime.Now;
+			}
+
+			try
+			{
+				await _ticketRepository.UpdateTicketStatusAsync(ticket);
+			}
+			catch (Exception)
+			{
+
+				throw;
+			}
+		}
+
+		public async Task DeleteTicket(int ticketId)
+		{
+			try
+			{
+				await _ticketRepository.DeleteTicket(ticketId);
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
+	}
 }

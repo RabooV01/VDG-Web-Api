@@ -1,59 +1,89 @@
 ﻿using VDG_Web_Api.src.DTOs.DoctorDTOs;
-using VDG_Web_Api.src.DTOs.SpecialityDTOS;
-using VDG_Web_Api.src.Models;
+using VDG_Web_Api.src.Mapping;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services.Interfaces;
 
 namespace VDG_Web_Api.src.Services
 {
-    public class DoctorService : IDoctorService
-    {
-        private readonly IDoctorRepository _doctorRepository;
-        private readonly IUserService _userService;
-        public DoctorService(IDoctorRepository doctorRepository, IUserService userService)
-        {
-            _doctorRepository = doctorRepository;
-            _userService = userService;
-        }
-        public SpecialityDTO MapSpecialityToDTO(Speciality speciality)
-        {
-            return new SpecialityDTO()
-            {
-                Id = speciality.Id,
-                name = speciality.name
-            };
-        }
-        public DoctorDTO MapDoctorToDTO(Doctor doctor)
-        {
-
-            return new DoctorDTO()
-            {
-                Description = doctor.Description,
-                Id = doctor.Id,
-                UserId = doctor.UserId,
-                User = _userService.MapUserToDto(doctor.User),
-                SyndicateId = doctor.SyndicateId,
-                SpecialityId = doctor.SpecialityId,
-                Speciality = MapSpecialityToDTO(doctor.Speciality)
-            };
-        }
-
-		public Task<DoctorDTO> GetDoctorById(int doctorId)
+	public class DoctorService : IDoctorService
+	{
+		private readonly IDoctorRepository _doctorRepository;
+		public DoctorService(IDoctorRepository doctorRepository)
 		{
-			throw new NotImplementedException();
+			_doctorRepository = doctorRepository;
 		}
-		 public DoctorDTO MapToDoctorDto(Doctor doctor)
-        {
-            return new DoctorDTO()
-            {
-                Speciality = doctor.Speciality,
-                Id = doctor.Id,
-                SpecialityId = doctor.SpecialityId,
-                SyndicateId = doctor.SyndicateId,
-                UserId = doctor.UserId
-            };
-        }
+		public async Task<IEnumerable<DoctorDTO>> GetAllDoctors(int page, int pageSize, int? specialityId, string? name)
+		{
+			try
+			{
+				var doctors = await _doctorRepository.GetDoctors(page, pageSize, specialityId, name);
+				return doctors.Select(d => d.ToDto());
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
+		public async Task AddDoctor(AddDoctorDTO doctorDTO)
+		{
+			try
+			{
+				var doctor = await _doctorRepository.AddDoctorAsync(doctorDTO.ToEntity());
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
 
+		public async Task DeleteDoctor(int doctorId)
+		{
+			try
+			{
+				await _doctorRepository.DeleteDoctorAsync(doctorId);
+			}
+			catch (Exception)
+			{
 
-    }
+				throw;
+			}
+		}
+
+		public async Task<DoctorDTO> GetDoctorById(int doctorId)
+		{
+			var doctor = await _doctorRepository.GetDoctorByIdAsync(doctorId);
+
+			if (doctor == null)
+			{
+				throw new KeyNotFoundException("No such doctor");
+			}
+
+			return doctor.ToDto();
+		}
+
+		public async Task UpdateDoctorConsultationSettings(DoctorSettings doctorSettings, int doctorId)
+		{
+			try
+			{
+				await _doctorRepository.UpdateDoctorSettings(doctorId, doctorSettings.TicketOption, doctorSettings.TicketCost);
+			}
+			catch (Exception)
+			{
+
+				throw;
+			}
+		}
+
+		public async Task UpdateDoctorDescription(int doctorId, string description)
+		{
+			try
+			{
+				await _doctorRepository.UpdateDoctorDescription(description, doctorId);
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
+	}
 }

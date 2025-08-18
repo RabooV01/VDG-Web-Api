@@ -26,7 +26,7 @@ namespace VDG_Web_Api.src.Repositories
 				throw new InvalidOperationException($"Error while retrieving data. {ex.Message}", ex);
 			}
 		}
-		public async Task<IEnumerable<Ticket>> GetConsultationsAsync(int? doctorId = null, int? userId = null)
+		public async Task<IEnumerable<Ticket>> GetTicketsAsync(int? doctorId = null, int? userId = null)
 		{
 			if (doctorId != null && userId != null)
 			{
@@ -38,22 +38,32 @@ namespace VDG_Web_Api.src.Repositories
 
 				if (userId != null)
 				{
-					return await tickets.Where(t => t.UserId == userId)
+					return await tickets.Include(t => t.Doctor)
+						.ThenInclude(t => t.User)
+						.ThenInclude(u => u.Person)
+						.Include(t => t.TicketMessages)
+						.Include(t => t.Doctor.Speciality)
+						.Where(t => t.UserId == userId)
 						.ToListAsync();
 				}
+
 				if (doctorId != null)
 				{
-					return await tickets.Where(t => t.DoctorId == doctorId)
+					return await tickets
 						.Include(t => t.User)
 						.ThenInclude(u => u!.Person)
+						.Include(t => t.TicketMessages)
+						.Where(t => t.DoctorId == doctorId)
 						.ToListAsync();
 				}
+
+				throw new ArgumentException();
 			}
 			catch (Exception ex)
 			{
 				throw new InvalidOperationException($"Error while retrieving data. {ex.Message}", ex);
 			}
-			throw new InvalidOperationException($"Unexpected error occured in {nameof(GetConsultationsAsync)} method controlflow.");
+			throw new InvalidOperationException($"Unexpected error occured in {nameof(GetTicketsAsync)} method controlflow.");
 		}
 
 
@@ -78,32 +88,21 @@ namespace VDG_Web_Api.src.Repositories
 				throw new InvalidOperationException($"Faild to delet the message, Error: {e.Message}", e);
 			}
 		}
-		 public async Task SendConsultationRequestAsync(Ticket ticket, TicketMessage ticketMessage)
+		public async Task SendConsultationRequestAsync(Ticket ticket)
 		{
 			try
 			{
-
 				_context.Tickets.Add(ticket);
-				await _context.SaveChangesAsync();
-
-				ticketMessage.TicketId = ticket.Id;
-
-				_context.TicketMessages.Add(ticketMessage);
 				await _context.SaveChangesAsync();
 			}
 			catch (Exception e)
 			{
-
-				throw new InvalidOperationException($"Faild to send the ticket, Error: {e.Message}", e);
+				throw new InvalidOperationException($"Faild to add the ticket, Error: {e.Message}", e);
 			}
 		}
 
 		public async Task SendMessageAsync(TicketMessage ticketMessage)
 		{
-			if (ticketMessage == null)
-			{
-				throw new KeyNotFoundException("The ticket message has not found.");
-			}
 			try
 			{
 				_context.TicketMessages.Add(ticketMessage);
@@ -120,15 +119,13 @@ namespace VDG_Web_Api.src.Repositories
 			var ticketMessageToUpdate = await _context.TicketMessages.FindAsync(ticketMessage.Id);
 			if (ticketMessageToUpdate == null)
 			{
-				throw new KeyNotFoundException("The ticket message has not found.");
+				throw new KeyNotFoundException("The ticket message was not found.");
 			}
-
-			ticketMessageToUpdate = ticketMessage;
 
 			try
 			{
-				_context.TicketMessages.Update(ticketMessageToUpdate);
-				await _context.SaveChangesAsync();
+				await _context.TicketMessages.Where(tm => tm.Id == ticketMessageToUpdate.Id)
+					.ExecuteUpdateAsync(tm => tm.SetProperty(p => p.Text, ticketMessage.Text));
 			}
 			catch (Exception e)
 			{
@@ -147,6 +144,40 @@ namespace VDG_Web_Api.src.Repositories
 			{
 
 				throw new Exception($"Faild while retriving data,Error:{ex.Message}", ex);
+			}
+		}
+
+		public async Task<Ticket?> GetTicketByIdAsync(int ticketId)
+		{
+			var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId);
+			return ticket;
+		}
+
+		public async Task UpdateTicketStatusAsync(Ticket ticket)
+		{
+			try
+			{
+				await _context.Tickets.Where(t => t.Id == ticket.Id)
+					.ExecuteUpdateAsync(t => t.SetProperty(p => p.Status, ticket.Status)
+					.SetProperty(p => p.CloseDate, ticket.CloseDate));
+			}
+			catch (Exception)
+			{
+
+				throw;
+			}
+		}
+
+		public async Task DeleteTicket(int ticketId)
+		{
+			try
+			{
+				await _context.Tickets.Where(t => t.Id == ticketId)
+					.ExecuteDeleteAsync();
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Unable to delete ticket.", ex);
 			}
 		}
 	}

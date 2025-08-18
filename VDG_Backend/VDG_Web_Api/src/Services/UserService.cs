@@ -1,5 +1,7 @@
 using VDG_Web_Api.src.DTOs.PersonDTOs;
 using VDG_Web_Api.src.DTOs.UserDTOs;
+using VDG_Web_Api.src.Extensions.Validation;
+using VDG_Web_Api.src.Mapping;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services.Interfaces;
@@ -8,152 +10,102 @@ namespace VDG_Web_Api.src.Services;
 
 public class UserService : IUserService
 {
-    private readonly IUserRepository _userRepository;
-    private readonly string FailedUserOperationMessage = "User operation failed due to unexpected error";
-    private readonly string InvalidPersonObjectMessage = "Person is invalid";
-    public UserService(IUserRepository userRepository)
-    {
-        _userRepository = userRepository;
-    }
-    private string UserInvalidOperationErrorMessage(string operationName) =>
-        $"{operationName} {FailedUserOperationMessage}";
+	private readonly IUserRepository _userRepository;
+	private readonly string FailedUserOperationMessage = "User operation failed due to unexpected error";
+	public UserService(IUserRepository userRepository)
+	{
+		_userRepository = userRepository;
+	}
 
-    public PersonDTO MapPersonToDto(Person person) => new()
-    {
-        Id = person.Id,
-        FirstName = person.FirstName,
-        LastName = person.LastName,
-        Phone = person.Phone
-    };
+	private string UserInvalidOperationErrorMessage(string operationName) =>
+		$"{operationName} {FailedUserOperationMessage}";
 
-    public PersonProfileDTO MapPersonToProfileDTO(Person person) => new()
-    {
-        Id = person.Id,
-        FirstName = person.FirstName,
-        LastName = person.LastName,
-        Phone = person.Gender,
-        BirthDate = person.Birthdate,
-        Gender = person.Gender,
-        PersonalId = person.PersonalId
-    };
 
-    public Person MapPersonDtoToEntity(PersonDTO personDto)
-    {
-        return new Person()
-        {
-            Id = personDto.Id,
-            FirstName = personDto.FirstName,
-            LastName = personDto.LastName,
-            Phone = personDto.Phone
-        };
-    }
+	public async Task DeleteUserAsync(int userId)
+	{
+		try
+		{
+			await _userRepository.DeleteUserAsync(userId);
+		}
+		catch (KeyNotFoundException ex)
+		{
+			throw new InvalidOperationException(ex.Message, ex);
+		}
+		catch (Exception ex)
+		{
+			throw new InvalidOperationException($"{UserInvalidOperationErrorMessage(nameof(DeleteUserAsync))}, {ex.Message}", ex);
+		}
+	}
 
-    public Person MapPersonDtoToEntity(PersonProfileDTO personDetailsDto)
-    {
-        return new()
-        {
-            Id = personDetailsDto.Id ?? 0,
-            Birthdate = personDetailsDto.BirthDate,
-            FirstName = personDetailsDto.FirstName!,
-            LastName = personDetailsDto.LastName!,
-            Gender = personDetailsDto.Gender,
-            PersonalId = personDetailsDto.PersonalId,
-            Phone = personDetailsDto.Phone
-        };
-    }
+	public async Task<UserDTO?> GetUser(int userId)
+	{
 
-    public User MapUserDtoToEntity(UserDTO userDto)
-    {
-        return new User()
-        {
-            Id = userDto.Id!.Value,
-            Email = userDto.Email,
-            Person = MapPersonDtoToEntity(userDto.Person),
-            PersonId = userDto.Person.Id,
-            Role = userDto.Role
-        };
-    }
-    public UserDTO MapUserToDto(User user)
-    {
-        return new UserDTO()
-        {
-            Id = user.Id,
-            Email = user.Email,
-            Person = MapPersonToDto(user.Person!),
-            Role = user.Role
-        };
-    }
+		var user = await _userRepository.GetById(userId) ?? throw new KeyNotFoundException("User has not been found");
+		try
+		{
+			return user.ToDto();
+		}
+		catch (Exception ex)
+		{
+			throw new InvalidOperationException($"Failed mapping user, Error: {ex.Message}", ex);
+		}
+	}
 
-    public async Task DeleteUserAsync(int userId)
-    {
-        try
-        {
-            await _userRepository.DeleteUserAsync(userId);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            throw new InvalidOperationException(ex.Message, ex);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException($"{UserInvalidOperationErrorMessage(nameof(DeleteUserAsync))}, {ex.Message}", ex);
-        }
-    }
+	public async Task<IEnumerable<UserDTO>> GetUsers(int page, int limit)
+	{
+		try
+		{
+			var users = await _userRepository.GetUsers(page, limit);
+			return users.Select(u => u.ToDto());
+		}
+		catch (Exception ex)
+		{
+			throw new Exception($"{UserInvalidOperationErrorMessage(nameof(GetUsers))}, {ex.Message}", ex);
+		}
+	}
 
-    public async Task<UserDTO?> GetUser(int userId)
-    {
+	public async Task UpdateUserAsync(PersonProfileDTO personProfile, int userId)
+	{
+		User user = await _userRepository.GetById(userId) ?? throw new ArgumentException("Invalid User");
+		user.Person = personProfile.ToEntity();
+		try
+		{
+			await _userRepository.UpdateUserAsync(user);
+		}
+		catch (Exception ex)
+		{
+			throw new InvalidOperationException($"Update Failed. Error {ex.Message}", ex);
+		}
+	}
 
-        var user = await _userRepository.GetById(userId);
+	public async Task<bool> AddUser(UserRegister userRegister)
+	{
+		try
+		{
+			if (!userRegister.IsValidUser())
+			{
+				return false;
+			}
 
-        if (user == null)
-        {
-            throw new KeyNotFoundException("User has not been found");
-        }
+			await _userRepository.AddUserAsync(userRegister.ToEntity());
 
-        try
-        {
-            return MapUserToDto(user);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException($"Failed mapping user, Error: {ex.Message}", ex);
-        }
-    }
+			return true;
+		}
+		catch (Exception)
+		{
+			throw;
+		}
+	}
 
-    public async Task<IEnumerable<UserDTO>> GetUsers(int page, int limit)
-    {
-        try
-        {
-            var users = await _userRepository.GetUsers(page, limit);
-            return users.Select(MapUserToDto);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"{UserInvalidOperationErrorMessage(nameof(GetUsers))}, {ex.Message}", ex);
-        }
-    }
+	public async Task<UserProfileDTO> LoadUserProfile(int userId)
+	{
+		var user = await _userRepository.GetById(userId);
 
-    public async Task UpdateUserAsync(UserDTO userDTO)
-    {
-        if (userDTO.Id == null)
-        {
-            throw new ArgumentNullException("User Id must be provided to complete this operation.");
-        }
+		if (user == null)
+		{
+			throw new KeyNotFoundException("No such user");
+		}
 
-        var user = await _userRepository.GetById(userDTO.Id!.Value);
-
-        if (user == null)
-        {
-            throw new ArgumentNullException("Invalid User");
-        }
-
-        try
-        {
-            await _userRepository.UpdateUserAsync(user);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException($"Update Failed. Error {ex.Message}", ex);
-        }
-    }
+		return user.ToProfileDto();
+	}
 }

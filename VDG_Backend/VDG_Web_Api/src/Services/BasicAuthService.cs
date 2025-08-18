@@ -1,11 +1,15 @@
 using System.Security.Authentication;
 using VDG_Web_Api.src.DTOs.UserDTOs;
+using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.Extensions.Validation;
+using VDG_Web_Api.src.Mapping;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services.Interfaces;
 
-public class BasicAuthService : IAuthService
+namespace VDG_Web_Api.src.Services;
+
+public class BasicAuthService
 {
 	private readonly IUserRepository _userRepository;
 	private readonly IUserService _userService;
@@ -18,10 +22,7 @@ public class BasicAuthService : IAuthService
 
 	public async Task<bool> AuthenticateAsync(UserRegister userRegister)
 	{
-		if (userRegister == null)
-		{
-			throw new ArgumentNullException("Something is missing, Double check your credentials and try again.");
-		}
+		ArgumentNullException.ThrowIfNull(userRegister);
 
 		if (!userRegister.IsValidUser() || !userRegister.Person!.IsValidPerson())
 		{
@@ -33,9 +34,9 @@ public class BasicAuthService : IAuthService
 			var user = new User()
 			{
 				Email = userRegister.Email,
-				Person = _userService.MapPersonDtoToEntity(userRegister.Person!),
+				Person = userRegister.Person.ToEntity(),
 				PasswordHash = userRegister.Password,
-				Role = "User"
+				Role = UserRole.User
 			};
 
 			await _userRepository.AddUserAsync(user);
@@ -50,23 +51,12 @@ public class BasicAuthService : IAuthService
 
 	public async Task<UserDTO> ValidateUser(UserLogin userLogin)
 	{
-		var user = await _userRepository.GetByEmail(userLogin.Email);
-		if (user == null)
-		{
-			throw new ArgumentException("Invalid email or password");
-		}
-
+		var user = await _userRepository.GetByEmail(userLogin.Email) ?? throw new ArgumentException("Invalid email or password");
 		if (!userLogin.Password.Equals(user.PasswordHash))
 		{
 			throw new ArgumentException("Invalid email or password");
 		}
 
-		return new()
-		{
-			Id = user.Id,
-			Email = user.Email,
-			Role = user.Role,
-			Person = _userService.MapPersonToDto(user.Person!)
-		};
+		return user.ToDto();
 	}
 }

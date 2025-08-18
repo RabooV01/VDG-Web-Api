@@ -14,14 +14,10 @@ public class VirtualClinicRepository : IVirtualClinicRepository
 		_context = context;
 	}
 
-	public async Task AddClinic(VirtualClinic clinic, ClinicWorkTime initialWorkTime)
+	public async Task AddClinic(VirtualClinic clinic)
 	{
 		_context.VirtualClinics.Add(clinic);
 		await _context.SaveChangesAsync();
-
-		initialWorkTime.ClinicId = clinic.Id;
-
-		await AddClinicWorkTime(initialWorkTime);
 	}
 
 	public async Task AddClinicWorkTime(ClinicWorkTime workTime)
@@ -32,13 +28,21 @@ public class VirtualClinicRepository : IVirtualClinicRepository
 
 	public async Task<VirtualClinic?> GetClinicById(int Id)
 	{
-		var clinic = await _context.VirtualClinics.FindAsync(Id);
+		var clinic = await _context.VirtualClinics
+			.Include(c => c.Doctor)
+				.ThenInclude(d => d.User)
+				.ThenInclude(u => u.Person)
+			.Include(c => c.Doctor)
+				.ThenInclude(d => d.Speciality)
+			.Include(c => c.WorkTimes)
+			.FirstOrDefaultAsync(c => c.Id == Id);
 		return clinic;
 	}
 
 	public async Task<IEnumerable<VirtualClinic>> GetClinicsByDoctorId(int doctorId)
 	{
 		var doctorClinics = await _context.VirtualClinics
+			.Include(c => c.WorkTimes)
 			.Where(clinic => clinic.DoctorId.Equals(doctorId))
 			.ToListAsync();
 
@@ -49,6 +53,7 @@ public class VirtualClinicRepository : IVirtualClinicRepository
 	{
 		var workTimes = await _context.ClinicWorkTimes
 			.Where(w => w.ClinicId == clinicId)
+			.OrderBy(cw => cw.StartWorkHours)
 			.ToListAsync();
 
 		return workTimes;
@@ -71,7 +76,8 @@ public class VirtualClinicRepository : IVirtualClinicRepository
 		if (clinicWorkTime == null)
 			return;
 
-		await _context.ClinicWorkTimes.Where(c => c.Id == workTimeId).ExecuteDeleteAsync();
+		_context.ClinicWorkTimes.Remove(clinicWorkTime);
+		await _context.SaveChangesAsync();
 	}
 
 	public async Task UpdateClinic(VirtualClinic clinic)

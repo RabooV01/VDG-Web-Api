@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VDG_Web_Api.src.DTOs.UserDTOs;
 using VDG_Web_Api.src.Services.Interfaces;
+using VDG_Web_Api.src.Services.JWTService;
 
 namespace VDG_Web_Api.src.Controllers
 {
@@ -9,22 +10,39 @@ namespace VDG_Web_Api.src.Controllers
 	public class AuthController : ControllerBase
 	{
 		private readonly IAuthService _authService;
+		private readonly IUserService _userService;
 
-		public AuthController(IAuthService authService)
+
+		public AuthController(IAuthService authService, IUserService userService)
 		{
 			_authService = authService;
+			_userService = userService;
 		}
 
-		[HttpPost]
-		public async Task<ActionResult> RegisterUser(UserRegister user)
+		[HttpPost("Register")]
+		public async Task<ActionResult> Register(UserRegister userRegister)
 		{
 			try
 			{
-				if (await _authService.AuthenticateAsync(user))
+				if (await _userService.AddUser(userRegister))
 				{
 					return Created();
 				}
-				return BadRequest("Check that your email address is valid, and please write password longer than 8 characters");
+
+				return BadRequest("user has not been registered, Please try again");
+			}
+			catch (Exception e)
+			{
+				return BadRequest(e.Message);
+			}
+		}
+		[HttpPost]
+		public async Task<ActionResult<AuthResponse>> Authenticate(UserLogin user)
+		{
+			try
+			{
+				var response = await _authService.AuthenticateAsync(user);
+				return Ok(response);
 			}
 			catch (Exception ex)
 			{

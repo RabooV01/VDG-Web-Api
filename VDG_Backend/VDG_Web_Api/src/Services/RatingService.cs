@@ -1,51 +1,35 @@
 ﻿using VDG_Web_Api.src.DTOs.RatingDTOs;
-using VDG_Web_Api.src.Models;
+using VDG_Web_Api.src.Mapping;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services.Interfaces;
 
 namespace VDG_Web_Api.src.Services
 {
-    public class RatingService : IRatingService
-    {
-        private readonly IRatingRepository _ratingRepository;
+	public class RatingService : IRatingService
+	{
+		private readonly IRatingRepository _ratingRepository;
 
-        public RatingService(IRatingRepository repository)
-        {
-            _ratingRepository = repository;
-        }
+		public RatingService(IRatingRepository repository)
+		{
+			_ratingRepository = repository;
+		}
 
-        public async Task Rate(RatingDTO ratingDto)
-        {
-            if (ratingDto == null)
-            {
-                throw new ArgumentNullException("rating not found");
-            }
-            if (ratingDto.UserId == null || ratingDto.DoctorId == null)
-            {
-                throw new ArgumentNullException("may there is no a doctor or a user");
-            }
-            try
-            {
-                await _ratingRepository.Rate(MapToRating(ratingDto));
-            }
-            catch (Exception ex)
-            {
+		public async Task Rate(RatingDTO ratingDto)
+		{
+			if (ratingDto == null)
+			{
+				throw new ArgumentNullException("rating not found");
+			}
 
-                throw new Exception($"can't rate, Error: {ex.Message}", ex);
-            }
-        }
+			try
+			{
+				await _ratingRepository.Rate(ratingDto.ToEntity());
+			}
+			catch (Exception ex)
+			{
 
-        public Rating MapToRating(RatingDTO ratingDto)
-        {
-            return new Rating()
-            {
-                Id = ratingDto.Id,
-                UserId = ratingDto.UserId,
-                DoctorId = ratingDto.DoctorId,
-                Act = ratingDto.Act,
-                AvgWait = ratingDto.AvgWait,
-                AvgService = ratingDto.AvgService,
-            };
-        }
-    }
+				throw new Exception($"can't rate, Error: {ex.Message}", ex);
+			}
+		}
+	}
 }

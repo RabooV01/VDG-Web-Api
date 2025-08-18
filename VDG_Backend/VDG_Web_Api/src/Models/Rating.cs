@@ -19,18 +19,18 @@ public partial class Rating
 	public int? DoctorId { get; set; }
 
 	[Column("Avg_Wait")]
-	public double? AvgWait { get; set; }
+	public double AvgWait { get; set; }
 
 	[Column("Avg_Service")]
-	public double? AvgService { get; set; }
+	public double AvgService { get; set; }
 
-	public double? Act { get; set; }
+	public double Act { get; set; }
 
 	[ForeignKey("DoctorId")]
 	[InverseProperty("Ratings")]
-	public virtual Doctor? Doctor { get; set; }
+	public virtual Doctor? Doctor { get; set; } = null!;
 
 	[ForeignKey("UserId")]
 	[InverseProperty("Ratings")]
-	public virtual User? User { get; set; }
+	public virtual User? User { get; set; } = null!;
 }

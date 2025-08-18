@@ -1,4 +1,4 @@
-using VDG_Web_Api.src.Models;
+using VDG_Web_Api.src.DTOs.DoctorDTOs;
 
 namespace VDG_Web_Api.src.DTOs.VirtualClinicDTOs;
 
@@ -6,19 +6,21 @@ public class VirtualClinicDTO
 {
 	public int Id { get; set; }
 
-	public int? DoctorId { get; set; }
+	public string? Name { get; set; }
 
-	public virtual Doctor? Doctor { get; set; }
+	public int DoctorId { get; set; }
 
-	public TimeOnly? StartWorkHours { get; set; }
-
-	public TimeOnly? EndWorkHours { get; set; }
+	public DoctorDTO Doctor { get; set; } = null!;
 
 	public string Status { get; set; } = "Inactive";
 
-	public double? AvgService { get; set; }
+	public int AvgService { get; set; }
 
-	public string? Location { get; set; }
+	public string Location { get; set; } = string.Empty;
 
-	public double? PreviewCost { get; set; }
+	public string? LocationCoords { get; set; }
+
+	public double PreviewCost { get; set; }
+
+	public List<ClinicWorkTimeDTO> WorkTimes { get; set; } = new();
 }

@@ -13,12 +13,12 @@ public partial class Post
 	[Column("Doctor_Id")]
 	[StringLength(16)]
 	[Unicode(false)]
-	public int? DoctorId { get; set; }
+	public int DoctorId { get; set; }
 
 	[Column(TypeName = "text")]
-	public string? Content { get; set; }
+	public string Content { get; set; } = string.Empty;
 
 	[ForeignKey("DoctorId")]
 	[InverseProperty("Posts")]
-	public virtual Doctor? Doctor { get; set; }
+	public virtual Doctor Doctor { get; set; } = null!;
 }
