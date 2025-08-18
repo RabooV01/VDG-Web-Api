@@ -5,6 +5,7 @@ namespace VDG_Web_Api.src.Repositories.Interfaces
 {
 	public interface IDoctorRepository
 	{
+		public Task<IEnumerable<Doctor>> GetDoctors(int page, int pageSize, int? specialityId = null, string? name = null);
 		public Task<int> AddDoctorAsync(Doctor doctor);
 		public Task DeleteDoctorAsync(int doctorId);
 		public Task UpdateDoctorAsync(Doctor doctor);
@@ -12,6 +13,7 @@ namespace VDG_Web_Api.src.Repositories.Interfaces
 		public Task<Doctor?> GetDoctorBySyndicateIdAsync(string syndicateId);
 		public Task UpdateDoctorDescription(string description, int doctorId);
 		public Task UpdateDoctorSettings(int doctorId, TicketOptions ticketOptions, double ticketCost);
+		public Task<Doctor?> GetDoctorByUserId(int userId);
 
 		// search items
 		public Task<IEnumerable<Doctor>?> GetDoctorsBySpecialityIdAsync(int specialityId);

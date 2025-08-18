@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.Models;
 
 namespace VDG_Web_Api.src.Data;
@@ -35,13 +36,26 @@ public partial class VdgDbDemoContext : DbContext
 
 	public virtual DbSet<ClinicWorkTime> ClinicWorkTimes { get; set; } = null!;
 
+	public virtual DbSet<PromotionRequest> PromotionRequests { get; set; } = null!;
+
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		=> optionsBuilder.UseSqlServer(_config.GetConnectionString("Default"));
+		=> optionsBuilder.UseSqlServer(_config.GetConnectionString("Remote"));
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
 		modelBuilder.UseCollation("SQL_Latin1_General_CP1_CI_AS");
 
+		modelBuilder.Entity<PromotionRequest>(p =>
+		{
+			p.HasKey(q => q.Id);
+
+			p.HasOne(q => q.User).WithMany().HasForeignKey(k => k.UserId)
+				.OnDelete(DeleteBehavior.NoAction);
+			p.HasOne(q => q.Admin).WithMany().HasForeignKey(k => k.RespondBy)
+				.OnDelete(DeleteBehavior.NoAction);
+
+			p.HasOne(q => q.Speciality).WithMany().HasForeignKey(k => k.SpecialityId);
+		});
 
 		modelBuilder.Entity<Doctor>(entity =>
 		{
@@ -55,6 +69,11 @@ public partial class VdgDbDemoContext : DbContext
 		modelBuilder.Entity<Person>(entity =>
 		{
 			entity.HasKey(e => e.Id).HasName("PK__Person__3214EC07A0A03B3C");
+
+			entity.HasData([new(){
+					Id = 1,
+					FirstName = "Admin"
+				}]);
 		});
 
 		modelBuilder.Entity<Post>(entity =>
@@ -127,6 +146,15 @@ public partial class VdgDbDemoContext : DbContext
 			entity.HasOne(d => d.Person).WithOne()
 				.OnDelete(DeleteBehavior.Cascade)
 				.HasConstraintName("User_Person_FK");
+
+			entity.HasData([new()
+			{
+				Id = 1,
+				PersonId = 1,
+				Email = "admin@vdg.com",
+				PasswordHash = "AdminIsAdmin",
+				Role = UserRole.Admin
+			}]);
 		});
 
 		modelBuilder.Entity<VirtualClinic>(entity =>

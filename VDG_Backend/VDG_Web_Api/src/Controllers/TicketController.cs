@@ -70,14 +70,14 @@ namespace VDG_Web_Api.src.Controllers
 				var tickets = await _ticketService.GetDoctorConsultationsAsync(doctorId);
 				return Ok(tickets);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				return BadRequest();
+				return BadRequest(ex.Message);
 			}
 		}
 
 		[HttpGet("{ticketId}/Messages")]
-		public async Task<ActionResult<TicketDTO>> GetTicket(int ticketId)
+		public async Task<ActionResult<IEnumerable<TicketMessageDTO>>> GetTicketMessages(int ticketId)
 		{
 			try
 			{
@@ -94,7 +94,7 @@ namespace VDG_Web_Api.src.Controllers
 				bool isAdmin = _claimService.GetCurrentUserRole().Equals(UserRole.Admin);
 
 
-				if (!isAdmin && ticket.UserId != currentUserId && currentUserId != doctorId)
+				if (!isAdmin && ticket.UserId != currentUserId && ticket.DoctorId != doctorId)
 				{
 					return Unauthorized();
 				}
@@ -221,6 +221,34 @@ namespace VDG_Web_Api.src.Controllers
 			{
 
 				throw;
+			}
+		}
+
+		[HttpDelete("Message/{messageId}")]
+		public async Task<ActionResult> DeleteMessage(int messageId)
+		{
+			try
+			{
+				await _ticketService.DeleteMessageAsync(messageId);
+				return NoContent();
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+		[HttpDelete("{tickedId}")]
+		public async Task<ActionResult> DeleteTicket(int tickedId)
+		{
+			try
+			{
+				await _ticketService.DeleteTicket(tickedId);
+				return NoContent();
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
 			}
 		}
 	}

@@ -13,7 +13,8 @@ public static class ReservationMapping
 			ScheduledAt = reservationDTO.ScheduledAt,
 			Type = reservationDTO.Type,
 			UserId = reservationDTO.UserId,
-			VirtualId = reservationDTO.VirtualId
+			VirtualId = reservationDTO.VirtualId,
+			Status = reservationDTO.Status
 		};
 
 	public static ReservationDTO ToDto(this Reservation reservation)
@@ -24,7 +25,8 @@ public static class ReservationMapping
 			Text = reservation.Text,
 			Type = reservation.Type,
 			UserId = reservation.UserId,
-			VirtualId = reservation.VirtualId
+			VirtualId = reservation.VirtualId,
+			Status = reservation.Status
 		};
 
 	public static ClinicReservationDTO ToClinicReservationDto(this Reservation reservation)
@@ -36,7 +38,8 @@ public static class ReservationMapping
 			Type = reservation.Type,
 			UserId = reservation.UserId,
 			VirtualId = reservation.VirtualId,
-			User = reservation.User?.ToDto()
+			User = reservation.User?.ToDto(),
+			Status = reservation.Status
 		};
 
 	public static UserReservationDTO ToUserReservationDto(this Reservation reservation)
@@ -48,6 +51,7 @@ public static class ReservationMapping
 		   Type = reservation.Type,
 		   UserId = reservation.UserId,
 		   VirtualId = reservation.VirtualId,
-		   VirtualClinic = reservation.Virtual?.ToDto()
+		   VirtualClinic = reservation.Virtual.ToClinicInfo(),
+		   Status = reservation.Status
 	   };
 }

@@ -22,7 +22,5 @@ public class VirtualClinicDTO
 
 	public double PreviewCost { get; set; }
 
-	public List<DayOfWeek> Holidays { get; set; } = new();
-
 	public List<ClinicWorkTimeDTO> WorkTimes { get; set; } = new();
 }

@@ -1,4 +1,5 @@
 using VDG_Web_Api.src.DTOs.VirtualClinicDTOs;
+using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.Mapping;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
@@ -9,23 +10,48 @@ namespace VDG_Web_Api.src.Services;
 public class VirtualClinicService : IVirtualClinicService
 {
 	private readonly IVirtualClinicRepository _clinicRepository;
-
-	public VirtualClinicService(IVirtualClinicRepository clinicRepository, IDoctorService doctorService)
+	private readonly IClaimService _claimService;
+	private readonly IDoctorRepository _doctorRepository;
+	public VirtualClinicService(IVirtualClinicRepository clinicRepository, IDoctorService doctorService, IClaimService claimService, IDoctorRepository doctorRepository)
 	{
 		_clinicRepository = clinicRepository;
+		_claimService = claimService;
+		_doctorRepository = doctorRepository;
+	}
+
+	private List<ClinicWorkTime> GenerateWorkingTime(WorkTimeInitialize workTimeInit)
+	{
+		IEnumerable<ClinicWorkTime> workTimes = new List<ClinicWorkTime>();
+		return Enumerable.Range(0, 6)
+			.Where(day => !workTimeInit.Holidays.Contains((DayOfWeek)day))
+			.GroupJoin(workTimes, day => day, workTime => (int)workTime.DayOfWeek,
+			(day, workTime) => new ClinicWorkTime()
+			{
+				DayOfWeek = (DayOfWeek)day,
+				ClinicId = workTimeInit.ClinicId,
+				StartWorkHours = workTimeInit.StartWorkHours,
+				EndWorkHours = workTimeInit.EndWorkHours
+			}).ToList();
 	}
 
 	public async Task AddClinic(AddVirtualClinicDTO clinic)
 	{
-		if (clinic.WorkTimes.Any(x => x.StartWorkHours >= x.EndWorkHours) || clinic.WorkTimes.Count == 0)
+		var doctor = await _doctorRepository.GetDoctorByUserId(_claimService.GetCurrentUserId());
+
+		if (doctor == null && !_claimService.GetCurrentUserRole().Equals(UserRole.Admin))
 		{
-			throw new ArgumentException("invalid worktimes, must provide atleast one valid worktime range");
+			throw new UnauthorizedAccessException();
+		}
+
+		if (doctor!.Id != clinic.DoctorId && !_claimService.GetCurrentUserRole().Equals(UserRole.Admin))
+		{
+			clinic.DoctorId = doctor.Id;
 		}
 
 		try
 		{
 			var virtualClinic = clinic.ToEntity();
-
+			virtualClinic.WorkTimes = GenerateWorkingTime(clinic.WorkTime);
 			await _clinicRepository.AddClinic(virtualClinic);
 		}
 		catch (Exception e)
@@ -37,15 +63,10 @@ public class VirtualClinicService : IVirtualClinicService
 
 	public async Task AddClinicWorkTime(ClinicWorkTimeDTO workTimeDTO)
 	{
-		ClinicWorkTime workTime = new()
-		{
-			ClinicId = workTimeDTO.ClinicId,
-			StartWorkHours = workTimeDTO.StartWorkHours,
-			EndWorkHours = workTimeDTO.EndWorkHours
-		};
 
 		try
 		{
+			ClinicWorkTime workTime = workTimeDTO.ToEntity();
 			await _clinicRepository.AddClinicWorkTime(workTime);
 		}
 		catch (Exception e)
@@ -72,7 +93,7 @@ public class VirtualClinicService : IVirtualClinicService
 
 		if (clinic == null)
 		{
-			throw new ArgumentNullException();
+			throw new ArgumentNullException(nameof(clinic), "invalid clinic");
 		}
 
 		return clinic.ToDto();
@@ -110,10 +131,18 @@ public class VirtualClinicService : IVirtualClinicService
 		}
 	}
 
-	public async Task<VirtualClinicInProfileDTO> GetClinicsByDoctorId(int doctorId)
+	public async Task<IEnumerable<VirtualClinicInProfileDTO>> GetClinicsByDoctorId(int doctorId)
 	{
-		var clinics = await _clinicRepository.GetClinicsByDoctorId(doctorId);
-		throw new NotImplementedException();
+		try
+		{
+			var clinics = await _clinicRepository.GetClinicsByDoctorId(doctorId);
+
+			return clinics.Select(c => c.ToClinicInProfileDto());
+		}
+		catch (Exception)
+		{
+			throw;
+		}
 	}
 
 }

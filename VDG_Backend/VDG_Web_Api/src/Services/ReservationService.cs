@@ -1,4 +1,5 @@
 using VDG_Web_Api.src.DTOs.ReservationDTOs;
+using VDG_Web_Api.src.DTOs.VirtualClinicDTOs;
 using VDG_Web_Api.src.Extensions.Validation;
 using VDG_Web_Api.src.Mapping;
 using VDG_Web_Api.src.Models;
@@ -10,20 +11,18 @@ public class ReservationService : IReservationService
 {
 	private readonly IReservationRepository _reservationRepository;
 	private readonly IVirtualClinicService _virtualClinicService;
-	private readonly IUserService _userService;
+	private readonly IClaimService _claimService;
 
 	private readonly static int _confirmThresholdPerHours = 24;
 
 	public ReservationService(IReservationRepository reservationRepository,
 		IVirtualClinicService virtualClinicService,
-		IUserService userService)
+		IClaimService claimService)
 	{
 		_reservationRepository = reservationRepository;
 		_virtualClinicService = virtualClinicService;
-		_userService = userService;
+		_claimService = claimService;
 	}
-
-
 
 	public async Task BookAppointmentAsync(ReservationDTO reservationDto)
 	{
@@ -36,18 +35,16 @@ public class ReservationService : IReservationService
 		{
 			var currentClinic = await _virtualClinicService.GetClinicById(reservationDto.VirtualId);
 
-			bool isHoliday = currentClinic.Holidays.Any(h => h.Equals(reservationDto.ScheduledAt.DayOfWeek));
-
-			if (isHoliday)
+			if (!currentClinic.WorkTimes.Any(wt => wt.Day == reservationDto.ScheduledAt.DayOfWeek.ToString()))
 			{
-				throw new ArgumentException("appointments cannot be on a holiday");
+				throw new OperationCanceledException("Appointments cannot be on holidays.");
 			}
 
 			Reservation reservation = reservationDto.ToEntity();
 
 			var existUserAppointmentsDoctorIds = (await GetUserReservationsAsync(reservation.UserId))
 			.Where(r => r.ScheduledAt > DateTime.Now)
-			.Select(r => r.VirtualClinic!.DoctorId);
+			.Select(r => r.VirtualClinic!.Doctor.Id);
 
 			if (await HasConflict(reservationDto))
 			{
@@ -99,35 +96,52 @@ public class ReservationService : IReservationService
 		{
 			throw;
 		}
-		catch (Exception ex)
+		catch (Exception)
 		{
-			throw new InvalidOperationException($"Error occured while canceling the appointment: {ex.Message}", ex);
+			throw;
 		}
+	}
+	public IEnumerable<TimeOnly> ExtractSlotsFromWorkTimes(IEnumerable<ClinicWorkTimeDTO> workTimes, int avgService)
+	{
+		List<TimeOnly> times = new();
+		foreach (var workTime in workTimes)
+		{
+			TimeOnly lastTiming = workTime.StartWorkHours;
+
+			TimeOnly endTiming = workTime.EndWorkHours;
+			while (lastTiming < endTiming)
+			{
+				times.Add(lastTiming);
+				lastTiming = lastTiming.AddMinutes(avgService);
+			}
+		}
+		return times;
 	}
 
 	public async Task<Dictionary<DateTime, Reservation>> GenerateClinicAvailableReservations(int virtualId, DateTime date)
 	{
-		// get all reservations for a certain date
-		Dictionary<DateTime, Reservation> reservations = (await _reservationRepository.GetClinicReservationsAsync(virtualId, date)).ToDictionary(x => x.ScheduledAt);
-		var clinic = await _virtualClinicService.GetClinicById(virtualId);
-		var workTimes = clinic.WorkTimes.ToArray();
-
-		for (int i = 0; i < workTimes.Length; i++)
+		try
 		{
-			DateTime lastTiming = DateTime.Parse($"{date.Date.Add(workTimes[i].StartWorkHours.ToTimeSpan())}");
-			DateTime endTiming = DateTime.Parse($"{date.Add(workTimes[i].EndWorkHours.ToTimeSpan())}");
+			// get all reservations for a certain date
+			Dictionary<DateTime, Reservation> reservations = (await _reservationRepository.GetClinicReservationsAsync(virtualId, date)).ToDictionary(x => x.ScheduledAt);
+			var clinic = await _virtualClinicService.GetClinicById(virtualId);
+			var workTimes = clinic.WorkTimes.ToArray();
+			var extractedTimes = ExtractSlotsFromWorkTimes(workTimes.Where(wt => wt.Day == date.DayOfWeek.ToString()), clinic.AvgService);
 
-			while (lastTiming < endTiming)
+			foreach (var time in extractedTimes)
 			{
-				if (!reservations.ContainsKey(lastTiming))
+				var dateTime = date.Date.Add(time.ToTimeSpan());
+				if (dateTime > DateTime.Now && !reservations.ContainsKey(dateTime))
 				{
-					reservations.Add(lastTiming, new() { ScheduledAt = lastTiming });
+					reservations.Add(dateTime, new() { ScheduledAt = dateTime });
 				}
-
-				lastTiming = lastTiming.AddMinutes(clinic.AvgService);
 			}
+			return reservations;
 		}
-		return reservations;
+		catch (Exception)
+		{
+			throw;
+		}
 	}
 
 	public async Task<IEnumerable<ClinicReservationDTO>> GetClinicReservationsAsync(int virtualClinicId, DateTime date)
@@ -187,21 +201,22 @@ public class ReservationService : IReservationService
 
 	public async Task<bool> EditAppointmentAsync(ReservationDTO reservationDto)
 	{
-		if (!reservationDto.IsValidReservation())
-		{
-			throw new ArgumentException("Reservation value is invalid, No update was applied.");
-		}
 
 		try
 		{
+			if (!reservationDto.IsValidReservation())
+			{
+				throw new ArgumentException("Reservation value is invalid, No update was applied.");
+			}
+
 			var currentClinic = await _virtualClinicService.GetClinicById(reservationDto.VirtualId);
 
-			bool isHoliday = currentClinic.Holidays.Any(h => h.Equals(reservationDto.ScheduledAt.DayOfWeek));
+			//bool isHoliday = currentClinic.Holidays.Any(h => h.Equals(reservationDto.ScheduledAt.DayOfWeek));
 
-			if (isHoliday)
-			{
-				throw new ArgumentException("appointments cannot be on a holiday");
-			}
+			//if (isHoliday)
+			//{
+			//	throw new ArgumentException("appointments cannot be on a holiday");
+			//}
 
 			if (await HasConflict(reservationDto))
 			{
@@ -213,13 +228,60 @@ public class ReservationService : IReservationService
 
 			return true;
 		}
-		catch (ArgumentException)
-		{
-			throw;
-		}
 		catch (InvalidOperationException ex)
 		{
 			throw new InvalidOperationException($"Update failed, Error: {ex.Message}", ex);
+		}
+		catch (Exception)
+		{
+			throw;
+		}
+	}
+
+	public async Task PreviewReservation(int reservationId)
+	{
+		try
+		{
+			var reservation = await _reservationRepository.GetReservationByIdAsync(reservationId);
+			if (reservation == null)
+			{
+				throw new ArgumentException($"Reservation is not valid", nameof(reservationId));
+			}
+			var clinic = await _virtualClinicService.GetClinicById(reservation.VirtualId);
+
+			if (clinic.Doctor.UserId != _claimService.GetCurrentUserId() && !_claimService.IsAdmin())
+			{
+				throw new UnauthorizedAccessException();
+			}
+
+			await _reservationRepository.PreviewReservation(reservationId);
+		}
+		catch (Exception)
+		{
+			throw;
+		}
+	}
+
+	public async Task<IEnumerable<ReservationDayBusyness>> GetMonthBusyness(int clinicId, DateTime date)
+	{
+		// TODO generate all days, and then assign values.
+		try
+		{
+			var reservations = await _reservationRepository.GetClinicReservationInMonth(clinicId, date);
+			var clinic = await _virtualClinicService.GetClinicById(clinicId);
+			var totalTimes = ExtractSlotsFromWorkTimes(clinic.WorkTimes, clinic.AvgService).Count();
+
+			var ReservationBusyness = Enumerable.Range(1, DateTime.DaysInMonth(date.Year, date.Month))
+				.Select(day => new DateTime(date.Year, date.Month, day))
+				.GroupJoin(reservations, day => day,
+				reservation => reservation.ScheduledAt.Date,
+				(date, reservations) => new ReservationDayBusyness()
+				{
+					Day = DateOnly.FromDateTime(date),
+					BusynessPercent = $"{(double)reservations.Count() * 100 / (totalTimes == 0 ? 1 : totalTimes):F2}"
+				});
+
+			return ReservationBusyness;
 		}
 		catch (Exception)
 		{

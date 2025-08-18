@@ -41,6 +41,8 @@ namespace VDG_Web_Api.src.Repositories
 					return await tickets.Include(t => t.Doctor)
 						.ThenInclude(t => t.User)
 						.ThenInclude(u => u.Person)
+						.Include(t => t.TicketMessages)
+						.Include(t => t.Doctor.Speciality)
 						.Where(t => t.UserId == userId)
 						.ToListAsync();
 				}
@@ -50,6 +52,7 @@ namespace VDG_Web_Api.src.Repositories
 					return await tickets
 						.Include(t => t.User)
 						.ThenInclude(u => u!.Person)
+						.Include(t => t.TicketMessages)
 						.Where(t => t.DoctorId == doctorId)
 						.ToListAsync();
 				}
@@ -162,6 +165,19 @@ namespace VDG_Web_Api.src.Repositories
 			{
 
 				throw;
+			}
+		}
+
+		public async Task DeleteTicket(int ticketId)
+		{
+			try
+			{
+				await _context.Tickets.Where(t => t.Id == ticketId)
+					.ExecuteDeleteAsync();
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Unable to delete ticket.", ex);
 			}
 		}
 	}

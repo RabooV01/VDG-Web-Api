@@ -1,5 +1,4 @@
 .vs/
-appsettings.json
 .bin/
 .obj/
 *.drawio

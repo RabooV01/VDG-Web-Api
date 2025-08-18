@@ -15,14 +15,15 @@ namespace VDG_Web_Api.src.Mapping
 				Status = ticketDTO.Status
 			};
 
-		public static TicketDTO ToDto(this Ticket ticket)
+		public static TicketDTO ToDto(this Ticket ticket, DateTime firstMessageDate)
 			=> new()
 			{
 				Id = ticket.Id,
 				UserId = ticket.UserId,
 				Status = ticket.Status,
 				DoctorId = ticket.DoctorId,
-				CloseDate = ticket.CloseDate
+				CloseDate = ticket.CloseDate,
+				OpenDate = firstMessageDate
 			};
 
 		public static TicketMessage ToEntity(this TicketMessageDTO ticketMessageDTO)
@@ -45,7 +46,7 @@ namespace VDG_Web_Api.src.Mapping
 				Text = ticketMessage.Text
 			};
 
-		public static UserTicketDTO ToUserTicketDto(this Ticket ticket)
+		public static UserTicketDTO ToUserTicketDto(this Ticket ticket, TicketMessage firstMessage)
 			=> new()
 			{
 				Id = ticket.Id,
@@ -53,10 +54,13 @@ namespace VDG_Web_Api.src.Mapping
 				Status = ticket.Status,
 				UserId = ticket.UserId,
 				CloseDate = ticket.CloseDate,
-				DoctorName = $"{ticket.Doctor.User.Person.FirstName} {ticket.Doctor.User.Person.LastName}"
+				DoctorName = $"{ticket.Doctor.User.Person.FirstName} {ticket.Doctor.User.Person.LastName}",
+				DoctorSpeciality = ticket.Doctor.Speciality.Name,
+				OpenDate = firstMessage.Date,
+				Description = firstMessage.Text.Length > 40 ? $"{firstMessage.Text[0..40]}..." : firstMessage.Text
 			};
 
-		public static DoctorTicketDTO ToDoctorTicketDto(this Ticket ticket)
+		public static DoctorTicketDTO ToDoctorTicketDto(this Ticket ticket, TicketMessage firstMessage)
 			=> new()
 			{
 				Id = ticket.Id,
@@ -64,7 +68,9 @@ namespace VDG_Web_Api.src.Mapping
 				Status = ticket.Status,
 				UserId = ticket.UserId,
 				CloseDate = ticket.CloseDate,
-				UserName = $"{ticket.User.Person.FirstName} {ticket.User.Person.LastName}"
+				UserName = $"{ticket.User.Person.FirstName} {ticket.User.Person.LastName}",
+				OpenDate = firstMessage.Date,
+				Description = firstMessage.Text.Length > 40 ? $"{firstMessage.Text[0..40]}..." : firstMessage.Text
 			};
 
 		public static Ticket ToEntity(this AddTicketDTO addTicketDTO)

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using VDG_Web_Api.src.Data;
 using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.Models;
@@ -53,8 +54,6 @@ namespace VDG_Web_Api.src.Repositories
 				.Include(d => d.User)
 				.ThenInclude(u => u.Person)
 				.FirstOrDefaultAsync(d => d.Id == doctorId);
-			if (doctor == null)
-				throw new ArgumentNullException("this Doctor is not found");
 
 			return doctor;
 		}
@@ -154,6 +153,46 @@ namespace VDG_Web_Api.src.Repositories
 			catch (Exception)
 			{
 				throw;
+			}
+		}
+
+		public async Task<Doctor?> GetDoctorByUserId(int userId)
+		{
+			try
+			{
+				var doctor = await _context.Doctors.Include(d => d.User)
+					.FirstOrDefaultAsync(d => d.UserId == userId);
+				return doctor;
+			}
+			catch (Exception)
+			{
+
+				throw;
+			}
+		}
+
+		public async Task<IEnumerable<Doctor>> GetDoctors(int page, int pageSize, int? specialityId = null, string? name = null)
+		{
+			try
+			{
+				Expression<Func<Doctor, bool>> doctorFilterExpression = doctor => (specialityId == null || doctor.SpecialityId == specialityId) &&
+				(name == null || $"{doctor.User.Person.FirstName} {doctor.User.Person.LastName}".Contains(name));
+
+				var doctors = await _context.Doctors.Include(d => d.User)
+					.ThenInclude(u => u.Person)
+					.Include(d => d.Speciality)
+					.Where(doctorFilterExpression)
+					.OrderByDescending(doctor => doctor.User.Person.FirstName)
+					.ThenBy(doctor => doctor.User.Person.LastName)
+					.Skip((page - 1) * pageSize)
+					.Take(pageSize)
+					.ToListAsync();
+
+				return doctors;
+			}
+			catch (Exception e)
+			{
+				throw new Exception("Error while retrieving data.", e);
 			}
 		}
 	}

@@ -35,6 +35,9 @@ namespace VDG_Web_Api.Migrations
                         .HasColumnType("int")
                         .HasColumnName("Clinic_Id");
 
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
+
                     b.Property<TimeOnly>("EndWorkHours")
                         .HasColumnType("time")
                         .HasColumnName("End_WorkHours");
@@ -143,6 +146,13 @@ namespace VDG_Web_Api.Migrations
                         .HasName("PK__Person__3214EC07A0A03B3C");
 
                     b.ToTable("Person");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            FirstName = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("VDG_Web_Api.src.Models.Post", b =>
@@ -169,6 +179,51 @@ namespace VDG_Web_Api.Migrations
                     b.HasIndex("DoctorId");
 
                     b.ToTable("Post");
+                });
+
+            modelBuilder.Entity("VDG_Web_Api.src.Models.PromotionRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RequestedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("RespondBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ResponseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SpecialityId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SyndicateId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RespondBy");
+
+                    b.HasIndex("SpecialityId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PromotionRequests");
                 });
 
             modelBuilder.Entity("VDG_Web_Api.src.Models.Rating", b =>
@@ -221,6 +276,9 @@ namespace VDG_Web_Api.Migrations
                     b.Property<DateTime>("ScheduledAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasMaxLength(512)
@@ -256,7 +314,7 @@ namespace VDG_Web_Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("name")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
@@ -357,7 +415,7 @@ namespace VDG_Web_Api.Migrations
                         .HasColumnType("varchar(128)")
                         .HasColumnName("Password_Hash");
 
-                    b.Property<int?>("PersonId")
+                    b.Property<int>("PersonId")
                         .HasColumnType("int")
                         .HasColumnName("Person_Id");
 
@@ -370,10 +428,19 @@ namespace VDG_Web_Api.Migrations
                         .HasName("PK__User__3214EC071AAE95BF");
 
                     b.HasIndex("PersonId")
-                        .IsUnique()
-                        .HasFilter("[Person_Id] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("User");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "admin@vdg.com",
+                            PasswordHash = "AdminIsAdmin",
+                            PersonId = 1,
+                            Role = 2
+                        });
                 });
 
             modelBuilder.Entity("VDG_Web_Api.src.Models.VirtualClinic", b =>
@@ -468,6 +535,32 @@ namespace VDG_Web_Api.Migrations
                     b.Navigation("Doctor");
                 });
 
+            modelBuilder.Entity("VDG_Web_Api.src.Models.PromotionRequest", b =>
+                {
+                    b.HasOne("VDG_Web_Api.src.Models.User", "Admin")
+                        .WithMany()
+                        .HasForeignKey("RespondBy")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("VDG_Web_Api.src.Models.Speciality", "Speciality")
+                        .WithMany()
+                        .HasForeignKey("SpecialityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("VDG_Web_Api.src.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Admin");
+
+                    b.Navigation("Speciality");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("VDG_Web_Api.src.Models.Rating", b =>
                 {
                     b.HasOne("VDG_Web_Api.src.Models.Doctor", "Doctor")
@@ -540,6 +633,7 @@ namespace VDG_Web_Api.Migrations
                         .WithOne()
                         .HasForeignKey("VDG_Web_Api.src.Models.User", "PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("User_Person_FK");
 
                     b.Navigation("Person");
