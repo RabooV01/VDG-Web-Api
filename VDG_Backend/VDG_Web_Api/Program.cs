@@ -61,26 +61,26 @@ builder.Services.AddTransient<ILocalizationService, LocalizationService>();
 builder.Services.AddTransient<IFileHandler, FileHandler>();
 
 JWTOptions JwtConfig = builder.Configuration.GetSection("JWT")
-	.Get<JWTOptions>()!;
+    .Get<JWTOptions>()!;
 
 builder.Services.AddSingleton(JwtConfig);
 
 builder.Services.AddAuthentication() // add authentication to the builder
-	.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opt =>
-	{ // add authentication option (JWT Bearer)
-		opt.SaveToken = true;
-		opt.TokenValidationParameters = new()
-		{ // setting up validation params
-			ValidateIssuer = true, // Ensures that the issuer of the token matches the expected issuer
-			ValidIssuer = JwtConfig.Issuer,
-			ValidateAudience = true,
-			ValidAudience = JwtConfig.Audience,
-			ValidateIssuerSigningKey = true, //  Validates that the signing key used to sign the token matches our signing key
-			IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtConfig.SigningKey!)),
-			ValidateLifetime = true,
-			ClockSkew = TimeSpan.FromMinutes(1) // allowing only 1min difference
-		};
-	});
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opt =>
+    { // add authentication option (JWT Bearer)
+        opt.SaveToken = true;
+        opt.TokenValidationParameters = new()
+        { // setting up validation params
+            ValidateIssuer = true, // Ensures that the issuer of the token matches the expected issuer
+            ValidIssuer = JwtConfig.Issuer,
+            ValidateAudience = true,
+            ValidAudience = JwtConfig.Audience,
+            ValidateIssuerSigningKey = true, //  Validates that the signing key used to sign the token matches our signing key
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtConfig.SigningKey!)),
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromMinutes(1) // allowing only 1min difference
+        };
+    });
 
 
 builder.Services.AddScoped<IAuthService, JWTAuthService>();
@@ -93,35 +93,35 @@ builder.Services.AddCors(x =>
 builder.Services.AddSwaggerGen(c =>
 {
 
-	c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-	{
-		In = ParameterLocation.Header,
-		Description = "Please enter token 'Bearer {token}'",
-		Name = "Authorization",
-		Type = SecuritySchemeType.Http,
-		Scheme = "bearer",
-		BearerFormat = "JWT"
-	});
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter token 'Bearer {token}'",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT"
+    });
 
-	c.AddSecurityRequirement(new OpenApiSecurityRequirement
-	{
-		{
-			new OpenApiSecurityScheme
-			{
-				Reference = new OpenApiReference
-				{
-					Type = ReferenceType.SecurityScheme,
-					Id = "Bearer"
-				}
-			},
-			new string[] {}
-		}
-	});
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
 });
 
 builder.Services.AddAuthorization(x => x.AddPolicy("Doctor-Admin", p =>
 {
-	p.RequireRole([UserRole.Doctor.ToString(), UserRole.Admin.ToString()]);
+    p.RequireRole([UserRole.Doctor.ToString(), UserRole.Admin.ToString()]);
 }));
 
 var app = builder.Build();
