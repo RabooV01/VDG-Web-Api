@@ -12,6 +12,7 @@ using VDG_Web_Api.src.Repositories;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services;
 using VDG_Web_Api.src.Services.Interfaces;
+using VDG_Web_Api.src.Services.LocalizationService;
 
 var builder = WebApplication.CreateBuilder();
 
@@ -22,7 +23,7 @@ builder.Services.AddControllers()
 		options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 	});
 builder.Services.AddHttpContextAccessor();
-
+builder.Services.AddHttpClient();
 //builder.Services.AddOpenApi();
 builder.Services.AddOpenApiDocument();
 // Our App Services
@@ -54,6 +55,8 @@ builder.Services.AddScoped<IRatingService, RatingService>();
 
 builder.Services.AddScoped<IPromotionRequestRepository, PromotionRequestRepository>();
 builder.Services.AddScoped<IPromotionRequestService, PromotionRequestService>();
+
+builder.Services.AddTransient<ILocalizationService, LocalizationService>();
 
 builder.Services.AddTransient<IFileHandler, FileHandler>();
 

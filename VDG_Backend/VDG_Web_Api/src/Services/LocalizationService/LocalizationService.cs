@@ -1,0 +1,88 @@
+﻿namespace VDG_Web_Api.src.Services.LocalizationService
+{
+	public class LocalizationService : ILocalizationService
+	{
+		private readonly HttpClient _httpClient;
+		private readonly string _apiUrl = "https://nominatim.openstreetmap.org/search";
+		private readonly string _apiReverseUrl = "https://nominatim.openstreetmap.org/reverse";
+		public LocalizationService(HttpClient httpClient)
+		{
+			_httpClient = httpClient;
+		}
+
+		public async Task<LocationDto> GetLocationAsync(string locationName)
+		{
+			var query = locationName.Split([' ', '/', '-', '_']);
+			var encodedName = Uri.EscapeDataString(query[0]);
+
+			foreach (var q in query)
+			{
+				if (q == query[0])
+					continue;
+				encodedName = $"{encodedName}+{Uri.EscapeDataString(q)}";
+			}
+			var url = $"{_apiUrl}?q={encodedName}&format=json&limit=1";
+			if (!_httpClient.DefaultRequestHeaders.UserAgent.Any())
+			{
+				_httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("VDG-Backend");
+			}
+			try
+			{
+				var response = await _httpClient.GetAsync(url);
+				if (!response.IsSuccessStatusCode)
+				{
+					// Handle error or throw
+					return null;
+				}
+
+				var json = await response.Content.ReadAsStringAsync();
+
+				var results = System.Text.Json.JsonSerializer.Deserialize<List<LocationDto>>(json);
+
+				if (results == null || results.Count == 0)
+				{
+					throw new ArgumentException("No such location has been found.", nameof(locationName));
+				}
+
+				return results.Select(r =>
+				{
+					var name = r.DisplayName.Split(',');
+					var dname = name[0];
+					r.DisplayName = name[1] == null ? dname : $"{dname}, {name[1]}";
+					return r;
+				}).First();
+			}
+			catch (HttpRequestException ex)
+			{
+				// Handle network errors here
+				throw new InvalidOperationException("Error connecting to location service.", ex);
+			}
+
+
+		}
+
+		public async Task<LocationDto> GetLocationAsync(double latitude, double longitude)
+		{
+
+			var url = $"{_apiReverseUrl}?lat={latitude}&lon={longitude}&format=json&limit=1";
+
+			var response = await _httpClient.GetAsync(url);
+
+			if (!response.IsSuccessStatusCode)
+			{
+				throw new ArgumentException("No such location has been found.", "coordinates");
+			}
+
+			var json = await response.Content.ReadAsStringAsync();
+
+			var results = System.Text.Json.JsonSerializer.Deserialize<List<LocationDto>>(json);
+
+			if (results == null || results.Count == 0)
+			{
+				throw new ArgumentException("No such location has been found.", "coordinates");
+			}
+
+			return results.First();
+		}
+	}
+}
