@@ -2,6 +2,7 @@
 using VDG_Web_Api.src.DTOs.UserDTOs;
 using VDG_Web_Api.src.Services.Interfaces;
 using VDG_Web_Api.src.Services.JWTService;
+using VDG_Web_Api.src.Services.LocalizationService;
 
 namespace VDG_Web_Api.src.Controllers
 {
@@ -11,12 +12,31 @@ namespace VDG_Web_Api.src.Controllers
 	{
 		private readonly IAuthService _authService;
 		private readonly IUserService _userService;
+		private readonly ILocalizationService _localizationService;
 
 
-		public AuthController(IAuthService authService, IUserService userService)
+		public AuthController(IAuthService authService, IUserService userService, ILocalizationService localizationService)
 		{
 			_authService = authService;
 			_userService = userService;
+			_localizationService = localizationService;
+		}
+
+		[HttpGet("loc")]
+		public async Task<ActionResult<LocationDto>> getloc(string name)
+		{
+			try
+			{
+				return Ok(await _localizationService.GetLocationAsync(name));
+			}
+			catch (ArgumentException e)
+			{
+				return NotFound(e.Message);
+			}
+			catch (Exception)
+			{
+				throw;
+			}
 		}
 
 		[HttpPost("Register")]

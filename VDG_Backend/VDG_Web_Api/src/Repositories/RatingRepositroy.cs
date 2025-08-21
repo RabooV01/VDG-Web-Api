@@ -12,6 +12,8 @@ namespace VDG_Web_Api.src.Repositories
         {
             _context = context;
         }
+
+
         public async Task Rate(Rating rating)
         {
             try
@@ -22,6 +24,31 @@ namespace VDG_Web_Api.src.Repositories
             catch (Exception ex)
             {
 
+                throw new Exception($"Something went wrong, Error: {ex.Message}", ex);
+            }
+        }
+
+        public async Task UpdateRate(Rating rating)
+        {
+            try
+            {
+                _context.Ratings.Update(rating);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Something went wrong, Error: {ex.Message}", ex);
+            }
+        }
+        public async Task DeleteRate(Rating rating)
+        {
+            try
+            {
+                _context.Ratings.Remove(rating);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
                 throw new Exception($"Something went wrong, Error: {ex.Message}", ex);
             }
         }
