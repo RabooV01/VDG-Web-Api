@@ -30,5 +30,39 @@ namespace VDG_Web_Api.src.Services
                 throw new Exception($"can't rate, Error: {ex.Message}", ex);
             }
         }
+
+        public async Task Update(RatingDTO ratingDto)
+        {
+            if (ratingDto == null)
+            {
+                throw new ArgumentNullException("There is no rating to update");
+            }
+            try
+            {
+                await _ratingRepository.UpdateRate(ratingDto.ToEntity());
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"Something went wrong, Error: {ex.Message}", ex);
+            }
+        }
+        public async Task Delete(RatingDTO ratingDto)
+        {
+            if (ratingDto == null)
+            {
+                throw new ArgumentNullException("There is no rating to delete");
+            }
+            try
+            {
+                await _ratingRepository.DeleteRate(ratingDto.ToEntity());
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"Something went wrong, Error: {ex.Message}", ex);
+            }
+        }
+
     }
 }

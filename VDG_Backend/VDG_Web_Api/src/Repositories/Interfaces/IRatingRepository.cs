@@ -6,7 +6,9 @@ namespace VDG_Web_Api.src.Repositories.Interfaces
     {
         public Task Rate(Rating rate);
 
+        public Task UpdateRate(Rating rate);
 
+        public Task DeleteRate(Rating rate);
 
     }
 }
