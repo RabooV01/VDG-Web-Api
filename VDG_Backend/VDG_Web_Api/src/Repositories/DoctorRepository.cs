@@ -97,7 +97,7 @@ namespace VDG_Web_Api.src.Repositories
         {
             var doctors = await _context.Doctors.Include(d => d.User)
                 .ThenInclude(u => u.Person)
-                .Where(d => ($"{d.User!.Person!.FirstName} {d.User.Person.LastName}").Contains(Name))
+                .Where(d => (d.User.Person.FirstName + " " + d.User.Person.LastName).Contains(Name))
                 .ToListAsync();
 
             if (doctors == null)
@@ -177,7 +177,7 @@ namespace VDG_Web_Api.src.Repositories
             try
             {
                 Expression<Func<Doctor, bool>> doctorFilterExpression = doctor => (specialityId == null || doctor.SpecialityId == specialityId) &&
-                (name == null || $"{doctor.User.Person.FirstName} {doctor.User.Person.LastName}".Contains(name));
+                (name == null || (doctor.User.Person.FirstName + " " + doctor.User.Person.LastName).Contains(name));
 
                 var doctors = await _context.Doctors.Include(d => d.User)
                     .ThenInclude(u => u.Person)
