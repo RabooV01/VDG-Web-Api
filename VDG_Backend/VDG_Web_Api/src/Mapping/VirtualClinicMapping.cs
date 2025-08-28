@@ -16,7 +16,8 @@ public static class VirtualClinicMapping
 			Location = clinic.Location,
 			PreviewCost = clinic.PreviewCost,
 			Status = clinic.Status,
-			Name = clinic.Name
+			Name = clinic.Name,
+			LocationCoords = clinic.LocationCoords
 		};
 
 	public static UserReservationDTO ToClinicHighlightDto(this Reservation reservation)
@@ -95,7 +96,8 @@ public static class VirtualClinicMapping
 			Doctor = clinic.Doctor.ToDto(),
 			PreviewCost = clinic.PreviewCost,
 			Name = clinic.Name,
-			WorkTimes = clinic.WorkTimes.Select(wt => wt.ToDto()).ToList()
+			WorkTimes = clinic.WorkTimes.Select(wt => wt.ToDto()).ToList(),
+			LocationCoords = clinic.LocationCoords
 		};
 
 	public static VirtualClinic ToEntity(this AddVirtualClinicDTO clinicDTO)
