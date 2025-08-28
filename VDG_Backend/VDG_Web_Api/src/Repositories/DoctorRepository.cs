@@ -129,6 +129,26 @@ namespace VDG_Web_Api.src.Repositories
 
             return doctors;
         }
+        public async Task<int> GetRatingDoctorByIdAsync(int DoctorId)
+        {
+            if (await _context.Ratings.AnyAsync() is false)
+                return 0;
+
+            var avgWait = await _context.Ratings.Where(r => r.DoctorId == DoctorId).AverageAsync(r => r.AvgWait);
+            var avgService = await _context.Ratings.Where(r => r.DoctorId == DoctorId).AverageAsync(r => r.AvgService);
+            var act = await _context.Ratings.Where(r => r.DoctorId == DoctorId).AverageAsync(r => r.Act);
+            return (int)Math.Round((avgWait + avgService + act) / 3.0);
+        }
+        public async Task<IEnumerable<Doctor>?> GetDoctorsByRatingAsync(int rating)
+        {
+            var doctors = new List<Doctor>();
+            foreach (var doctor in _context.Doctors)
+            {
+                if (await GetRatingDoctorByIdAsync(doctor.Id) == rating)
+                    doctors.Add(doctor);
+            }
+            return doctors;
+        }
 
 
 
@@ -203,3 +223,48 @@ namespace VDG_Web_Api.src.Repositories
 
     }
 }
+/*
+ // افترض أن لديك هذه الكيانات
+public class Doctor
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+
+public class Rating
+{
+    public int DoctorId { get; set; }
+    public double Score { get; set; }
+}
+
+// ثم الافتراض بأن لديك IEnumerable للطبيب وIEnumerable للتقييم
+IEnumerable<Doctor> doctors = ...; // قائمة الأطباء
+IEnumerable<Rating> ratings = ...; // قائمة التقييمات
+
+// لحساب معدل كل دكتور
+var averageRatings = from doctor in doctors
+                     join rating in ratings 
+                     on doctor.Id equals rating.DoctorId into doctorRatings
+                     select new
+                     {
+                         Doctor = doctor.Name,
+                         AverageRating = doctorRatings.Any() ? doctorRatings.Average(r => r.Score) : 0
+                     };
+
+// الآن يمكنك استعراض النتائج
+foreach (var item in averageRatings)
+{
+    Console.WriteLine($"الدكتور: {item.Doctor}, المتوسط: {item.AverageRating}");
+}
+
+var averageRatings = doctors.GroupJoin(
+    ratings,                          // المصدر الثاني الذي نربطه (التقييمات)
+    doctor => doctor.Id,              // المفتاح من القائمة الأولى (معرف الدكتور)
+    rating => rating.DoctorId,        // المفتاح من القائمة الثانية (معرف الدكتور في التقييم)
+    (doctor, doctorRatings) => new    // العملية التي تنفذ لكل دكتور مع تقييماته المرتبطة
+    {
+        Doctor = doctor.Name,         // اسم الدكتور
+        AverageRating = doctorRatings.Any() ? doctorRatings.Average(r => r.Score) : 0 // حساب المتوسط
+    });
+
+ */
