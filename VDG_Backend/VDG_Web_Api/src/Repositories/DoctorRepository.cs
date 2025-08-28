@@ -129,6 +129,26 @@ namespace VDG_Web_Api.src.Repositories
 
             return doctors;
         }
+        public async Task<int> GetRatingDoctorByIdAsync(int DoctorId)
+        {
+            if (await _context.Ratings.AnyAsync() is false)
+                return 0;
+
+            var avgWait = await _context.Ratings.Where(r => r.DoctorId == DoctorId).AverageAsync(r => r.AvgWait);
+            var avgService = await _context.Ratings.Where(r => r.DoctorId == DoctorId).AverageAsync(r => r.AvgService);
+            var act = await _context.Ratings.Where(r => r.DoctorId == DoctorId).AverageAsync(r => r.Act);
+            return (int)Math.Round((avgWait + avgService + act) / 3.0);
+        }
+        public async Task<IEnumerable<Doctor>?> GetDoctorsByRatingAsync(int rating)
+        {
+            var doctors = new List<Doctor>();
+            foreach (var doctor in _context.Doctors)
+            {
+                if (await GetRatingDoctorByIdAsync(doctor.Id) == rating)
+                    doctors.Add(doctor);
+            }
+            return doctors;
+        }
 
 
 

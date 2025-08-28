@@ -5,7 +5,7 @@ namespace VDG_Web_Api.src.Repositories.Interfaces
 {
     public interface ISearchingRepository
     {
-        public Task<IEnumerable<VirtualClinic>> SearchVirtualClinicsAsync(FilterDTO filter);
+        public Task<IEnumerable<Doctor>> SearchDoctorAsync(FilterDTO filter);
 
 
     }
