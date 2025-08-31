@@ -1,4 +1,5 @@
 using VDG_Web_Api.src.DTOs.DoctorDTOs;
+using VDG_Web_Api.src.DTOs.VirtualClinicDTOs;
 using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.Models;
 
@@ -71,5 +72,24 @@ public static class DoctorMapping
 			LastName = doctorDTO.LastName,
 			Phone = doctorDTO.Phone,
 			Id = doctorDTO.PersonId
+		};
+
+	public static DoctorSearchDto ToSearchDto(this Doctor doctor, VirtualClinic? minClinic)
+		=> new()
+		{
+			DoctorId = doctor.Id,
+			DoctorName = $"{doctor.User.Person.FirstName} {doctor.User.Person.LastName}",
+			Rating = doctor.Ratings.Any() ? doctor.Ratings.Sum(r => (r.Act + r.AvgWait + r.AvgService) / 3) / doctor.Ratings.Count : 0,
+			ShortestDistanceClinic = minClinic?.Name ?? string.Empty,
+			ShortestDistanceLocation = minClinic?.Location ?? string.Empty,
+			Clinics = doctor.VirtualClinics.Select(vc => new VirtualClinicSearchDto()
+			{
+				clinicId = vc.Id,
+				clinicName = vc.Name ?? string.Empty,
+				Location = vc.Location
+			}),
+			DoctorDescription = doctor.Description,
+			TicketCost = doctor.TicketCost,
+			TicketOption = doctor.TicketOption.ToString()
 		};
 }

@@ -12,6 +12,7 @@ namespace VDG_Web_Api.src.Services
 		{
 			_doctorRepository = doctorRepository;
 		}
+
 		public async Task<IEnumerable<DoctorDTO>> GetAllDoctors(int page, int pageSize, int? specialityId, string? name)
 		{
 			try

@@ -19,6 +19,12 @@ namespace VDG_Web_Api.src.Services
 			return int.Parse(_principal.FindFirstValue(ClaimTypes.NameIdentifier)!);
 		}
 
+		public int GetCurrentDoctorId()
+		{
+			int doctorId = int.Parse(_principal.FindFirstValue("DoctorId")!);
+			return doctorId;
+		}
+
 		public UserRole GetCurrentUserRole()
 		{
 			return Enum.Parse<UserRole>(_principal.FindFirstValue(ClaimTypes.Role)!);
