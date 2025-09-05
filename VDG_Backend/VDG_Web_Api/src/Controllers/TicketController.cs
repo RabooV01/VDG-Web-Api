@@ -34,7 +34,7 @@ namespace VDG_Web_Api.src.Controllers
 
 					if (doctor.UserId == ticketDTO.UserId)
 					{
-						return BadRequest("Cannot open a ticked with yourself");
+						return BadRequest("Cannot open a ticket with yourself");
 					}
 				}
 

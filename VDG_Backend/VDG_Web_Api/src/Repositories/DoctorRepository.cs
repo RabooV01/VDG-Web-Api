@@ -14,6 +14,16 @@ namespace VDG_Web_Api.src.Repositories
 			_context = context;
 		}
 
+		public async Task<int> CountAsync(Expression<Func<Doctor, bool>>[] expressions)
+		{
+			var doctorsCount = _context.Doctors.AsQueryable();
+			foreach (var exp in expressions)
+			{
+				doctorsCount = doctorsCount.Where(exp);
+			}
+			return await doctorsCount.CountAsync();
+		}
+
 		public async Task<int> AddDoctorAsync(Doctor doctor)
 		{
 			try

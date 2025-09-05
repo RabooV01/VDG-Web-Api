@@ -1,10 +1,12 @@
-﻿using VDG_Web_Api.src.Enums;
+﻿using System.Linq.Expressions;
+using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.Models;
 
 namespace VDG_Web_Api.src.Repositories.Interfaces
 {
 	public interface IDoctorRepository
 	{
+		public Task<int> CountAsync(Expression<Func<Doctor, bool>>[] expressions);
 		public Task<IEnumerable<Doctor>> GetDoctors(int page, int pageSize, int? specialityId = null, string? name = null);
 		public Task<int> AddDoctorAsync(Doctor doctor);
 		public Task DeleteDoctorAsync(int doctorId);

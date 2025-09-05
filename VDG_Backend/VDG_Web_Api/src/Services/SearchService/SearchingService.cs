@@ -1,5 +1,7 @@
-﻿using VDG_Web_Api.src.DTOs.DoctorDTOs;
+﻿using System.Linq.Expressions;
+using VDG_Web_Api.src.DTOs.DoctorDTOs;
 using VDG_Web_Api.src.DTOs.FilterDTOs;
+using VDG_Web_Api.src.Helpers.Pagination;
 using VDG_Web_Api.src.Mapping;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
@@ -29,32 +31,43 @@ namespace VDG_Web_Api.src.Services.SearchService
 			}
 		}
 
-		public async Task<IEnumerable<DoctorSearchDto>> SearchDoctorAsync(FilterDTO filter)
+		public async Task<PaginationModel<DoctorSearchDto>> SearchDoctorAsync(FilterDTO filter, int page, int pageSize)
 		{
 			var filteredDoctors = await _doctorRepository.GetDoctorsBySpecialityIdAsync(filter.SpecialityId);
+
+			List<Expression<Func<Doctor, bool>>> expressions = [d => d.SpecialityId == filter.SpecialityId];
 
 			if (!string.IsNullOrEmpty(filter.Gender))
 			{
 				filteredDoctors = filteredDoctors.Where(d => filter.Gender.Equals(d.User.Person.Gender, StringComparison.OrdinalIgnoreCase));
+				expressions.Add(d => filter.Gender.Equals(d.User.Person.Gender));
 			}
 
 			if (filter.MinRate is not null)
 			{
 				filteredDoctors = filteredDoctors.Where(d => d.Ratings.Sum(r => (r.AvgService + r.Act + r.AvgWait) / 3) / d.Ratings.Count >= filter.MinRate);
+				expressions.Add(d => d.Ratings.Sum(r => (r.AvgService + r.Act + r.AvgWait) / 3) / d.Ratings.Count >= filter.MinRate);
 			}
 
 			filteredDoctors = filteredDoctors.Where(d => d.VirtualClinics.Any(vc => vc.PreviewCost <= filter.CostRange));
+			expressions.Add(d => d.VirtualClinics.Any(vc => vc.PreviewCost <= filter.CostRange));
+
 			if (filter.ShortestDistanceFirst)
 			{
 				filteredDoctors = filteredDoctors.OrderBy(d => d.VirtualClinics.Select(vc => ClinicDistance(vc, filter.UserLat!.Value, filter.UserLon!.Value)));
 			}
 
-			return filteredDoctors.Select(doctor =>
+			var total = await _doctorRepository.CountAsync(expressions.ToArray());
+
+			return new PaginationModel<DoctorSearchDto>(filteredDoctors.Select(doctor =>
 			{
 				var minClinic = filter.ShortestDistanceFirst ? doctor.VirtualClinics.MinBy(vc => ClinicDistance(vc, filter.UserLat!.Value, filter.UserLon!.Value)) : null;
 
 				return doctor.ToSearchDto(minClinic);
-			});
+			}),
+			(int)Math.Ceiling(((double)total) / pageSize),
+			page,
+			total);
 		}
 
 		private double ClinicDistance(VirtualClinic vc, double userLat, double userLon)

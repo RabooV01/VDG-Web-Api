@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using VDG_Web_Api.src.DTOs.DoctorDTOs;
 using VDG_Web_Api.src.DTOs.FilterDTOs;
 using VDG_Web_Api.src.Enums;
+using VDG_Web_Api.src.Helpers.Pagination;
 using VDG_Web_Api.src.Services.Interfaces;
 using VDG_Web_Api.src.Services.SearchService;
 
@@ -40,7 +41,7 @@ namespace VDG_Web_Api.src.Controllers
 		}
 
 		[HttpGet("[action]")]
-		public async Task<ActionResult<IEnumerable<DoctorSearchDto>>> GetFilteredDoctors(string? name, [Required] int SpecialityId, string? gender, double? cost, double? minRate, double? lat, double? lon, bool ShortestDistanceFirst = false)
+		public async Task<ActionResult<PaginationModel<DoctorSearchDto>>> GetFilteredDoctors(string? name, [Required] int SpecialityId, string? gender, double? cost, double? minRate, double? lat, double? lon, bool ShortestDistanceFirst = false, int page = 1, int pageSize = 20)
 		{
 			try
 			{
@@ -62,7 +63,7 @@ namespace VDG_Web_Api.src.Controllers
 				{
 					filter.CostRange = cost.Value;
 				}
-				var doctors = await _searchingService.SearchDoctorAsync(filter);
+				var doctors = await _searchingService.SearchDoctorAsync(filter, page, pageSize);
 
 				return Ok(doctors);
 			}
