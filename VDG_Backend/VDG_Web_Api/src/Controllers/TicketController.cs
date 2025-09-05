@@ -27,6 +27,17 @@ namespace VDG_Web_Api.src.Controllers
 			try
 			{
 				ticketDTO.UserId = _claimService.GetCurrentUserId();
+
+				if (_claimService.GetCurrentUserRole().Equals(UserRole.Doctor))
+				{
+					var doctor = await _doctorService.GetDoctorById(_claimService.GetCurrentDoctorId());
+
+					if (doctor.UserId == ticketDTO.UserId)
+					{
+						return BadRequest("Cannot open a ticket with yourself");
+					}
+				}
+
 				await _ticketService.SendConsultationRequest(ticketDTO);
 				return Created();
 			}

@@ -35,13 +35,20 @@ public class JWTAuthService : IAuthService
 		{
 			throw new AuthenticationFailureException("Invalid username or password");
 		}
+		int? doctorId = null;
+
+		if (user.Role.Equals(UserRole.Doctor))
+		{
+			doctorId = (await _doctorRepository.GetDoctorByUserId(user.Id))!.Id;
+		}
 
 		var tokenHandler = new JwtSecurityTokenHandler();
 
 		Claim[] claims = [new (ClaimTypes.NameIdentifier, user.Id.ToString()),
 			new (ClaimTypes.Name, $"{user.Person.FirstName};{user.Person.LastName}"),
 			new (ClaimTypes.Email, user.Email),
-			new (ClaimTypes.Role, user.Role.ToString())];
+			new (ClaimTypes.Role, user.Role.ToString()),
+			new ("DoctorId", doctorId.ToString() ?? string.Empty)];
 
 		var tokenDiscriptor = new SecurityTokenDescriptor()
 		{
@@ -53,12 +60,6 @@ public class JWTAuthService : IAuthService
 		};
 
 		var token = tokenHandler.CreateToken(tokenDiscriptor);
-		int? doctorId = null;
-
-		if (user.Role.Equals(UserRole.Doctor))
-		{
-			doctorId = (await _doctorRepository.GetDoctorByUserId(user.Id))!.Id;
-		}
 
 		AuthResponse response = new()
 		{

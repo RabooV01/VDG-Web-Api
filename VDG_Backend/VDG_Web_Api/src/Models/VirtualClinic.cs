@@ -26,8 +26,6 @@ public partial class VirtualClinic
 	[DefaultValue("Inactive")]
 	public string Status { get; set; } = "Inactive";
 
-	public string Holidays { get; set; } = string.Empty;
-
 	[Column("Avg_Service")]
 	public int AvgService { get; set; }
 

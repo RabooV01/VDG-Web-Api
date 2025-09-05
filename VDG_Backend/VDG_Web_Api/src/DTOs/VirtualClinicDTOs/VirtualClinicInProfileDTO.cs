@@ -11,6 +11,8 @@ public class VirtualClinicInProfileDTO
 
 	public string? Location { get; set; }
 
+	public string? LocationCoords { get; set; }
+
 	public double? PreviewCost { get; set; }
 
 	public TimeOnly StartWorkHours { get; set; }
