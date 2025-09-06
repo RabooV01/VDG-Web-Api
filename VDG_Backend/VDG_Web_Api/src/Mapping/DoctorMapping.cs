@@ -90,6 +90,7 @@ public static class DoctorMapping
 			}),
 			DoctorDescription = doctor.Description,
 			TicketCost = doctor.TicketCost,
-			TicketOption = doctor.TicketOption.ToString()
+			TicketOption = doctor.TicketOption.ToString(),
+			Speciality = doctor.Speciality.Name
 		};
 }

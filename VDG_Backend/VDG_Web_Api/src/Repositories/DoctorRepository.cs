@@ -109,7 +109,8 @@ namespace VDG_Web_Api.src.Repositories
 				.ThenInclude(u => u.Person)
 				.Include(d => d.VirtualClinics)
 				.ThenInclude(c => c.WorkTimes)
-				.Where(d => (d.User.Person.FirstName + " " + d.User.Person.LastName).Contains(Name))
+				.Include(d => d.Speciality)
+				.Where(d => (d.User.Person.LastName != null && (d.User.Person.FirstName + " " + d.User.Person.LastName).Contains(Name)) || d.User.Person.FirstName.Contains(Name))
 				.ToListAsync();
 
 			if (doctors == null)

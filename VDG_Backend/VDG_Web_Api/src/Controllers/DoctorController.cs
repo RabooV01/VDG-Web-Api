@@ -41,7 +41,7 @@ namespace VDG_Web_Api.src.Controllers
 		}
 
 		[HttpGet("[action]")]
-		public async Task<ActionResult<PaginationModel<DoctorSearchDto>>> GetFilteredDoctors(string? name, [Required] int SpecialityId, string? gender, double? cost, double? minRate, double? lat, double? lon, bool ShortestDistanceFirst = false, int page = 1, int pageSize = 20)
+		public async Task<ActionResult<PaginationModel<DoctorSearchDto>>> GetFilteredDoctors(string? name, [Required] int SpecialtyId, string? gender, double? cost, double? minRate, double? lat, double? lon, bool ShortestDistanceFirst = false, int page = 1, int pageSize = 20)
 		{
 			try
 			{
@@ -55,7 +55,7 @@ namespace VDG_Web_Api.src.Controllers
 					Gender = gender,
 					MinRate = minRate,
 					ShortestDistanceFirst = ShortestDistanceFirst,
-					SpecialityId = SpecialityId,
+					SpecialityId = SpecialtyId,
 					UserLat = lat,
 					UserLon = lon
 				};

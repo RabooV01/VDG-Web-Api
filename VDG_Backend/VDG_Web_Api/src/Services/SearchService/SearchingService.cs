@@ -45,8 +45,8 @@ namespace VDG_Web_Api.src.Services.SearchService
 
 			if (filter.MinRate is not null)
 			{
-				filteredDoctors = filteredDoctors.Where(d => d.Ratings.Sum(r => (r.AvgService + r.Act + r.AvgWait) / 3) / d.Ratings.Count >= filter.MinRate);
-				expressions.Add(d => d.Ratings.Sum(r => (r.AvgService + r.Act + r.AvgWait) / 3) / d.Ratings.Count >= filter.MinRate);
+				filteredDoctors = filteredDoctors.Where(d => d.Ratings.Count > 0 && d.Ratings.Sum(r => (r.AvgService + r.Act + r.AvgWait) / 3) / d.Ratings.Count >= filter.MinRate);
+				expressions.Add(d => d.Ratings.Count > 0 && d.Ratings.Sum(r => (r.AvgService + r.Act + r.AvgWait) / 3) / d.Ratings.Count >= filter.MinRate);
 			}
 
 			filteredDoctors = filteredDoctors.Where(d => d.VirtualClinics.Any(vc => vc.PreviewCost <= filter.CostRange));

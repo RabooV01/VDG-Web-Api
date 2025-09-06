@@ -7,6 +7,7 @@ namespace VDG_Web_Api.src.DTOs.DoctorDTOs
 		public int DoctorId { get; set; }
 		public string DoctorName { get; set; }
 		public string DoctorDescription { get; set; }
+		public string Speciality { get; set; }
 		public string TicketOption { get; set; }
 		public double TicketCost { get; set; }
 		public double Rating { get; set; }
