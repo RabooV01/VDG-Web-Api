@@ -15,7 +15,7 @@ namespace VDG_Web_Api.src.Controllers
 
         [HttpGet("DoctorRate/{doctoId}")]
 
-        public async Task<ActionResult<RatingDTO>> GetDoctorRate([FromRoute] int DoctorId)
+        public async Task<ActionResult<RatingDTO>> GetDoctorRate(int DoctorId)
         {
             try
             {
