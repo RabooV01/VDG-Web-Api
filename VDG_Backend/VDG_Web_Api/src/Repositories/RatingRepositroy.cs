@@ -14,6 +14,19 @@ namespace VDG_Web_Api.src.Repositories
         }
 
 
+        public async Task<Rating> GetRate(int id)
+        {
+            try
+            {
+                return await _context.Ratings.FindAsync(id);
+            }
+            catch (Exception ex)
+            {
+
+                throw new InvalidOperationException($"Error while retrieving data. {ex.Message}", ex);
+            }
+        }
+
         public async Task Rate(Rating rating)
         {
             try

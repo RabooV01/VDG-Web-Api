@@ -10,5 +10,7 @@ namespace VDG_Web_Api.src.Repositories.Interfaces
 
         public Task DeleteRate(Rating rate);
 
+        public Task<Rating> GetRate(int id);
+
     }
 }

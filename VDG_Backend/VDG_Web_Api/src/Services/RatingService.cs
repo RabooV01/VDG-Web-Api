@@ -1,5 +1,6 @@
 ﻿using VDG_Web_Api.src.DTOs.RatingDTOs;
 using VDG_Web_Api.src.Mapping;
+using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services.Interfaces;
 
@@ -14,6 +15,20 @@ namespace VDG_Web_Api.src.Services
             _ratingRepository = repository;
         }
 
+        public async Task<RatingDTO> Get(int id)
+        {
+            try
+            {
+                Rating rate = await _ratingRepository.GetRate(id);
+
+                return rate.ToDto();
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"Can't get Rating, Error{ex.Message}", ex);
+            }
+        }
         public async Task Rate(RatingDTO ratingDto)
         {
             if (ratingDto == null)
@@ -63,6 +78,5 @@ namespace VDG_Web_Api.src.Services
                 throw new Exception($"Something went wrong, Error: {ex.Message}", ex);
             }
         }
-
     }
 }
