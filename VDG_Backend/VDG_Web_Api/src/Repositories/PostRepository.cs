@@ -1,0 +1,92 @@
+﻿using Microsoft.EntityFrameworkCore;
+using VDG_Web_Api.src.Data;
+using VDG_Web_Api.src.Models;
+using VDG_Web_Api.src.Repositories.Interfaces;
+
+namespace VDG_Web_Api.src.Repositories
+{
+    public class PostRepository : IPostRepository
+    {
+        private readonly VdgDbDemoContext _context;
+        public PostRepository(VdgDbDemoContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<int> AddPostAsync(Post post)
+        {
+            try
+            {
+                _context.Posts.Add(post);
+                await _context.SaveChangesAsync();
+                return post.Id;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Unable to add Post ,error: [{ex.Message}]", ex);
+            }
+        }
+
+        public async Task DeletePostAsync(int postId)
+        {
+            Post? post = await _context.Posts.FindAsync(postId);
+            if (post == null)
+            {
+                throw new ArgumentNullException("actually, this postId is not found");
+            }
+            try
+            {
+                _context.Posts.Remove(post);
+                await _context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Unable to remove this post, Error:[{ex.Message}]", ex);
+            }
+        }
+
+        public async Task<IEnumerable<Post>> GetAllPostsAsync(int doctorId)
+        {
+            var posts = await _context.Posts.Where(p => p.DoctorId == doctorId).ToListAsync();
+
+            if (posts == null)
+            {
+                throw new ArgumentException($"this doctor has not any Post ");
+            }
+            return posts;
+
+        }
+
+        public async Task<Post> GetPostAsync(int postId)
+        {
+            var post = await _context.Posts.FindAsync(postId);
+            if (post == null)
+                throw new KeyNotFoundException("the post has not found ");
+
+            return post;
+
+        }
+
+        public async Task UpdatePostAsync(Post post)
+        {
+            var postToUpdate = await _context.Posts.FindAsync(post.Id);
+
+            if (postToUpdate == null)
+                throw new KeyNotFoundException("the post has not found for update");
+
+            postToUpdate = post;
+            try
+            {
+                _context.Update(postToUpdate);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+
+                throw new InvalidOperationException($"Unable to update the post ,error: {ex.Message}", ex);
+            }
+
+        }
+    }
+}
