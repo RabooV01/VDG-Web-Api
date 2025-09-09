@@ -58,7 +58,7 @@ namespace VDG_Web_Api.src.Services
             try
             {
                 var post = await _postrepository.GetPostAsync(postId);
-                return post.ToDto();
+                return post;
             }
             catch (Exception ex)
             {
