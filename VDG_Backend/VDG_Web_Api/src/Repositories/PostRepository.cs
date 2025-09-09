@@ -85,11 +85,10 @@ namespace VDG_Web_Api.src.Repositories
             if (postToUpdate == null)
                 throw new KeyNotFoundException("the post has not found for update");
 
-            postToUpdate = post;
             try
             {
-                _context.Update(postToUpdate);
-                await _context.SaveChangesAsync();
+                await _context.Posts.Where(p => p.Id == post.Id)
+                    .ExecuteUpdateAsync(po => po.SetProperty(p => p.ImageUrl, post.ImageUrl).SetProperty(p => p.Content, post.Content));
             }
             catch (Exception ex)
             {

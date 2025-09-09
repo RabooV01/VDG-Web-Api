@@ -9,7 +9,7 @@ namespace VDG_Web_Api.src.Services.Interfaces
 
         public Task DeletePostAsync(int postId);
 
-        public Task UpdatePostAsync(PostDTO post);
+        public Task UpdatePostAsync(UpdatePostDTO post);
 
         public Task<IEnumerable<PostDTO>> GetAllPostsAsync(int doctorId);
 
