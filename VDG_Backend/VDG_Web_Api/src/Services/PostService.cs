@@ -15,11 +15,11 @@ namespace VDG_Web_Api.src.Services
             _postrepository = postrepository;
         }
 
-        public async Task AddPostAsync(PostDTO post)
+        public async Task AddPostAsync(AddPostDTO post)
         {
             try
             {
-                Post p = post.ToEntity();
+                Post p = post.AddPostToEntity();
                 await _postrepository.AddPostAsync(p);
             }
             catch (Exception ex)
@@ -70,7 +70,7 @@ namespace VDG_Web_Api.src.Services
         {
             try
             {
-                await _postrepository.UpdatePostAsync(post.ToEntity());
+                await _postrepository.UpdatePostAsync(post.PostToEntity());
             }
             catch (Exception ex)
             {

@@ -5,7 +5,7 @@ namespace VDG_Web_Api.src.Services.Interfaces
     public interface IPostService
     {
 
-        public Task AddPostAsync(PostDTO post);
+        public Task AddPostAsync(AddPostDTO post);
 
         public Task DeletePostAsync(int postId);
 
