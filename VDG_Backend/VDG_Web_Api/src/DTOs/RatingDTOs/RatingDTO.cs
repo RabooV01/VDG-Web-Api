@@ -5,6 +5,7 @@
 		public int Id { get; set; }
 		public int UserId { get; set; }
 		public int DoctorId { get; set; }
+		public string UserFullName { get; set; }
 		public double AvgWait { get; set; }
 		public double AvgService { get; set; }
 		public double Act { get; set; }

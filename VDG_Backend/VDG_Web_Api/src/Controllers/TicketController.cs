@@ -41,9 +41,9 @@ namespace VDG_Web_Api.src.Controllers
 				await _ticketService.SendConsultationRequest(ticketDTO);
 				return Created();
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-				return Problem();
+				return BadRequest(e.Message);
 			}
 		}
 

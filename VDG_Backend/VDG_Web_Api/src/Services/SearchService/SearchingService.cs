@@ -18,12 +18,12 @@ namespace VDG_Web_Api.src.Services.SearchService
 			//_VirtualRepository = virtualRepository;
 		}
 
-		public async Task<IEnumerable<DoctorSearchDto>> GetByName(string name)
+		public async Task<PaginationModel<DoctorSearchDto>> GetByName(string name, int page, int pageSize)
 		{
 			try
 			{
 				var doctors = await _doctorRepository.GetDoctorsByNameAsync(name);
-				return doctors.Select(d => d.ToSearchDto(null));
+				return new PaginationModel<DoctorSearchDto>(doctors.Select(d => d.ToSearchDto(null)).Skip((page - 1) * pageSize).Take(pageSize), (int)Math.Ceiling((double)doctors.Count() / pageSize), page, doctors.Count());
 			}
 			catch (Exception)
 			{

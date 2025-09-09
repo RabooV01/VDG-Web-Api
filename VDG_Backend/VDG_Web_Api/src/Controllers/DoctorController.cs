@@ -26,11 +26,11 @@ namespace VDG_Web_Api.src.Controllers
 		}
 
 		[HttpGet("[action]")]
-		public async Task<ActionResult<IEnumerable<DoctorSearchDto>>> GetByName([Required] string name)
+		public async Task<ActionResult<IEnumerable<DoctorSearchDto>>> GetByName([Required] string name, int page = 1, int pageSize = 20)
 		{
 			try
 			{
-				var doctors = await _searchingService.GetByName(name);
+				var doctors = await _searchingService.GetByName(name, page, pageSize);
 				return Ok(doctors);
 			}
 			catch (Exception)

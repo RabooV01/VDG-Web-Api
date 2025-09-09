@@ -8,6 +8,7 @@ using VDG_Web_Api.src;
 using VDG_Web_Api.src.Data;
 using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.FileHandler;
+using VDG_Web_Api.src.Hubs;
 using VDG_Web_Api.src.Repositories;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services;
@@ -75,7 +76,7 @@ builder.Services.AddAuthentication() // add authentication to the builder
 			ClockSkew = TimeSpan.FromMinutes(1) // allowing only 1min difference
 		};
 	});
-
+builder.Services.AddSignalR();
 
 builder.Services.AddScoped<IAuthService, JWTAuthService>();
 builder.Services.AddCors(x =>
@@ -129,7 +130,7 @@ app.UseSwaggerUi();
 //}
 
 app.UseHttpsRedirection();
-
+app.MapHub<ChatHub>("chathub");
 app.UseStaticFiles();
 
 app.UseAuthorization();

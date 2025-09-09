@@ -14,6 +14,8 @@ public partial class VdgDbDemoContext : DbContext
 		_config = config;
 	}
 
+	public virtual DbSet<SupportModel> SupportModels { get; set; }
+
 	public virtual DbSet<Doctor> Doctors { get; set; } = null!;
 
 	public virtual DbSet<Person> People { get; set; } = null!;

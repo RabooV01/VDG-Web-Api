@@ -27,6 +27,10 @@ public partial class User
 	[Unicode(false)]
 	public UserRole Role { get; set; } = UserRole.User;
 
+	public string? ImageUrl { get; set; }
+
+	public DateTime? RegisteredAt { get; set; }
+
 	[ForeignKey("PersonId")]
 	public virtual Person Person { get; set; } = null!;
 
