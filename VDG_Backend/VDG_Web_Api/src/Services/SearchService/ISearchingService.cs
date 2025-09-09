@@ -7,6 +7,6 @@ namespace VDG_Web_Api.src.Services.SearchService
 	public interface ISearchingService
 	{
 		public Task<PaginationModel<DoctorSearchDto>> SearchDoctorAsync(FilterDTO filter, int page, int pageSize);
-		public Task<IEnumerable<DoctorSearchDto>> GetByName(string name);
+		public Task<PaginationModel<DoctorSearchDto>> GetByName(string name, int page, int pageSize);
 	}
 }
