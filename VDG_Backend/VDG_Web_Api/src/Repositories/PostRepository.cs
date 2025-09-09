@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using VDG_Web_Api.src.Data;
+using VDG_Web_Api.src.DTOs.PostDTOs;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 
@@ -58,9 +59,18 @@ namespace VDG_Web_Api.src.Repositories
 
         }
 
-        public async Task<Post> GetPostAsync(int postId)
+        public async Task<PostDTO> GetPostAsync(int postId)
         {
-            var post = await _context.Posts.FindAsync(postId);
+
+            var post = await _context.Posts.Select(pm => new PostDTO()
+            {
+                DoctorId = pm.DoctorId,
+                Content = pm.Content,
+                DoctorName = pm.Doctor.User.Person.FirstName + " " + pm.Doctor.User.Person.LastName ?? "",
+                DoctorSpeciality = pm.Doctor.Speciality.Name,
+                Id = pm.Id,
+                ImageUrl = pm.ImageUrl
+            }).FirstOrDefaultAsync();
             if (post == null)
                 throw new KeyNotFoundException("the post has not found ");
 

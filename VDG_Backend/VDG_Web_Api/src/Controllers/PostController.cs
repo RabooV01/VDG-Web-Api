@@ -15,7 +15,7 @@ namespace VDG_Web_Api.src.Controllers
 
         [HttpPost("Adding")]
 
-        public async Task<ActionResult> AddPost(PostDTO postDTO)
+        public async Task<ActionResult> AddPost([FromBody] AddPostDTO postDTO)
         {
 
             if (postDTO == null)

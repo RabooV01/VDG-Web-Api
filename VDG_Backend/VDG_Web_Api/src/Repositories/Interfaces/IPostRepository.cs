@@ -1,4 +1,5 @@
-﻿using VDG_Web_Api.src.Models;
+﻿using VDG_Web_Api.src.DTOs.PostDTOs;
+using VDG_Web_Api.src.Models;
 
 namespace VDG_Web_Api.src.Repositories.Interfaces
 {
@@ -12,7 +13,7 @@ namespace VDG_Web_Api.src.Repositories.Interfaces
 
         public Task<IEnumerable<Post>> GetAllPostsAsync(int doctorId);
 
-        public Task<Post> GetPostAsync(int postId);
+        public Task<PostDTO> GetPostAsync(int postId);
 
     }
 }
