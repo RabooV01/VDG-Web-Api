@@ -158,6 +158,18 @@ namespace VDG_Web_Api.src.Repositories
             return Math.Round((avgWait + avgService + act) / 3.0);
         }
 
+        public async Task<IEnumerable<Doctor>> GetTopDoctor(int cnt)
+        {
+            var topDoctors = new List<(double, Doctor)>();
+            foreach (var doctor in _context.Doctors)
+            {
+                var pair = (await GetRatingDoctorByIdAsync(doctor.Id), doctor);
+                topDoctors.Add(pair);
+            }
+
+            return topDoctors.OrderByDescending(pair => pair.Item1).Select(pair => pair.Item2).ToList().Take(cnt);
+        }
+
 
         public async Task<IEnumerable<Doctor>> GetDoctorsByRatingAsync(int rating)
         {

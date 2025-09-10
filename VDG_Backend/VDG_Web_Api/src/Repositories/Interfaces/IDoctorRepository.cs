@@ -19,7 +19,7 @@ namespace VDG_Web_Api.src.Repositories.Interfaces
         public Task<IEnumerable<Doctor>> GetDoctorsByRatingAsync(int rating);
         public Task<double> GetRatingDoctorByIdAsync(int DoctorId);
 
-        //public Task<IEnumerable<Doctor>> GetTopDoctors();
+        public Task<IEnumerable<Doctor>> GetTopDoctor(int cnt);
         // search items
         public Task<IEnumerable<Doctor>> GetDoctorsBySpecialityIdAsync(int specialityId);
         public Task<IEnumerable<Doctor>> GetDoctorsByNameAsync(string Name);
