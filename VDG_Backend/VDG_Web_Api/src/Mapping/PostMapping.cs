@@ -13,12 +13,12 @@ namespace VDG_Web_Api.src.Mapping
                 Content = postDTO.Content
             };
 
-        public static Post PostToEntity(this PostDTO postDTO)
+        public static Post PostToEntity(this UpdatePostDTO postDTO)
            => new()
            {
-               Id = postDTO.Id,
-               DoctorId = postDTO.DoctorId,
-               Content = postDTO.Content
+               Id = postDTO.PostId,
+               Content = postDTO.Content,
+               ImageUrl = postDTO.ImageUrl
            };
 
         public static PostDTO ToDto(this Post post)
