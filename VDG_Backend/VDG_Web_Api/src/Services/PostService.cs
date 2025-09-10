@@ -66,7 +66,7 @@ namespace VDG_Web_Api.src.Services
             }
         }
 
-        public async Task UpdatePostAsync(PostDTO post)
+        public async Task UpdatePostAsync(UpdatePostDTO post)
         {
             try
             {

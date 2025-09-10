@@ -1,9 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using VDG_Web_Api.src.DTOs.PostDTOs;
+using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.Services.Interfaces;
 
 namespace VDG_Web_Api.src.Controllers
 {
+    [Route("api/[controller]/[action]")]
+    [ApiController]
+    [Authorize(Roles = $"{nameof(UserRole.Admin)}, {nameof(UserRole.Doctor)}")]
     public class PostController : ControllerBase
     {
         private readonly IPostService _postService;
@@ -13,7 +18,7 @@ namespace VDG_Web_Api.src.Controllers
             _postService = postService;
         }
 
-        [HttpPost("Adding")]
+        [HttpPost]
 
         public async Task<ActionResult> AddPost([FromBody] AddPostDTO postDTO)
         {
@@ -35,7 +40,7 @@ namespace VDG_Web_Api.src.Controllers
             }
         }
 
-        [HttpDelete("delete")]
+        [HttpDelete]
 
         public async Task<ActionResult> DeletePost(PostDTO postDTO)
         {
@@ -55,8 +60,8 @@ namespace VDG_Web_Api.src.Controllers
             }
         }
 
-        [HttpPut("update")]
-        public async Task<ActionResult> UpdatePost(PostDTO postDTO)
+        [HttpPut]
+        public async Task<ActionResult> UpdatePost([FromBody] UpdatePostDTO postDTO)
         {
             if (postDTO == null)
             {
@@ -73,7 +78,8 @@ namespace VDG_Web_Api.src.Controllers
             }
         }
 
-        [HttpGet("GetAllPosts")]
+        [HttpGet]
+        [AllowAnonymous]
         public async Task<IEnumerable<PostDTO>> GetAllPosts(int doctorId)
         {
             if (doctorId < 0)
@@ -91,7 +97,7 @@ namespace VDG_Web_Api.src.Controllers
             }
         }
 
-        [HttpGet("GetPost")]
+        [HttpGet]
         public async Task<PostDTO> GetPost(int postId)
         {
             if (postId < 0)
