@@ -34,6 +34,7 @@ namespace VDG_Web_Api.src.Controllers
 		}
 
 		[HttpPost]
+		[AllowAnonymous]
 		public async Task<ActionResult> AddSupportMessage(string message)
 		{
 			try

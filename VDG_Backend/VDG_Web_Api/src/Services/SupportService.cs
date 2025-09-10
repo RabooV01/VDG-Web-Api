@@ -62,7 +62,7 @@ namespace VDG_Web_Api.src.Services
 					Role = s.User.Role,
 					UserFullName = (s.User.Person.FirstName + " " + s.User.Person.LastName),
 					UserId = s.UserId
-				}), (int)Math.Ceiling(((double)rows) / pageSize), page, rows));
+				}), (int)Math.Ceiling(((double)rows) / pageSize), page, rows);
 			}
 			catch (Exception)
 			{
