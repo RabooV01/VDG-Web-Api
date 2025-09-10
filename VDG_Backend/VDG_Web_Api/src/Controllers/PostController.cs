@@ -80,9 +80,9 @@ namespace VDG_Web_Api.src.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IEnumerable<PostDTO>> GetAllPosts(int doctorId)
+        public async Task<IEnumerable<PostDTO>> GetAllPosts(int? doctorId)
         {
-            if (doctorId < 0)
+            if (doctorId is not null && (doctorId < 0))
             {
                 throw new ArgumentNullException(nameof(doctorId));
             }
