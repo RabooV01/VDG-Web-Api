@@ -40,18 +40,18 @@ namespace VDG_Web_Api.src.Services
 			}
 		}
 
-		public async Task<IEnumerable<PostDTO>> GetAllPostsAsync(int doctorId)
-		{
-			try
-			{
-				var posts = await _postrepository.GetAllPostsAsync(doctorId);
-				return posts.Select(p => p.ToDto()).ToList();
-			}
-			catch (Exception ex)
-			{
-				throw new Exception($"invalid retrieving posts, Error{ex.Message}", ex);
-			}
-		}
+        public async Task<IEnumerable<PostDTO>> GetAllPostsAsync(int? doctorId)
+        {
+            try
+            {
+                var posts = await _postrepository.GetAllPostsAsync(doctorId);
+                return posts.Select(p => p.ToDto()).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"invalid retieriving posts, Error{ex.Message}", ex);
+            }
+        }
 
 		public async Task<PostDTO> GetPostAsync(int postId)
 		{

@@ -7,90 +7,91 @@ namespace VDG_Web_Api.src.Mapping;
 
 public static class DoctorMapping
 {
-	public static Doctor ToEntity(this AddDoctorDTO doctorDTO)
-		=> new()
-		{
-			UserId = doctorDTO.UserId,
-			Description = doctorDTO.Description,
-			SpecialityId = doctorDTO.SpecialityId,
-			SyndicateId = doctorDTO.SyndicateId,
-			TicketCost = doctorDTO.TicketCost,
-			TicketOption = doctorDTO.TicketOptions
-		};
-	public static Doctor ToEntity(this DoctorDTO doctorDTO)
-		=> new()
-		{
-			Id = doctorDTO.DoctorId,
-			UserId = doctorDTO.UserId,
-			SpecialityId = doctorDTO.SpecialityId,
-			User = doctorDTO.GetUser(),
-			TicketCost = doctorDTO.TicketCost,
-			TicketOption = Enum.Parse<TicketOptions>(doctorDTO.TicketOption)
-		};
+    public static Doctor ToEntity(this AddDoctorDTO doctorDTO)
+        => new()
+        {
+            UserId = doctorDTO.UserId,
+            Description = doctorDTO.Description,
+            SpecialityId = doctorDTO.SpecialityId,
+            SyndicateId = doctorDTO.SyndicateId,
+            TicketCost = doctorDTO.TicketCost,
+            TicketOption = doctorDTO.TicketOptions
+        };
+    public static Doctor ToEntity(this DoctorDTO doctorDTO)
+        => new()
+        {
+            Id = doctorDTO.DoctorId,
+            UserId = doctorDTO.UserId,
+            SpecialityId = doctorDTO.SpecialityId,
+            User = doctorDTO.GetUser(),
+            TicketCost = doctorDTO.TicketCost,
+            TicketOption = Enum.Parse<TicketOptions>(doctorDTO.TicketOption)
+        };
 
-	public static DoctorInfo ToInfo(this Doctor doctor)
-		=> new()
-		{
-			Id = doctor.Id,
-			FirstName = doctor.User.Person.FirstName,
-			LastName = doctor.User.Person.LastName ?? string.Empty,
-			Speciality = doctor.Speciality.Name
-		};
+    public static DoctorInfo ToInfo(this Doctor doctor)
+        => new()
+        {
+            Id = doctor.Id,
+            FirstName = doctor.User.Person.FirstName,
+            LastName = doctor.User.Person.LastName ?? string.Empty,
+            Speciality = doctor.Speciality.Name
+        };
 
-	public static DoctorDTO ToDto(this Doctor doctor)
-		=> new()
-		{
-			DoctorId = doctor.Id,
-			SpecialityId = doctor.SpecialityId,
-			Speciality = doctor.Speciality.Name,
-			PersonId = doctor.User.PersonId,
-			FirstName = doctor.User.Person.FirstName,
-			LastName = doctor.User.Person.LastName,
-			Phone = doctor.User.Person.Phone,
-			UserId = doctor.UserId,
-			Email = doctor.User.Email,
-			Role = doctor.User.Role.ToString(),
-			Description = doctor.Description,
-			TicketCost = doctor.TicketCost,
-			TicketOption = doctor.TicketOption.ToString()
-		};
+    public static DoctorDTO ToDto(this Doctor doctor)
+        => new()
+        {
+            DoctorId = doctor.Id,
+            SpecialityId = doctor.SpecialityId,
+            Speciality = doctor.Speciality.Name,
+            PersonId = doctor.User.PersonId,
+            FirstName = doctor.User.Person.FirstName,
+            LastName = doctor.User.Person.LastName,
+            Phone = doctor.User.Person.Phone,
+            UserId = doctor.UserId,
+            Email = doctor.User.Email,
+            Role = doctor.User.Role.ToString(),
+            Description = doctor.Description,
+            TicketCost = doctor.TicketCost,
+            TicketOption = doctor.TicketOption.ToString()
+        };
 
-	public static User GetUser(this DoctorDTO doctorDTO)
-		=> new()
-		{
-			Id = doctorDTO.UserId,
-			PersonId = doctorDTO.PersonId,
-			Email = doctorDTO.Email,
-			Role = Enum.Parse<UserRole>(doctorDTO.Role, true),
-			Person = doctorDTO.GetPerson()
-		};
+    public static User GetUser(this DoctorDTO doctorDTO)
+        => new()
+        {
+            Id = doctorDTO.UserId,
+            PersonId = doctorDTO.PersonId,
+            Email = doctorDTO.Email,
+            Role = Enum.Parse<UserRole>(doctorDTO.Role, true),
+            Person = doctorDTO.GetPerson()
+        };
 
-	public static Person GetPerson(this DoctorDTO doctorDTO)
-		=> new()
-		{
-			FirstName = doctorDTO.FirstName,
-			LastName = doctorDTO.LastName,
-			Phone = doctorDTO.Phone,
-			Id = doctorDTO.PersonId
-		};
+    public static Person GetPerson(this DoctorDTO doctorDTO)
+        => new()
+        {
+            FirstName = doctorDTO.FirstName,
+            LastName = doctorDTO.LastName,
+            Phone = doctorDTO.Phone,
+            Id = doctorDTO.PersonId
+        };
 
-	public static DoctorSearchDto ToSearchDto(this Doctor doctor, VirtualClinic? minClinic)
-		=> new()
-		{
-			DoctorId = doctor.Id,
-			DoctorName = $"{doctor.User.Person.FirstName} {doctor.User.Person.LastName}",
-			Rating = doctor.Ratings.Any() ? doctor.Ratings.Sum(r => (r.Act + r.AvgWait + r.AvgService) / 3) / doctor.Ratings.Count : 0,
-			ShortestDistanceClinic = minClinic?.Name ?? string.Empty,
-			ShortestDistanceLocation = minClinic?.Location ?? string.Empty,
-			Clinics = doctor.VirtualClinics.Select(vc => new VirtualClinicSearchDto()
-			{
-				clinicId = vc.Id,
-				clinicName = vc.Name ?? string.Empty,
-				Location = vc.Location
-			}),
-			DoctorDescription = doctor.Description,
-			TicketCost = doctor.TicketCost,
-			TicketOption = doctor.TicketOption.ToString(),
-			Speciality = doctor.Speciality.Name
-		};
+    public static DoctorSearchDto ToSearchDto(this Doctor doctor, VirtualClinic? minClinic)
+        => new()
+        {
+            DoctorId = doctor.Id,
+            ImageUrl = doctor.User.ImageUrl,
+            DoctorName = $"{doctor.User.Person.FirstName} {doctor.User.Person.LastName}",
+            Rating = doctor.Ratings.Any() ? doctor.Ratings.Sum(r => (r.Act + r.AvgWait + r.AvgService) / 3) / doctor.Ratings.Count : 0,
+            ShortestDistanceClinic = minClinic?.Name ?? string.Empty,
+            ShortestDistanceLocation = minClinic?.Location ?? string.Empty,
+            Clinics = doctor.VirtualClinics.Select(vc => new VirtualClinicSearchDto()
+            {
+                clinicId = vc.Id,
+                clinicName = vc.Name ?? string.Empty,
+                Location = vc.Location
+            }),
+            DoctorDescription = doctor.Description,
+            TicketCost = doctor.TicketCost,
+            TicketOption = doctor.TicketOption.ToString(),
+            Speciality = doctor.Speciality.Name
+        };
 }
