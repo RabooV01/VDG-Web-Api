@@ -65,7 +65,6 @@ namespace VDG_Web_Api.src.Services
                 throw new Exception($"invalid retieriving post, Error{ex.Message}", ex);
             }
         }
-
         public async Task UpdatePostAsync(PostDTO post)
         {
             try

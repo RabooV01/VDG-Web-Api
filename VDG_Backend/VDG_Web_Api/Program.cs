@@ -43,6 +43,7 @@ builder.Services.AddScoped<IRatingRepository, RatingRepositroy>();
 builder.Services.AddScoped<IPromotionRequestRepository, PromotionRequestRepository>();
 builder.Services.AddTransient<ILocalizationService, LocalizationService>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
 builder.Services.AddScoped<IClaimService, ClaimService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -56,6 +57,7 @@ builder.Services.AddScoped<IPromotionRequestService, PromotionRequestService>();
 builder.Services.AddScoped<ISearchingService, SearchingService>();
 builder.Services.AddTransient<IFileHandler, FileHandler>();
 builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 JWTOptions JwtConfig = builder.Configuration.GetSection("JWT")
     .Get<JWTOptions>()!;
@@ -63,21 +65,21 @@ JWTOptions JwtConfig = builder.Configuration.GetSection("JWT")
 builder.Services.AddSingleton(JwtConfig);
 
 builder.Services.AddAuthentication() // add authentication to the builder
-	.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opt =>
-	{ // add authentication option (JWT Bearer)
-		opt.SaveToken = true;
-		opt.TokenValidationParameters = new()
-		{ // setting up validation params
-			ValidateIssuer = true, // Ensures that the issuer of the token matches the expected issuer
-			ValidIssuer = JwtConfig.Issuer,
-			ValidateAudience = true,
-			ValidAudience = JwtConfig.Audience,
-			ValidateIssuerSigningKey = true, //  Validates that the signing key used to sign the token matches our signing key
-			IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtConfig.SigningKey!)),
-			ValidateLifetime = true,
-			ClockSkew = TimeSpan.FromMinutes(1) // allowing only 1min difference
-		};
-	});
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opt =>
+    { // add authentication option (JWT Bearer)
+        opt.SaveToken = true;
+        opt.TokenValidationParameters = new()
+        { // setting up validation params
+            ValidateIssuer = true, // Ensures that the issuer of the token matches the expected issuer
+            ValidIssuer = JwtConfig.Issuer,
+            ValidateAudience = true,
+            ValidAudience = JwtConfig.Audience,
+            ValidateIssuerSigningKey = true, //  Validates that the signing key used to sign the token matches our signing key
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtConfig.SigningKey!)),
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromMinutes(1) // allowing only 1min difference
+        };
+    });
 builder.Services.AddSignalR();
     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opt =>
     { // add authentication option (JWT Bearer)
