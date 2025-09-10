@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using VDG_Web_Api.src.Models;
+using VDG_Web_Api.src.DTOs.NotificationDTOs;
+using VDG_Web_Api.src.Mapping;
 using VDG_Web_Api.src.Services.Interfaces;
 
 namespace VDG_Web_Api.src.Controllers
@@ -16,14 +17,14 @@ namespace VDG_Web_Api.src.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Notification>>> Get(int adminId)
+        public async Task<ActionResult<IEnumerable<NotificationDTO>>> Get(int adminId)
         {
             if (adminId < 0)
                 return BadRequest();
             try
             {
                 var notifications = await _notificationService.GetAllNotifications(adminId);
-                return notifications.ToList();
+                return notifications.Select(notification => notification.ToDto()).ToList();
             }
             catch (Exception)
             {
@@ -33,14 +34,14 @@ namespace VDG_Web_Api.src.Controllers
 
         [HttpPost]
 
-        public async Task<ActionResult> Send(Notification notification)
+        public async Task<ActionResult> Send(NotificationDTO notification)
         {
             if (notification == null)
                 return BadRequest();
 
             try
             {
-                await _notificationService.SendNotification(notification);
+                await _notificationService.SendNotification(notification.ToEntity());
                 return Ok();
             }
             catch (Exception)
