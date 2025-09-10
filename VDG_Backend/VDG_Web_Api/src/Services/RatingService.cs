@@ -1,6 +1,5 @@
 ﻿using VDG_Web_Api.src.DTOs.RatingDTOs;
 using VDG_Web_Api.src.Mapping;
-using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services.Interfaces;
 
@@ -15,16 +14,17 @@ namespace VDG_Web_Api.src.Services
             _ratingRepository = repository;
         }
 
-        public async Task<RatingDTO> Get(int id)
+        public async Task<IEnumerable<RatingDTO>> Get(int id)
         {
             try
             {
-                Rating rate = await _ratingRepository.GetRate(id);
-                if (rate == null)
+                var ratings = await _ratingRepository.GetRate(id);
+                if (ratings == null)
                 {
-                    throw new ArgumentNullException(nameof(rate));
+                    throw new ArgumentNullException(nameof(ratings));
                 }
-                return rate.ToDto();
+
+                return ratings.Select(r => r.ToDto());
             }
             catch (Exception ex)
             {
@@ -49,15 +49,15 @@ namespace VDG_Web_Api.src.Services
             }
         }
 
-        public async Task Update(RatingDTO ratingDto)
+        public async Task Update(UpdateRatingDTO rating)
         {
-            if (ratingDto == null)
+            if (rating == null)
             {
                 throw new ArgumentNullException("There is no rating to update");
             }
             try
             {
-                await _ratingRepository.UpdateRate(ratingDto.ToEntity());
+                await _ratingRepository.UpdateRate(rating.Id, rating.AvgService, rating.AvgWait, rating.Act);
             }
             catch (Exception ex)
             {
@@ -65,15 +65,11 @@ namespace VDG_Web_Api.src.Services
                 throw new Exception($"Something went wrong, Error: {ex.Message}", ex);
             }
         }
-        public async Task Delete(RatingDTO ratingDto)
+        public async Task Delete(int rateId)
         {
-            if (ratingDto == null)
-            {
-                throw new ArgumentNullException("There is no rating to delete");
-            }
             try
             {
-                await _ratingRepository.DeleteRate(ratingDto.ToEntity());
+                await _ratingRepository.DeleteRate(rateId);
             }
             catch (Exception ex)
             {

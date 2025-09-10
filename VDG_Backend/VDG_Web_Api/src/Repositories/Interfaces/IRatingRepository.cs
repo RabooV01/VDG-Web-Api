@@ -6,11 +6,11 @@ namespace VDG_Web_Api.src.Repositories.Interfaces
     {
         public Task Rate(Rating rate);
 
-        public Task UpdateRate(Rating rate);
+        public Task UpdateRate(int rateId, double serv, double wait, double act);
 
-        public Task DeleteRate(Rating rate);
+        public Task DeleteRate(int rate);
 
-        public Task<Rating> GetRate(int id);
+        public Task<IEnumerable<Rating>> GetRate(int id);
 
     }
 }

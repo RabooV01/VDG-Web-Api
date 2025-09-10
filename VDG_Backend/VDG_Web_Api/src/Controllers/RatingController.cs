@@ -18,13 +18,12 @@ namespace VDG_Web_Api.src.Controllers
 
         [HttpGet]
 
-        public async Task<ActionResult<RatingDTO>> GetDoctorRate(int DoctorId)
+        public async Task<ActionResult<IEnumerable<RatingDTO>>> GetDoctorRate(int DoctorId)
         {
             try
             {
-                var rate = await _ratingService.Get(DoctorId);
-
-                return rate;
+                var ratings = await _ratingService.Get(DoctorId);
+                return ratings.ToList();
             }
             catch (Exception ex)
             {
@@ -50,7 +49,7 @@ namespace VDG_Web_Api.src.Controllers
 
         [HttpPut]
 
-        public async Task<ActionResult> Update(RatingDTO rate)
+        public async Task<ActionResult> Update(UpdateRatingDTO rate)
         {
             try
             {
@@ -66,11 +65,11 @@ namespace VDG_Web_Api.src.Controllers
 
         [HttpDelete("Delete")]
 
-        public async Task<ActionResult> Delete(RatingDTO rate)
+        public async Task<ActionResult> Delete(int rateId)
         {
             try
             {
-                await _ratingService.Delete(rate);
+                await _ratingService.Delete(rateId);
 
                 return Ok();
             }
