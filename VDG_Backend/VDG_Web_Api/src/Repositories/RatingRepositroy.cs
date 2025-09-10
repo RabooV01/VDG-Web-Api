@@ -1,4 +1,5 @@
-﻿using VDG_Web_Api.src.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using VDG_Web_Api.src.Data;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 
@@ -14,11 +15,13 @@ namespace VDG_Web_Api.src.Repositories
         }
 
 
-        public async Task<Rating> GetRate(int id)
+        public async Task<IEnumerable<Rating>> GetRate(int id)
         {
             try
             {
-                return await _context.Ratings.FindAsync(id);
+                return await _context.Ratings.Include(u => u.User)
+                    .ThenInclude(u => u.Person)
+                    .Where(r => r.DoctorId == id).ToListAsync();
             }
             catch (Exception ex)
             {
@@ -40,11 +43,12 @@ namespace VDG_Web_Api.src.Repositories
             }
         }
 
-        public async Task UpdateRate(Rating rating)
+        public async Task UpdateRate(int rating, double sev, double wait, double act)
         {
             try
             {
-                _context.Ratings.Update(rating);
+                await _context.Ratings.Where(r => r.Id == rating)
+                    .ExecuteUpdateAsync(r => r.SetProperty(p => p.AvgService, sev).SetProperty(p => p.AvgWait, wait).SetProperty(p => p.Act, act));
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -52,12 +56,11 @@ namespace VDG_Web_Api.src.Repositories
                 throw new Exception($"Something went wrong, Error: {ex.Message}", ex);
             }
         }
-        public async Task DeleteRate(Rating rating)
+        public async Task DeleteRate(int rating)
         {
             try
             {
-                _context.Ratings.Remove(rating);
-                await _context.SaveChangesAsync();
+                await _context.Ratings.Where(r => r.Id == rating).ExecuteDeleteAsync();
             }
             catch (Exception ex)
             {

@@ -15,6 +15,15 @@ namespace VDG_Web_Api.src.Mapping
                 DoctorId = ratingDTO.DoctorId,
                 UserId = ratingDTO.UserId
             };
+        //public static Rating UpdateRatingToEntity(this UpdateRatingDTO rating)
+        //    => new()
+        //    {
+        //        Act = rating.Act,
+        //        AvgService = rating.AvgService,
+        //        AvgWait = rating.AvgWait,
+        //        DoctorId = rating.DoctorId,
+        //        UserId = rating.UserId
+        //    };
         public static Rating AddRatingToEntity(this AddRatingDTO ratingDTO)
             => new()
             {
@@ -30,9 +39,20 @@ namespace VDG_Web_Api.src.Mapping
                 Id = rating.Id,
                 Act = rating.Act,
                 AvgService = rating.AvgService,
+                UserFullName = rating.User.Person.FirstName + " " + rating.User.Person.LastName,
                 AvgWait = rating.AvgWait,
                 DoctorId = rating.DoctorId,
-                UserId = rating.UserId
+                UserId = rating.UserId,
             };
+        //public static UpdateRatingDTO ToUpdateDto(this Rating rating)
+        //    => new()
+        //    {
+        //        Act = rating.Act,
+        //        AvgService = rating.AvgService,
+        //        AvgWait = rating.AvgWait,
+        //        DoctorId = rating.DoctorId,
+        //        UserId = rating.UserId,
+        //        UserFullName = rating.User.Person.FirstName + " " + rating.User.Person.LastName
+        //    };
     }
 }
