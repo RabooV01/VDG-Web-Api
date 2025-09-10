@@ -32,6 +32,26 @@ namespace VDG_Web_Api.src.Controllers
         }
 
         [HttpPost]
+
+        public async Task<ActionResult> Send(Notification notification)
+        {
+            if (notification == null)
+                return BadRequest();
+
+            try
+            {
+                await _notificationService.SendNotification(notification);
+                return Ok();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+
+        [HttpDelete]
         public async Task<ActionResult> Delete(int notificationId)
         {
             if (notificationId < 0)
