@@ -289,4 +289,30 @@ public class ReservationService : IReservationService
 			throw;
 		}
 	}
+
+	public async Task<IEnumerable<ReservationStatisticsDto>> GetReservationStatistics(int virtualId)
+	{
+		try
+		{
+			var today = DateTime.Now;
+			var reservations = await _reservationRepository.GetReservationStatistics(virtualId);
+			var stats = Enumerable.Range(1, today.Day).Select(day => new DateTime(today.Year, today.Month, day))
+				.GroupJoin(reservations, d => $"{d:ddd}-{d.Day}", r => $"{r.ScheduledAt:ddd}-{r.ScheduledAt.Day}", (date, res) =>
+				{
+					return new ReservationStatisticsDto()
+					{
+						Count = res.Count(),
+						Day = $"{date:ddd}-{date.Day}"
+					};
+				});
+
+			return stats;
+
+		}
+		catch (Exception)
+		{
+
+			throw;
+		}
+	}
 }

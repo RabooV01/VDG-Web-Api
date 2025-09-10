@@ -11,4 +11,5 @@ public interface IReservationService
 	public Task<bool> EditAppointmentAsync(ReservationDTO reservation);
 	public Task PreviewReservation(int reservationId);
 	public Task<IEnumerable<ReservationDayBusyness>> GetMonthBusyness(int clinicId, DateTime date);
+	public Task<IEnumerable<ReservationStatisticsDto>> GetReservationStatistics(int virtualId);
 }

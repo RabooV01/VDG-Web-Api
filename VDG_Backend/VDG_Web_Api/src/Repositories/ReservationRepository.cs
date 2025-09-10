@@ -157,6 +157,23 @@ public class ReservationRepository : IReservationRepository
 		}
 	}
 
+	public async Task<IEnumerable<Reservation>> GetReservationStatistics(int virtualId)
+	{
+		try
+		{
+			var today = DateTime.Now;
+			var servedReservationsLastMonth = await _context.Reservations
+				.Where(r => r.VirtualId == virtualId && r.ScheduledAt.Month == today.Month && r.ScheduledAt.Year == today.Year && r.Status == ReservationStatus.Previewed)
+				.ToListAsync();
+
+			return servedReservationsLastMonth;
+		}
+		catch (Exception e)
+		{
+			throw new Exception("Error while retrieving data.", e);
+		}
+	}
+
 	//public async Task<int> GetClinicReservationCapacity(int clinicId)
 	//{
 	//	try

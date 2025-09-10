@@ -21,6 +21,20 @@ namespace VDG_Web_Api.src.Controllers
 			_claimService = claimService;
 		}
 
+		[HttpGet("[action]")]
+		public async Task<ActionResult<IEnumerable<ReservationStatisticsDto>>> GetReservationStatistics(int virtualId)
+		{
+			try
+			{
+				var stats = await _reservationService.GetReservationStatistics(virtualId);
+				return Ok(stats);
+			}
+			catch (Exception e)
+			{
+				return BadRequest(e.Message);
+			}
+		}
+
 		[HttpGet("Clinic/{clinicId}/MonthBusyness")]
 		public async Task<ActionResult<IEnumerable<ReservationDayBusyness>>> GetBusynessPercent(int clinicId, DateTime date)
 		{
