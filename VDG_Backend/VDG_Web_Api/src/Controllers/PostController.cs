@@ -44,13 +44,9 @@ namespace VDG_Web_Api.src.Controllers
 
 		public async Task<ActionResult> DeletePost(int postId)
 		{
-			if (postDTO == null || postDTO.Id < 0)
-			{
-				throw new ArgumentNullException(nameof(postDTO));
-			}
 			try
 			{
-				await _postService.DeletePostAsync(postDTO.Id);
+				await _postService.DeletePostAsync(postId);
 				return Ok();
 			}
 			catch (Exception ex)
@@ -78,14 +74,14 @@ namespace VDG_Web_Api.src.Controllers
 			}
 		}
 
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IEnumerable<PostDTO>> GetAllPosts(int? doctorId)
-        {
-            if (doctorId is not null && (doctorId < 0))
-            {
-                throw new ArgumentNullException(nameof(doctorId));
-            }
+		[HttpGet]
+		[AllowAnonymous]
+		public async Task<IEnumerable<PostDTO>> GetAllPosts(int? doctorId)
+		{
+			if (doctorId is not null && (doctorId < 0))
+			{
+				throw new ArgumentNullException(nameof(doctorId));
+			}
 
 			try
 			{
