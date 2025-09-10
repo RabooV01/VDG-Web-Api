@@ -156,7 +156,6 @@ namespace VDG_Web_Api.src.Repositories
                     .Include(r => r.Doctor)
                     .ThenInclude(d => d.User)
                     .ThenInclude(u => u.Person)
-                    .Select(r => new { r.AvgService, r.AvgWait, r.Act, r.Doctor, r.DoctorId })
                     .GroupBy(r => r.DoctorId, (r) => r)
                     .Select(r => new DoctorRating()
                     {
