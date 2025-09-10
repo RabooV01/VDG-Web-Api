@@ -13,11 +13,13 @@ namespace VDG_Web_Api.src.Services
     {
         private readonly int UpdateAndDeleteThreshold = 5;
         private readonly ITicketRepository _ticketRepository;
+        private readonly IClaimService _claimService;
 
 
-        public TicketService(ITicketRepository ticketRepository)
+        public TicketService(ITicketRepository ticketRepository, IClaimService claimService)
         {
             this._ticketRepository = ticketRepository;
+            _claimService = claimService;
         }
 
         public async Task<TicketDTO> GetTicketByIdAsync(int ticketId)
@@ -221,6 +223,32 @@ namespace VDG_Web_Api.src.Services
             }
             catch (Exception)
             {
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<StatisticTicketDTO>> GetTicketStatistics()
+        {
+            try
+            {
+                var doctorId = _claimService.GetCurrentDoctorId();
+                var tickets = await _ticketRepository.GetTicketStatistics(doctorId);
+
+                return tickets.GroupBy(t => t.TicketMessages.OrderBy(t => t.Date).First().Date, (date, tickets) =>
+                {
+                    var d = date.ToString("ddd");
+                    return new StatisticTicketDTO()
+                    {
+                        Date = d,
+                        CloseDays = tickets.Where(t => t.Status == TicketStatus.Closed).Count(),
+                        OpenDays = tickets.Where(t => t.Status == TicketStatus.Open).Count(),
+                        PendingDays = tickets.Where(t => t.Status == TicketStatus.Pending).Count()
+                    };
+                });
+            }
+            catch (Exception)
+            {
+
                 throw;
             }
         }
