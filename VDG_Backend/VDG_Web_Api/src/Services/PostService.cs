@@ -40,7 +40,7 @@ namespace VDG_Web_Api.src.Services
             }
         }
 
-        public async Task<IEnumerable<PostDTO>> GetAllPostsAsync(int doctorId)
+        public async Task<IEnumerable<PostDTO>> GetAllPostsAsync(int? doctorId)
         {
             try
             {

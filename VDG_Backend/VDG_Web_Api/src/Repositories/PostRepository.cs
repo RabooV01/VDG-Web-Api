@@ -47,8 +47,23 @@ namespace VDG_Web_Api.src.Repositories
             }
         }
 
-        public async Task<IEnumerable<Post>> GetAllPostsAsync(int doctorId)
+        public async Task<IEnumerable<Post>> GetAllPostsAsync(int? doctorId)
         {
+            if (doctorId is null)
+            {
+                try
+                {
+                    return await _context.Posts.ToListAsync();
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+
+            }
+
+
             var posts = await _context.Posts.Where(p => p.DoctorId == doctorId).ToListAsync();
 
             if (posts == null)

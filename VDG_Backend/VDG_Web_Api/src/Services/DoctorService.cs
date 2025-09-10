@@ -1,6 +1,5 @@
 ﻿using VDG_Web_Api.src.DTOs.DoctorDTOs;
 using VDG_Web_Api.src.Mapping;
-using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services.Interfaces;
 
@@ -88,14 +87,16 @@ namespace VDG_Web_Api.src.Services
             }
         }
 
-        public async Task<IEnumerable<Doctor>> GetTopDoctor(int cnt)
+        public async Task<IEnumerable<DoctorRatingDto>> GetTopDoctor()
         {
-            if (cnt < 0)
-                throw new KeyNotFoundException("the counter is negative");
-
             try
             {
-                return await _doctorRepository.GetTopDoctor(cnt);
+                return (await _doctorRepository.GetTopTenDoctors()).Select(d => new DoctorRatingDto()
+                {
+                    DoctorId = d.DoctorId,
+                    DoctorName = d.Doctor.User.Person.FirstName + " " + d.Doctor.User.Person.LastName,
+                    Rating = d.Rating
+                });
             }
             catch (Exception)
             {

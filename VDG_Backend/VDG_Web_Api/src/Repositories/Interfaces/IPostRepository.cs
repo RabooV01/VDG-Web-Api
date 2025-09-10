@@ -11,7 +11,7 @@ namespace VDG_Web_Api.src.Repositories.Interfaces
 
         public Task UpdatePostAsync(Post post);
 
-        public Task<IEnumerable<Post>> GetAllPostsAsync(int doctorId);
+        public Task<IEnumerable<Post>> GetAllPostsAsync(int? doctorId);
 
         public Task<PostDTO> GetPostAsync(int postId);
 
