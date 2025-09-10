@@ -58,16 +58,6 @@ namespace VDG_Web_Api.src.Controllers
                     SpecialityId = SpecialtyId,
                     UserLat = lat,
                     UserLon = lon
-<<<<<<< HEAD
-
-                };
-                if (cost is not null)
-                {
-                    filter.CostRange = cost.Value;
-                }
-                var doctors = await _searchingService.SearchDoctorAsync(filter, page, pageSize);
-
-=======
                 };
                 if (cost is not null)
                 {
@@ -83,23 +73,6 @@ namespace VDG_Web_Api.src.Controllers
             }
         }
 
-        [HttpGet("GetAll")]
-        //[Authorize(Roles = nameof(UserRole.Admin))]
-        public async Task<ActionResult<IEnumerable<DoctorDTO>>> GetAll(int page = 1, int pageSize = 20, int? specialityId = null, string? name = null)
-        {
-            try
-            {
-                var doctors = await _doctorService.GetAllDoctors(page, pageSize, specialityId, name);
->>>>>>> 01364df90c77b193905d3541c8b7a69e00907005
-                return Ok(doctors);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
-
-<<<<<<< HEAD
         [HttpGet("GetAll")]
         //[Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<ActionResult<IEnumerable<DoctorDTO>>> GetAll(int page = 1, int pageSize = 20, int? specialityId = null, string? name = null)
@@ -128,20 +101,6 @@ namespace VDG_Web_Api.src.Controllers
                 //}
 
                 return Ok(doctor);
-=======
-        [HttpGet("{doctorId}")]
-        public async Task<ActionResult<DoctorDTO>> GetDoctor(int doctorId)
-        {
-            try
-            {
-                var doctor = await _doctorService.GetDoctorById(doctorId);
-
-                //if (doctor.UserId != _claimService.GetCurrentUserId() && !_claimService.GetCurrentUserRole().Equals(UserRole.Admin))
-                //{
-                //	return Unauthorized();
-                //}
-
-                return Ok(doctor);
             }
             catch (Exception)
             {
@@ -157,7 +116,6 @@ namespace VDG_Web_Api.src.Controllers
             {
                 await _doctorService.UpdateDoctorDescription(_claimService.GetCurrentDoctorId(), description);
                 return NoContent();
->>>>>>> 01364df90c77b193905d3541c8b7a69e00907005
             }
             catch (Exception)
             {
@@ -165,15 +123,6 @@ namespace VDG_Web_Api.src.Controllers
             }
         }
 
-<<<<<<< HEAD
-        [HttpPut]
-        [Authorize(Roles = nameof(UserRole.Doctor))]
-        public async Task<ActionResult> UpdateDescription(string description)
-        {
-            try
-            {
-                await _doctorService.UpdateDoctorDescription(_claimService.GetCurrentDoctorId(), description);
-=======
         [HttpPut("Settings")]
         [Authorize(Roles = nameof(UserRole.Doctor))]
         public async Task<ActionResult> UpdateDoctorSettings(DoctorSettings doctorSettings)
@@ -181,7 +130,6 @@ namespace VDG_Web_Api.src.Controllers
             try
             {
                 await _doctorService.UpdateDoctorConsultationSettings(doctorSettings, _claimService.GetCurrentDoctorId());
->>>>>>> 01364df90c77b193905d3541c8b7a69e00907005
                 return NoContent();
             }
             catch (Exception)
@@ -190,32 +138,6 @@ namespace VDG_Web_Api.src.Controllers
             }
         }
 
-<<<<<<< HEAD
-        [HttpPut("Settings")]
-        [Authorize(Roles = nameof(UserRole.Doctor))]
-        public async Task<ActionResult> UpdateDoctorSettings(DoctorSettings doctorSettings)
-        {
-            try
-            {
-                await _doctorService.UpdateDoctorConsultationSettings(doctorSettings, _claimService.GetCurrentDoctorId());
-=======
-        [HttpDelete("{doctorId}")]
-        [Authorize(Roles = nameof(UserRole.Admin))]
-        public async Task<ActionResult> DeleteDoctor(int doctorId)
-        {
-            try
-            {
-                await _doctorService.DeleteDoctor(doctorId);
->>>>>>> 01364df90c77b193905d3541c8b7a69e00907005
-                return NoContent();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-        }
-
-<<<<<<< HEAD
         [HttpDelete("{doctorId}")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<ActionResult> DeleteDoctor(int doctorId)
@@ -231,8 +153,6 @@ namespace VDG_Web_Api.src.Controllers
             }
         }
 
-=======
->>>>>>> 01364df90c77b193905d3541c8b7a69e00907005
         [HttpPost]
         [Authorize(Roles = $"{nameof(UserRole.Admin)}")]
         public async Task<ActionResult> PromoteUserToDoctor(AddDoctorDTO doctorDTO)
@@ -250,28 +170,16 @@ namespace VDG_Web_Api.src.Controllers
 
 
         [HttpGet("[action]")]
-<<<<<<< HEAD
-        public async Task<ActionResult<DoctorDTO>> GetTopDoctor(int cnt = 10)
-        {
-            try
-            {
-                var topdoctor = await _doctorService.GetTopDoctor(cnt);
-=======
         public async Task<ActionResult<IEnumerable<DoctorRatingDto>>> GetTopDoctor()
         {
             try
             {
                 var topdoctor = await _doctorService.GetTopDoctor();
->>>>>>> 01364df90c77b193905d3541c8b7a69e00907005
                 return Ok(topdoctor);
             }
             catch (Exception)
             {
-<<<<<<< HEAD
-                throw;
-=======
                 return BadRequest();
->>>>>>> 01364df90c77b193905d3541c8b7a69e00907005
             }
 
         }

@@ -244,7 +244,7 @@ namespace VDG_Web_Api.src.Services
                         OpenDays = tickets.Where(t => t.Status == TicketStatus.Open).Count(),
                         PendingDays = tickets.Where(t => t.Status == TicketStatus.Pending).Count()
                     };
-                });
+                }).ToList();
             }
             catch (Exception)
             {
