@@ -15,7 +15,15 @@ namespace VDG_Web_Api.src.Mapping
                 DoctorId = ratingDTO.DoctorId,
                 UserId = ratingDTO.UserId
             };
-
+        public static Rating AddRatingToEntity(this AddRatingDTO ratingDTO)
+            => new()
+            {
+                Act = ratingDTO.Act,
+                AvgService = ratingDTO.AvgService,
+                AvgWait = ratingDTO.AvgWait,
+                DoctorId = ratingDTO.DoctorId,
+                UserId = ratingDTO.UserId
+            };
         public static RatingDTO ToDto(this Rating rating)
             => new()
             {
@@ -23,8 +31,8 @@ namespace VDG_Web_Api.src.Mapping
                 Act = rating.Act,
                 AvgService = rating.AvgService,
                 AvgWait = rating.AvgWait,
-                DoctorId = rating.DoctorId ?? 0,
-                UserId = rating.UserId ?? 0
+                DoctorId = rating.DoctorId,
+                UserId = rating.UserId
             };
     }
 }

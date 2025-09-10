@@ -7,8 +7,8 @@ namespace VDG_Web_Api.src.Repositories
     public class RatingRepositroy : IRatingRepository
     {
         private readonly VdgDbDemoContext _context;
-
         public RatingRepositroy(VdgDbDemoContext context)
+
         {
             _context = context;
         }
@@ -26,7 +26,6 @@ namespace VDG_Web_Api.src.Repositories
                 throw new InvalidOperationException($"Error while retrieving data. {ex.Message}", ex);
             }
         }
-
         public async Task Rate(Rating rating)
         {
             try

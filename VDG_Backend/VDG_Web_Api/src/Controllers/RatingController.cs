@@ -4,6 +4,9 @@ using VDG_Web_Api.src.Services.Interfaces;
 
 namespace VDG_Web_Api.src.Controllers
 {
+    [Route("api/[controller]/[action]")]
+    [ApiController]
+
     public class RatingController : ControllerBase
     {
         private readonly IRatingService _ratingService;
@@ -13,7 +16,7 @@ namespace VDG_Web_Api.src.Controllers
             _ratingService = ratingService;
         }
 
-        [HttpGet("DoctorRate/{doctoId}")]
+        [HttpGet]
 
         public async Task<ActionResult<RatingDTO>> GetDoctorRate(int DoctorId)
         {
@@ -25,13 +28,13 @@ namespace VDG_Web_Api.src.Controllers
             }
             catch (Exception ex)
             {
-                throw new Exception($"Can't get rating, Error{ex.Message}", ex);
+                throw new Exception($"Can't get rating, Error {ex.Message}", ex);
             }
         }
 
-        [HttpPost("Rate")]
+        [HttpPost]
 
-        public async Task<ActionResult> Rate(RatingDTO rate)
+        public async Task<ActionResult> Rate(AddRatingDTO rate)
         {
             try
             {
@@ -41,11 +44,11 @@ namespace VDG_Web_Api.src.Controllers
             }
             catch (Exception ex)
             {
-                throw new Exception($"Something went wrong, Error{ex.Message}", ex);
+                throw new Exception($"Something went wrong, Error {ex.Message}", ex);
             }
         }
 
-        [HttpPut("Update")]
+        [HttpPut]
 
         public async Task<ActionResult> Update(RatingDTO rate)
         {

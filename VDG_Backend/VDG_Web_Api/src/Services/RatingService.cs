@@ -20,7 +20,10 @@ namespace VDG_Web_Api.src.Services
             try
             {
                 Rating rate = await _ratingRepository.GetRate(id);
-
+                if (rate == null)
+                {
+                    throw new ArgumentNullException(nameof(rate));
+                }
                 return rate.ToDto();
             }
             catch (Exception ex)
@@ -29,7 +32,7 @@ namespace VDG_Web_Api.src.Services
                 throw new Exception($"Can't get Rating, Error{ex.Message}", ex);
             }
         }
-        public async Task Rate(RatingDTO ratingDto)
+        public async Task Rate(AddRatingDTO ratingDto)
         {
             if (ratingDto == null)
             {
@@ -37,7 +40,7 @@ namespace VDG_Web_Api.src.Services
             }
             try
             {
-                await _ratingRepository.Rate(ratingDto.ToEntity());
+                await _ratingRepository.Rate(ratingDto.AddRatingToEntity());
             }
             catch (Exception ex)
             {
