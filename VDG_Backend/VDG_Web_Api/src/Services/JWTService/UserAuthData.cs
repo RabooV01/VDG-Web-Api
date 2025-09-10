@@ -12,5 +12,6 @@ namespace VDG_Web_Api.src.Services.JWTService
 		public string FirstName { get; set; }
 		public string? LastName { get; set; }
 		public int? DoctorId { get; set; } = null;
+		public string? ImageUrl { get; set; }
 	}
 }

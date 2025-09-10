@@ -4,14 +4,15 @@ using VDG_Web_Api.src.Enums;
 
 namespace VDG_Web_Api.src.DTOs.UserDTOs
 {
-    public class UserDTO : PersonDTO
-    {
-        public int UserId { get; set; }
+	public class UserDTO : PersonDTO
+	{
+		public int UserId { get; set; }
 
-        public DateTime? RegisteredAt { get; set; } = DateTime.Now;
+		public DateTime? RegisteredAt { get; set; } = DateTime.Now;
+		public string? ImageUrl { get; set; }
 
-        [EmailAddress]
-        public string Email { get; set; } = string.Empty;
-        public string Role { get; set; } = UserRole.User.ToString();
-    }
+		[EmailAddress]
+		public string Email { get; set; } = string.Empty;
+		public string Role { get; set; } = UserRole.User.ToString();
+	}
 }
