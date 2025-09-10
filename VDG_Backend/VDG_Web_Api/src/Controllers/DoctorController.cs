@@ -169,7 +169,7 @@ namespace VDG_Web_Api.src.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet("TopDoctor")]
         public async Task<ActionResult<DoctorDTO>> GetTopDoctor(int cnt = 10)
         {
             try
