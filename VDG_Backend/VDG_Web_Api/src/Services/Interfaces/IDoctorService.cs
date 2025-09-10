@@ -1,5 +1,4 @@
 ﻿using VDG_Web_Api.src.DTOs.DoctorDTOs;
-using VDG_Web_Api.src.Models;
 
 namespace VDG_Web_Api.src.Services.Interfaces
 {
@@ -11,7 +10,7 @@ namespace VDG_Web_Api.src.Services.Interfaces
         public Task UpdateDoctorDescription(int doctorId, string description);
         public Task UpdateDoctorConsultationSettings(DoctorSettings doctorSettings, int doctorId);
 
-        public Task<IEnumerable<Doctor>> GetTopDoctor(int cnt = 10);
+        public Task<IEnumerable<DoctorRatingDto>> GetTopDoctor();
 
         public Task<IEnumerable<DoctorDTO>> GetAllDoctors(int page, int pageSize, int? specialityId = null, string? name = null);
     }

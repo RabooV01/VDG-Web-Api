@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using VDG_Web_Api.src.Data;
+using VDG_Web_Api.src.DTOs.DoctorDTOs;
 using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
@@ -147,40 +148,56 @@ namespace VDG_Web_Api.src.Repositories
 
             return doctors;
         }
-        public async Task<double> GetRatingDoctorByIdAsync(int DoctorId)
+        public async Task<IEnumerable<DoctorRating>> GetTopTenDoctors()
         {
-            if (await _context.Ratings.AnyAsync() is false)
-                return 0;
-
-            var avgWait = await _context.Ratings.Where(r => r.DoctorId == DoctorId).AverageAsync(r => r.AvgWait);
-            var avgService = await _context.Ratings.Where(r => r.DoctorId == DoctorId).AverageAsync(r => r.AvgService);
-            var act = await _context.Ratings.Where(r => r.DoctorId == DoctorId).AverageAsync(r => r.Act);
-            return Math.Round((avgWait + avgService + act) / 3.0);
-        }
-
-        public async Task<IEnumerable<Doctor>> GetTopDoctor(int cnt)
-        {
-            var topDoctors = new List<(double, Doctor)>();
-            foreach (var doctor in _context.Doctors)
+            try
             {
-                var pair = (await GetRatingDoctorByIdAsync(doctor.Id), doctor);
-                topDoctors.Add(pair);
+                var avgRate = await _context.Ratings.AsNoTracking()
+                    .Include(r => r.Doctor)
+                    .ThenInclude(d => d.User)
+                    .ThenInclude(u => u.Person)
+                    .GroupBy(r => r.DoctorId, (r) => r)
+                    .Select(r => new DoctorRating()
+                    {
+                        DoctorId = r.Key.Value,
+                        Doctor = r.Select(p => p.Doctor).FirstOrDefault(),
+                        Rating = r.Average(p => (p.Act + p.AvgWait + p.AvgService) / 3)
+                    }).OrderByDescending(d => d.Rating).Take(10).ToListAsync();
+                return avgRate;
+
             }
-
-            return topDoctors.OrderByDescending(pair => pair.Item1).Select(pair => pair.Item2).ToList().Take(cnt);
-        }
-
-
-        public async Task<IEnumerable<Doctor>> GetDoctorsByRatingAsync(int rating)
-        {
-            var doctors = new List<Doctor>();
-            foreach (var doctor in _context.Doctors)
+            catch (Exception)
             {
-                if (await GetRatingDoctorByIdAsync(doctor.Id) >= rating)
-                    doctors.Add(doctor);
+
+                throw;
             }
-            return doctors;
         }
+
+        //public async Task<IEnumerable<Doctor>> GetTopDoctor(int cnt)
+        //{
+        //    var topDoctors = new List<(double, Doctor)>();
+
+        //    var doctors = await _context.Doctors.AsNoTracking().ToListAsync();
+        //    foreach (var doctor in doctors)
+        //    {
+        //        var pair = (await GetRatingDoctorByIdAsync(doctor.Id), doctor);
+        //        topDoctors.Add(pair);
+        //    }
+
+        //    return (topDoctors.OrderByDescending(pair => pair.Item1).Select(pair => pair.Item2).Take(cnt)).ToList();
+        //}
+
+
+        //public async Task<IEnumerable<Doctor>> GetDoctorsByRatingAsync(int rating)
+        //{
+        //    var doctors = new List<Doctor>();
+        //    foreach (var doctor in _context.Doctors)
+        //    {
+        //        if (await GetRatingDoctorByIdAsync(doctor.Id) >= rating)
+        //            doctors.Add(doctor);
+        //    }
+        //    return doctors;
+        //}
 
 
 
