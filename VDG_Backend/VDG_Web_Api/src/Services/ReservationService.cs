@@ -1,5 +1,6 @@
 using VDG_Web_Api.src.DTOs.ReservationDTOs;
 using VDG_Web_Api.src.DTOs.VirtualClinicDTOs;
+using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.Extensions.Validation;
 using VDG_Web_Api.src.Mapping;
 using VDG_Web_Api.src.Models;
@@ -43,7 +44,7 @@ public class ReservationService : IReservationService
 			Reservation reservation = reservationDto.ToEntity();
 
 			var existUserAppointmentsDoctorIds = (await GetUserReservationsAsync(reservation.UserId))
-			.Where(r => r.ScheduledAt > DateTime.Now)
+			.Where(r => r.ScheduledAt > DateTime.Now && !r.Status.Equals(ReservationStatus.Previewed))
 			.Select(r => r.VirtualClinic!.Doctor.Id);
 
 			if (await HasConflict(reservationDto))

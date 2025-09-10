@@ -131,7 +131,7 @@ namespace VDG_Web_Api.src.Controllers
 			}
 			catch (Exception ex) when (ex is ArgumentException || ex is InvalidOperationException)
 			{
-				return BadRequest(ex);
+				return BadRequest(ex.Message);
 			}
 			catch (Exception e)
 			{

@@ -22,7 +22,7 @@ public class VirtualClinicService : IVirtualClinicService
 	private List<ClinicWorkTime> GenerateWorkingTime(WorkTimeInitialize workTimeInit)
 	{
 		IEnumerable<ClinicWorkTime> workTimes = new List<ClinicWorkTime>();
-		return Enumerable.Range(0, 6)
+		return Enumerable.Range(0, 7)
 			.Where(day => !workTimeInit.Holidays.Contains((DayOfWeek)day))
 			.GroupJoin(workTimes, day => day, workTime => (int)workTime.DayOfWeek,
 			(day, workTime) => new ClinicWorkTime()
