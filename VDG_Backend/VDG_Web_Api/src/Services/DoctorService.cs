@@ -95,7 +95,8 @@ namespace VDG_Web_Api.src.Services
                 {
                     DoctorId = d.DoctorId,
                     DoctorName = d.Doctor.User.Person.FirstName + " " + d.Doctor.User.Person.LastName,
-                    Rating = d.Rating
+                    Rating = d.Rating,
+                    Speciality = d.Speciality
                 });
             }
             catch (Exception)

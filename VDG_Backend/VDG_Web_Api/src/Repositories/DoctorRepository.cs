@@ -156,12 +156,15 @@ namespace VDG_Web_Api.src.Repositories
                     .Include(r => r.Doctor)
                     .ThenInclude(d => d.User)
                     .ThenInclude(u => u.Person)
+                    .Include(d => d.Doctor)
+                    .ThenInclude(d => d.Speciality)
                     .GroupBy(r => r.DoctorId, (r) => r)
                     .Select(r => new DoctorRating()
                     {
                         DoctorId = r.Key.Value,
                         Doctor = r.Select(p => p.Doctor).FirstOrDefault(),
-                        Rating = r.Average(p => (p.Act + p.AvgWait + p.AvgService) / 3)
+                        Rating = r.Average(p => (p.Act + p.AvgWait + p.AvgService) / 3),
+                        Speciality = r.Select(p => p.Doctor.Speciality.Name).FirstOrDefault()
                     }).OrderByDescending(d => d.Rating).Take(10).ToListAsync();
                 return avgRate;
 
