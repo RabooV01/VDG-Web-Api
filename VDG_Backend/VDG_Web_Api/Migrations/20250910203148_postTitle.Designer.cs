@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VDG_Web_Api.src.Data;
 
@@ -11,9 +12,11 @@ using VDG_Web_Api.src.Data;
 namespace VDG_Web_Api.Migrations
 {
     [DbContext(typeof(VdgDbDemoContext))]
-    partial class VdgDbDemoContextModelSnapshot : ModelSnapshot
+    [Migration("20250910203148_postTitle")]
+    partial class postTitle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,7 +54,7 @@ namespace VDG_Web_Api.Migrations
 
                     b.HasIndex("ClinicId");
 
-                    b.ToTable("Clinic_WorkTime", (string)null);
+                    b.ToTable("Clinic_WorkTime");
                 });
 
             modelBuilder.Entity("VDG_Web_Api.src.Models.Doctor", b =>
@@ -103,7 +106,7 @@ namespace VDG_Web_Api.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Doctor", (string)null);
+                    b.ToTable("Doctor");
                 });
 
             modelBuilder.Entity("VDG_Web_Api.src.Models.Notification", b =>
@@ -132,7 +135,7 @@ namespace VDG_Web_Api.Migrations
 
                     b.HasIndex("AdminId");
 
-                    b.ToTable("Notifications", (string)null);
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("VDG_Web_Api.src.Models.Person", b =>
@@ -174,7 +177,7 @@ namespace VDG_Web_Api.Migrations
                     b.HasKey("Id")
                         .HasName("PK__Person__3214EC07A0A03B3C");
 
-                    b.ToTable("Person", (string)null);
+                    b.ToTable("Person");
 
                     b.HasData(
                         new
@@ -214,7 +217,7 @@ namespace VDG_Web_Api.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("Post", (string)null);
+                    b.ToTable("Post");
                 });
 
             modelBuilder.Entity("VDG_Web_Api.src.Models.PromotionRequest", b =>
@@ -259,7 +262,7 @@ namespace VDG_Web_Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PromotionRequests", (string)null);
+                    b.ToTable("PromotionRequests");
                 });
 
             modelBuilder.Entity("VDG_Web_Api.src.Models.Rating", b =>
@@ -298,7 +301,7 @@ namespace VDG_Web_Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Rating", (string)null);
+                    b.ToTable("Rating");
                 });
 
             modelBuilder.Entity("VDG_Web_Api.src.Models.Reservation", b =>
@@ -339,7 +342,7 @@ namespace VDG_Web_Api.Migrations
 
                     b.HasIndex("VirtualId");
 
-                    b.ToTable("Reservation", (string)null);
+                    b.ToTable("Reservation");
                 });
 
             modelBuilder.Entity("VDG_Web_Api.src.Models.Speciality", b =>
@@ -358,7 +361,7 @@ namespace VDG_Web_Api.Migrations
                     b.HasKey("Id")
                         .HasName("PK__Speciali__3214EC074808F671");
 
-                    b.ToTable("Speciality", (string)null);
+                    b.ToTable("Speciality");
                 });
 
             modelBuilder.Entity("VDG_Web_Api.src.Models.SupportModel", b =>
@@ -386,7 +389,7 @@ namespace VDG_Web_Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("SupportModels", (string)null);
+                    b.ToTable("SupportModels");
                 });
 
             modelBuilder.Entity("VDG_Web_Api.src.Models.Ticket", b =>
@@ -423,7 +426,7 @@ namespace VDG_Web_Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Ticket", (string)null);
+                    b.ToTable("Ticket");
                 });
 
             modelBuilder.Entity("VDG_Web_Api.src.Models.TicketMessage", b =>
@@ -455,7 +458,7 @@ namespace VDG_Web_Api.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("Ticket_Message", (string)null);
+                    b.ToTable("Ticket_Message");
                 });
 
             modelBuilder.Entity("VDG_Web_Api.src.Models.User", b =>
@@ -500,7 +503,7 @@ namespace VDG_Web_Api.Migrations
                     b.HasIndex("PersonId")
                         .IsUnique();
 
-                    b.ToTable("User", (string)null);
+                    b.ToTable("User");
 
                     b.HasData(
                         new
@@ -556,7 +559,7 @@ namespace VDG_Web_Api.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("Virtual_Clinic", (string)null);
+                    b.ToTable("Virtual_Clinic");
                 });
 
             modelBuilder.Entity("VDG_Web_Api.src.Models.ClinicWorkTime", b =>

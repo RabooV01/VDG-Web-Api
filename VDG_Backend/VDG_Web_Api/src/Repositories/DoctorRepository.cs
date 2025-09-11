@@ -7,264 +7,266 @@ using VDG_Web_Api.src.Models;
 using VDG_Web_Api.src.Repositories.Interfaces;
 namespace VDG_Web_Api.src.Repositories
 {
-    public class DoctorRepository : IDoctorRepository
-    {
-        private readonly VdgDbDemoContext _context;
-        public DoctorRepository(VdgDbDemoContext context)
-        {
-            _context = context;
-        }
+	public class DoctorRepository : IDoctorRepository
+	{
+		private readonly VdgDbDemoContext _context;
+		public DoctorRepository(VdgDbDemoContext context)
+		{
+			_context = context;
+		}
 
-        public async Task<int> CountAsync(Expression<Func<Doctor, bool>>[] expressions)
-        {
-            var doctorsCount = _context.Doctors.AsQueryable();
-            foreach (var exp in expressions)
-            {
-                doctorsCount = doctorsCount.Where(exp);
-            }
-            return await doctorsCount.CountAsync();
-        }
+		public async Task<int> CountAsync(Expression<Func<Doctor, bool>>[] expressions)
+		{
+			var doctorsCount = _context.Doctors.AsQueryable();
+			foreach (var exp in expressions)
+			{
+				doctorsCount = doctorsCount.Where(exp);
+			}
+			return await doctorsCount.CountAsync();
+		}
 
-        public async Task<int> AddDoctorAsync(Doctor doctor)
-        {
-            try
-            {
-                _context.Doctors.Add(doctor);
-                await _context.SaveChangesAsync();
-                return doctor.Id;
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Unable to ِadd Doctor,error:[{ex.Message}]", ex);
-            }
+		public async Task<int> AddDoctorAsync(Doctor doctor)
+		{
+			try
+			{
+				_context.Doctors.Add(doctor);
+				await _context.SaveChangesAsync();
+				return doctor.Id;
+			}
+			catch (Exception ex)
+			{
+				throw new InvalidOperationException($"Unable to ِadd Doctor,error:[{ex.Message}]", ex);
+			}
 
-        }
+		}
 
-        public async Task DeleteDoctorAsync(int doctorId)
-        {
-            Doctor? doctor = await _context.Doctors.FindAsync(doctorId);
-            if (doctor == null)
-            {
-                throw new ArgumentNullException("actually, this doctorId is not found");
-            }
-            try
-            {
-                _context.Doctors.Remove(doctor);
-                await _context.SaveChangesAsync();
+		public async Task DeleteDoctorAsync(int doctorId)
+		{
+			Doctor? doctor = await _context.Doctors.FindAsync(doctorId);
+			if (doctor == null)
+			{
+				throw new ArgumentNullException("actually, this doctorId is not found");
+			}
+			try
+			{
+				_context.Doctors.Remove(doctor);
+				await _context.SaveChangesAsync();
 
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Unable to remove this doctor, Error:[{ex.Message}]", ex);
-            }
-        }
+			}
+			catch (Exception ex)
+			{
+				throw new InvalidOperationException($"Unable to remove this doctor, Error:[{ex.Message}]", ex);
+			}
+		}
 
-        public async Task UpdateDoctorAsync(Doctor doctor)
-        {
-            var doctorToUpdate = await _context.Doctors.FindAsync(doctor.Id);
+		public async Task UpdateDoctorAsync(Doctor doctor)
+		{
+			var doctorToUpdate = await _context.Doctors.FindAsync(doctor.Id);
 
-            if (doctorToUpdate == null)
-                throw new KeyNotFoundException("the doctor has not found for update");
+			if (doctorToUpdate == null)
+				throw new KeyNotFoundException("the doctor has not found for update");
 
-            doctorToUpdate = doctor;
-            try
-            {
-                _context.Update(doctorToUpdate);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
+			doctorToUpdate = doctor;
+			try
+			{
+				_context.Update(doctorToUpdate);
+				await _context.SaveChangesAsync();
+			}
+			catch (Exception ex)
+			{
 
-                throw new InvalidOperationException($"Unable to update the doctor ,error: {ex.Message}", ex);
-            }
-            throw new NotImplementedException();
+				throw new InvalidOperationException($"Unable to update the doctor ,error: {ex.Message}", ex);
+			}
+			throw new NotImplementedException();
 
-        }
+		}
 
-        public async Task UpdateDoctorDescription(string description, int doctorId)
-        {
-            try
-            {
-                await _context.Doctors.Where(d => d.Id == doctorId)
-                    .ExecuteUpdateAsync(d => d.SetProperty(p => p.Description, description));
-            }
-            catch (Exception)
-            {
+		public async Task UpdateDoctorDescription(string description, int doctorId)
+		{
+			try
+			{
+				await _context.Doctors.Where(d => d.Id == doctorId)
+					.ExecuteUpdateAsync(d => d.SetProperty(p => p.Description, description));
+			}
+			catch (Exception)
+			{
 
-                throw;
-            }
-        }
-        public async Task<Doctor?> GetDoctorByIdAsync(int doctorId)
-        {
-            Doctor? doctor = await _context.Doctors.Include(d => d.Speciality)
-                .Include(d => d.User)
-                .ThenInclude(u => u.Person)
-                .FirstOrDefaultAsync(d => d.Id == doctorId);
+				throw;
+			}
+		}
+		public async Task<Doctor?> GetDoctorByIdAsync(int doctorId)
+		{
+			Doctor? doctor = await _context.Doctors.Include(d => d.Speciality)
+				.Include(d => d.User)
+				.ThenInclude(u => u.Person)
+				.FirstOrDefaultAsync(d => d.Id == doctorId);
 
-            return doctor;
-        }
+			return doctor;
+		}
 
-        public async Task<IEnumerable<Doctor>> GetDoctorsByNameAsync(string Name)
-        {
-            var doctors = await _context.Doctors.Include(d => d.User)
-                .ThenInclude(u => u.Person)
-                .Include(d => d.VirtualClinics)
-                .ThenInclude(c => c.WorkTimes)
-                .Include(d => d.Speciality)
-                .Where(d => (d.User.Person.LastName != null && (d.User.Person.FirstName + " " + d.User.Person.LastName).Contains(Name)) || d.User.Person.FirstName.Contains(Name))
-                .ToListAsync();
+		public async Task<IEnumerable<Doctor>> GetDoctorsByNameAsync(string Name)
+		{
+			var doctors = await _context.Doctors.Include(d => d.User)
+				.ThenInclude(u => u.Person)
+				.Include(d => d.VirtualClinics)
+				.ThenInclude(c => c.WorkTimes)
+				.Include(d => d.Speciality)
+				.Include(d => d.Ratings)
+				.Where(d => (d.User.Person.LastName != null && (d.User.Person.FirstName + " " + d.User.Person.LastName).Contains(Name)) || d.User.Person.FirstName.Contains(Name))
+				.ToListAsync();
 
-            if (doctors == null)
-            {
-                throw new ArgumentException($"there is no the doctor with the name:{Name}");
-            }
-            return doctors;
-        }
-
-
-        public async Task<IEnumerable<Doctor>> GetDoctorsByGenderAsync(string gender)
-        {
-            var doctors = await _context.Doctors.Include(d => d.User)
-                .ThenInclude(u => u.Person)
-                .Where(d => d.User.Person.Gender == gender)
-                .ToListAsync();
-
-            if (doctors == null)
-                throw new KeyNotFoundException($"There are no {gender} doctors ");
-
-            return doctors;
-        }
-
-        public async Task<IEnumerable<Doctor>> GetDoctorsBySpecialityIdAsync(int specialityId)
-        {
-            var doctors = await _context.Doctors.Include(d => d.User)
-                .ThenInclude(u => u.Person)
-                .Include(d => d.Speciality)
-                .Include(d => d.VirtualClinics)
-                .ThenInclude(vc => vc.WorkTimes)
-                .Include(d => d.VirtualClinics)
-                .Where(d => d.SpecialityId == specialityId)
-                .ToListAsync();
-
-            return doctors;
-        }
-        public async Task<IEnumerable<DoctorRating>> GetTopTenDoctors()
-        {
-            try
-            {
-                var avgRate = await _context.Ratings.AsNoTracking()
-                    .Include(r => r.Doctor)
-                    .ThenInclude(d => d.User)
-                    .ThenInclude(u => u.Person)
-                    .GroupBy(r => r.DoctorId, (r) => r)
-                    .Select(r => new DoctorRating()
-                    {
-                        DoctorId = r.Key.Value,
-                        Doctor = r.Select(p => p.Doctor).FirstOrDefault(),
-                        Rating = r.Average(p => (p.Act + p.AvgWait + p.AvgService) / 3)
-                    }).OrderByDescending(d => d.Rating).Take(10).ToListAsync();
-                return avgRate;
-
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-
-        //public async Task<IEnumerable<Doctor>> GetTopDoctor(int cnt)
-        //{
-        //    var topDoctors = new List<(double, Doctor)>();
-
-        //    var doctors = await _context.Doctors.AsNoTracking().ToListAsync();
-        //    foreach (var doctor in doctors)
-        //    {
-        //        var pair = (await GetRatingDoctorByIdAsync(doctor.Id), doctor);
-        //        topDoctors.Add(pair);
-        //    }
-
-        //    return (topDoctors.OrderByDescending(pair => pair.Item1).Select(pair => pair.Item2).Take(cnt)).ToList();
-        //}
+			if (doctors == null)
+			{
+				throw new ArgumentException($"there is no the doctor with the name:{Name}");
+			}
+			return doctors;
+		}
 
 
-        //public async Task<IEnumerable<Doctor>> GetDoctorsByRatingAsync(int rating)
-        //{
-        //    var doctors = new List<Doctor>();
-        //    foreach (var doctor in _context.Doctors)
-        //    {
-        //        if (await GetRatingDoctorByIdAsync(doctor.Id) >= rating)
-        //            doctors.Add(doctor);
-        //    }
-        //    return doctors;
-        //}
+		public async Task<IEnumerable<Doctor>> GetDoctorsByGenderAsync(string gender)
+		{
+			var doctors = await _context.Doctors.Include(d => d.User)
+				.ThenInclude(u => u.Person)
+				.Where(d => d.User.Person.Gender == gender)
+				.ToListAsync();
+
+			if (doctors == null)
+				throw new KeyNotFoundException($"There are no {gender} doctors ");
+
+			return doctors;
+		}
+
+		public async Task<IEnumerable<Doctor>> GetDoctorsBySpecialityIdAsync(int specialityId)
+		{
+			var doctors = await _context.Doctors.Include(d => d.User)
+				.ThenInclude(u => u.Person)
+				.Include(d => d.Speciality)
+				.Include(d => d.VirtualClinics)
+				.ThenInclude(vc => vc.WorkTimes)
+				.Include(d => d.VirtualClinics)
+				.Include(d => d.Ratings)
+				.Where(d => d.SpecialityId == specialityId)
+				.ToListAsync();
+
+			return doctors;
+		}
+		public async Task<IEnumerable<DoctorRating>> GetTopTenDoctors()
+		{
+			try
+			{
+				var avgRate = await _context.Ratings.AsNoTracking()
+					.Include(r => r.Doctor)
+					.ThenInclude(d => d.User)
+					.ThenInclude(u => u.Person)
+					.GroupBy(r => r.DoctorId, (r) => r)
+					.Select(r => new DoctorRating()
+					{
+						DoctorId = r.Key.Value,
+						Doctor = r.Select(p => p.Doctor).FirstOrDefault(),
+						Rating = r.Average(p => (p.Act + p.AvgWait + p.AvgService) / 3)
+					}).OrderByDescending(d => d.Rating).Take(10).ToListAsync();
+				return avgRate;
+
+			}
+			catch (Exception)
+			{
+
+				throw;
+			}
+		}
+
+		//public async Task<IEnumerable<Doctor>> GetTopDoctor(int cnt)
+		//{
+		//    var topDoctors = new List<(double, Doctor)>();
+
+		//    var doctors = await _context.Doctors.AsNoTracking().ToListAsync();
+		//    foreach (var doctor in doctors)
+		//    {
+		//        var pair = (await GetRatingDoctorByIdAsync(doctor.Id), doctor);
+		//        topDoctors.Add(pair);
+		//    }
+
+		//    return (topDoctors.OrderByDescending(pair => pair.Item1).Select(pair => pair.Item2).Take(cnt)).ToList();
+		//}
+
+
+		//public async Task<IEnumerable<Doctor>> GetDoctorsByRatingAsync(int rating)
+		//{
+		//    var doctors = new List<Doctor>();
+		//    foreach (var doctor in _context.Doctors)
+		//    {
+		//        if (await GetRatingDoctorByIdAsync(doctor.Id) >= rating)
+		//            doctors.Add(doctor);
+		//    }
+		//    return doctors;
+		//}
 
 
 
-        public async Task<Doctor?> GetDoctorBySyndicateIdAsync(string syndicateId)
-        {
+		public async Task<Doctor?> GetDoctorBySyndicateIdAsync(string syndicateId)
+		{
 
-            Doctor? doctor = await _context.Doctors.FindAsync(syndicateId);
-            if (doctor == null)
-                throw new ArgumentNullException("this Doctor is not found");
+			Doctor? doctor = await _context.Doctors.FindAsync(syndicateId);
+			if (doctor == null)
+				throw new ArgumentNullException("this Doctor is not found");
 
-            return doctor;
-        }
+			return doctor;
+		}
 
-        public async Task UpdateDoctorSettings(int doctorId, TicketOptions ticketOptions, double ticketCost)
-        {
-            try
-            {
-                await _context.Doctors.Where(d => d.Id == doctorId)
-                    .ExecuteUpdateAsync(d => d.SetProperty(p => p.TicketOption, ticketOptions)
-                    .SetProperty(p => p.TicketCost, ticketCost));
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+		public async Task UpdateDoctorSettings(int doctorId, TicketOptions ticketOptions, double ticketCost)
+		{
+			try
+			{
+				await _context.Doctors.Where(d => d.Id == doctorId)
+					.ExecuteUpdateAsync(d => d.SetProperty(p => p.TicketOption, ticketOptions)
+					.SetProperty(p => p.TicketCost, ticketCost));
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
 
-        public async Task<Doctor?> GetDoctorByUserId(int userId)
-        {
-            try
-            {
-                var doctor = await _context.Doctors.Include(d => d.User)
-                    .FirstOrDefaultAsync(d => d.UserId == userId);
-                return doctor;
-            }
-            catch (Exception)
-            {
+		public async Task<Doctor?> GetDoctorByUserId(int userId)
+		{
+			try
+			{
+				var doctor = await _context.Doctors.Include(d => d.User)
+					.FirstOrDefaultAsync(d => d.UserId == userId);
+				return doctor;
+			}
+			catch (Exception)
+			{
 
-                throw;
-            }
-        }
+				throw;
+			}
+		}
 
 
-        public async Task<IEnumerable<Doctor>> GetDoctors(int page, int pageSize, int? specialityId = null, string? name = null)
-        {
-            try
-            {
-                Expression<Func<Doctor, bool>> doctorFilterExpression = doctor => (specialityId == null || doctor.SpecialityId == specialityId) &&
-                (name == null || (doctor.User.Person.FirstName + " " + doctor.User.Person.LastName).Contains(name));
+		public async Task<IEnumerable<Doctor>> GetDoctors(int page, int pageSize, int? specialityId = null, string? name = null)
+		{
+			try
+			{
+				Expression<Func<Doctor, bool>> doctorFilterExpression = doctor => (specialityId == null || doctor.SpecialityId == specialityId) &&
+				(name == null || (doctor.User.Person.FirstName + " " + doctor.User.Person.LastName).Contains(name));
 
-                var doctors = await _context.Doctors.Include(d => d.User)
-                    .ThenInclude(u => u.Person)
-                    .Include(d => d.Speciality)
-                    .Where(doctorFilterExpression)
-                    .OrderByDescending(doctor => doctor.User.Person.FirstName)
-                    .ThenBy(doctor => doctor.User.Person.LastName)
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToListAsync();
+				var doctors = await _context.Doctors.Include(d => d.User)
+					.ThenInclude(u => u.Person)
+					.Include(d => d.Speciality)
+					.Where(doctorFilterExpression)
+					.OrderByDescending(doctor => doctor.User.Person.FirstName)
+					.ThenBy(doctor => doctor.User.Person.LastName)
+					.Skip((page - 1) * pageSize)
+					.Take(pageSize)
+					.ToListAsync();
 
-                return doctors;
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Error while retrieving data.", e);
-            }
-        }
+				return doctors;
+			}
+			catch (Exception e)
+			{
+				throw new Exception("Error while retrieving data.", e);
+			}
+		}
 
-    }
+	}
 }

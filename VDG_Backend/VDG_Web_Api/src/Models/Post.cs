@@ -9,6 +9,8 @@ public partial class Post
 {
 	[Key]
 	public int Id { get; set; }
+
+	[Column(nameof(ImageUrl))]
 	public string? ImageUrl { get; set; }
 
 	[Column("Doctor_Id")]

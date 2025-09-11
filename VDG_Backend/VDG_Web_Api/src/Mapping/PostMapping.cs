@@ -10,7 +10,8 @@ namespace VDG_Web_Api.src.Mapping
 			{
 				ImageUrl = postDTO.ImageUrl,
 				DoctorId = postDTO.DoctorId,
-				Content = postDTO.Content
+				Content = postDTO.Content,
+				Title = postDTO.Title,
 			};
 
 		public static Post PostToEntity(this UpdatePostDTO postDTO)
@@ -30,7 +31,7 @@ namespace VDG_Web_Api.src.Mapping
 				Title = post.Title,
 				DoctorName = post.Doctor.User.Person.FirstName + " " + post.Doctor.User.Person.LastName,
 				DoctorSpeciality = post.Doctor.Speciality.Name,
-				ImageUrl = post.Doctor.User.ImageUrl
+				ImageUrl = post.ImageUrl
 			};
 	}
 }

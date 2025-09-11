@@ -47,24 +47,32 @@ namespace VDG_Web_Api.src.Repositories
 			}
 		}
 
-        public async Task<IEnumerable<Post>> GetAllPostsAsync(int? doctorId)
-        {
-            if (doctorId is null)
-            {
-                try
-                {
-                    return await _context.Posts.ToListAsync();
-                }
-                catch (Exception)
-                {
+		public async Task<IEnumerable<Post>> GetAllPostsAsync(int? doctorId)
+		{
+			if (doctorId is null)
+			{
+				try
+				{
+					return await _context.Posts.Include(p => p.Doctor)
+						.ThenInclude(d => d.User)
+						.ThenInclude(u => u.Person)
+						.Include(p => p.Doctor)
+						.ThenInclude(d => d.Speciality)
+						.ToListAsync();
+				}
+				catch (Exception)
+				{
 
-                    throw;
-                }
+					throw;
+				}
 
-            }
+			}
 
 
-            var posts = await _context.Posts.Where(p => p.DoctorId == doctorId).ToListAsync();
+			var posts = await _context.Posts.Include(p => p.Doctor)
+						.ThenInclude(d => d.User)
+						.ThenInclude(u => u.Person)
+						.Where(p => p.DoctorId == doctorId).ToListAsync();
 
 			if (posts == null)
 			{

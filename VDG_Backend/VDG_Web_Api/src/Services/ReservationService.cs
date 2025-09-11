@@ -1,3 +1,5 @@
+using FluentEmail.Core;
+using Hangfire;
 using VDG_Web_Api.src.DTOs.ReservationDTOs;
 using VDG_Web_Api.src.DTOs.VirtualClinicDTOs;
 using VDG_Web_Api.src.Enums;
@@ -13,16 +15,26 @@ public class ReservationService : IReservationService
 	private readonly IReservationRepository _reservationRepository;
 	private readonly IVirtualClinicService _virtualClinicService;
 	private readonly IClaimService _claimService;
+	private readonly IUserRepository _userRepository;
+	private readonly IDoctorRepository _doctorRepository;
+	private readonly IFluentEmail fluentEmail;
 
 	private readonly static int _confirmThresholdPerHours = 24;
 
 	public ReservationService(IReservationRepository reservationRepository,
 		IVirtualClinicService virtualClinicService,
-		IClaimService claimService)
+		IClaimService claimService,
+		IConfiguration configuration,
+		IUserRepository userRepository,
+		IDoctorRepository doctorRepository,
+		IFluentEmail fluentEmail)
 	{
 		_reservationRepository = reservationRepository;
 		_virtualClinicService = virtualClinicService;
 		_claimService = claimService;
+		_userRepository = userRepository;
+		_doctorRepository = doctorRepository;
+		this.fluentEmail = fluentEmail;
 	}
 
 	public async Task BookAppointmentAsync(ReservationDTO reservationDto)
@@ -62,6 +74,12 @@ public class ReservationService : IReservationService
 			}
 
 			await _reservationRepository.BookAppointmentAsync(reservation);
+			var doc = await _doctorRepository.GetDoctorByIdAsync(currentClinic.DoctorId);
+			var user = await _userRepository.GetById(reservation.UserId);
+			if (reservation.ScheduledAt.AddHours(-1) < DateTime.Now)
+				BackgroundJob.Schedule(() => SendReminder(doc.User.Person.FirstName + " " + doc.User.Person.LastName, reservation.ScheduledAt, user.Email, currentClinic.DoctorId), reservation.ScheduledAt.AddHours(-1));
+			else
+				BackgroundJob.Enqueue(() => SendReminder(doc.User.Person.FirstName + " " + doc.User.Person.LastName, reservation.ScheduledAt, user.Email, currentClinic.DoctorId));
 		}
 		catch (InvalidOperationException ex)
 		{
@@ -71,6 +89,13 @@ public class ReservationService : IReservationService
 		{
 			throw new InvalidOperationException($"Unexpected error occurred: {e.Message}", e);
 		}
+	}
+	public async Task SendReminder(string docFullName, DateTime Schudle, string userEmail, int doctorId)
+	{
+		await fluentEmail.To(userEmail)
+		.Subject("Appointment Reminder!")
+		.Body("You have an appointment with Dr." + docFullName + " at " + Schudle.ToString())
+		.SendAsync();
 	}
 
 	public async Task CancelAppointmentAsync(int reservationId)
@@ -270,7 +295,7 @@ public class ReservationService : IReservationService
 		{
 			var reservations = await _reservationRepository.GetClinicReservationInMonth(clinicId, date);
 			var clinic = await _virtualClinicService.GetClinicById(clinicId);
-			var totalTimes = ExtractSlotsFromWorkTimes(clinic.WorkTimes, clinic.AvgService).Count();
+			var totalTimes = ExtractSlotsFromWorkTimes(clinic.WorkTimes.Where(w => w.Day == date.ToString("dddd")), clinic.AvgService).Count();
 
 			var ReservationBusyness = Enumerable.Range(1, DateTime.DaysInMonth(date.Year, date.Month))
 				.Select(day => new DateTime(date.Year, date.Month, day))

@@ -11,7 +11,7 @@ namespace VDG_Web_Api.src.Services
 		private readonly IDoctorRepository _doctorRepository;
 		public ClaimService(IHttpContextAccessor httpContextAccessor, IDoctorRepository doctorRepository)
 		{
-			_principal = httpContextAccessor.HttpContext!.User;
+			_principal = httpContextAccessor.HttpContext?.User ?? new();
 			_doctorRepository = doctorRepository;
 		}
 		public int GetCurrentUserId()

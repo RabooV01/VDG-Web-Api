@@ -176,6 +176,10 @@ namespace VDG_Web_Api.src.Controllers
 		{
 			try
 			{
+				if (r.ScheduledAt.Subtract(DateTime.Now).TotalHours < 24)
+				{
+					return BadRequest("Cannot update an appointment that about to happen in next 24 hours.");
+				}
 				if (await _reservationService.EditAppointmentAsync(r))
 				{
 					return NoContent();
