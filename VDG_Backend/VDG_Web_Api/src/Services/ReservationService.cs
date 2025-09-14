@@ -149,7 +149,7 @@ public class ReservationService : IReservationService
 		try
 		{
 			// get all reservations for a certain date
-			Dictionary<DateTime, Reservation> reservations = (await _reservationRepository.GetClinicReservationsAsync(virtualId, date)).ToDictionary(x => x.ScheduledAt);
+			Dictionary<DateTime, Reservation> reservations = (await _reservationRepository.GetClinicReservationsAsync(virtualId, date)).DistinctBy(d => d.ScheduledAt).ToDictionary(x => x.ScheduledAt);
 			var clinic = await _virtualClinicService.GetClinicById(virtualId);
 			var workTimes = clinic.WorkTimes.ToArray();
 			var extractedTimes = ExtractSlotsFromWorkTimes(workTimes.Where(wt => wt.Day == date.DayOfWeek.ToString()), clinic.AvgService);

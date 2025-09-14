@@ -67,6 +67,18 @@ public class VirtualClinicService : IVirtualClinicService
 		try
 		{
 			ClinicWorkTime workTime = workTimeDTO.ToEntity();
+			var clwt = await _clinicRepository.GetClinicWorkTimes(workTime.ClinicId);
+			var valid = !clwt.Where(c => c.DayOfWeek == workTime.DayOfWeek)
+				.Any(wt => (workTime.StartWorkHours.IsBetween(wt.StartWorkHours, wt.EndWorkHours) ||
+				workTime.EndWorkHours.IsBetween(wt.StartWorkHours, wt.EndWorkHours)) &&
+				(wt.StartWorkHours.IsBetween(workTime.StartWorkHours, workTime.EndWorkHours) ||
+				wt.EndWorkHours.IsBetween(workTime.StartWorkHours, workTime.EndWorkHours)));
+
+			if (!valid)
+			{
+				throw new Exception("Intersect happened between working times");
+			}
+
 			await _clinicRepository.AddClinicWorkTime(workTime);
 		}
 		catch (Exception e)

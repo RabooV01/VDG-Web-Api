@@ -54,7 +54,7 @@ namespace VDG_Web_Api.src.Services.SearchService
 
 			if (filter.ShortestDistanceFirst)
 			{
-				filteredDoctors = filteredDoctors.OrderBy(d => d.VirtualClinics.Select(vc => ClinicDistance(vc, filter.UserLat!.Value, filter.UserLon!.Value)));
+				filteredDoctors = filteredDoctors.OrderBy(d => d.VirtualClinics.Select(vc => ClinicDistance(vc, filter.UserLat!.Value, filter.UserLon!.Value)).Min());
 			}
 
 			var total = await _doctorRepository.CountAsync(expressions.ToArray());

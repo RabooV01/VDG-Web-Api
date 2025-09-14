@@ -7,5 +7,7 @@ namespace VDG_Web_Api.src.DTOs.DoctorDTOs
         public int DoctorId { get; set; }
         public Doctor? Doctor { get; set; }
         public double Rating { get; set; }
+
+        public string Speciality { get; set; }
     }
 }
