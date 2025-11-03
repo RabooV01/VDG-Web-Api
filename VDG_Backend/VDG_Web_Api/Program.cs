@@ -10,13 +10,10 @@ using VDG_Web_Api.src.Data;
 using VDG_Web_Api.src.DTOs;
 using VDG_Web_Api.src.Enums;
 using VDG_Web_Api.src.FileHandler;
-using VDG_Web_Api.src.Hubs;
 using VDG_Web_Api.src.Repositories;
 using VDG_Web_Api.src.Repositories.Interfaces;
 using VDG_Web_Api.src.Services;
 using VDG_Web_Api.src.Services.Interfaces;
-using VDG_Web_Api.src.Services.LocalizationService;
-using VDG_Web_Api.src.Services.SearchService;
 
 var builder = WebApplication.CreateBuilder();
 
@@ -37,31 +34,12 @@ builder.Services.AddDbContext<VdgDbDemoContext>(opt => opt.UseSqlServer(cnnStr))
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
-builder.Services.AddScoped<IVirtualClinicRepository, VirtualClinicRepository>();
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
-builder.Services.AddScoped<ITicketRepository, TicketRepository>();
-builder.Services.AddScoped<ISpecialityRepository, SpecialityRepository>();
-builder.Services.AddScoped<IRatingRepository, RatingRepositroy>();
-builder.Services.AddScoped<IPromotionRequestRepository, PromotionRequestRepository>();
-builder.Services.AddTransient<ILocalizationService, LocalizationService>();
-builder.Services.AddScoped<IPostRepository, PostRepository>();
-builder.Services.AddScoped<ISupportRepository, SupportRepository>();
-builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
 builder.Services.AddScoped<IClaimService, ClaimService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IVirtualClinicService, VirtualClinicService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
-builder.Services.AddScoped<ITicketService, TicketService>();
-builder.Services.AddScoped<ISpecialityService, SpecialityService>();
-builder.Services.AddScoped<IRatingService, RatingService>();
-builder.Services.AddScoped<IPromotionRequestService, PromotionRequestService>();
-builder.Services.AddScoped<ISearchingService, SearchingService>();
 builder.Services.AddTransient<IFileHandler, FileHandler>();
-builder.Services.AddScoped<IPostService, PostService>();
-builder.Services.AddScoped<ISupportService, SupportService>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
 EmailConf emailConf = builder.Configuration.GetSection("Email").Get<EmailConf>()!;
 builder.Services.AddFluentEmail(emailConf.SenderEmail)
 	.AddSmtpSender(host: emailConf.Host, port: emailConf.Port);
@@ -96,7 +74,6 @@ builder.Services.AddAuthentication() // add authentication to the builder
 builder.Services.AddSignalR();
 
 
-builder.Services.AddScoped<IAuthService, JWTAuthService>();
 builder.Services.AddCors(x =>
 {
 	x.AddPolicy("Any", x => x.AllowAnyHeader()
@@ -149,7 +126,6 @@ app.UseSwaggerUi();
 app.UseHangfireDashboard();
 
 app.UseHttpsRedirection();
-app.MapHub<ChatHub>("chathub");
 app.UseStaticFiles();
 
 app.UseAuthorization();
